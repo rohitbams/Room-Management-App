@@ -20,10 +20,10 @@ public class Room {
     protected Room() {}
     
     // the constructor used to create Room instances, and save them to database
-    public Room(String name, int capacity) {
+    public Room(String name, int capacity, boolean availability) {
         this.name = name;
         this.capacity = capacity;
-        this.availability = true;
+        this.availability = availability;
     }
 
     public boolean isItBooked() {
@@ -41,6 +41,4 @@ public class Room {
     public int getCapacity() {
         return capacity;
     }
-
-    //TODO need a method to set availability
 }
