@@ -41,17 +41,17 @@ public class RoomServiceTest {
     @Test
     void shouldCreateRoom() {
         when(roomRepository.save(any(Room.class))).thenReturn(room1).thenReturn(room2);
-        Room createdRoom1 = roomService.createRoom(room1);
+        Room createdRoom1 = roomService.createRoom(room1.getName(), room1.getCapacity());
         assertNotNull(createdRoom1);
         assertEquals(room1.getID(), createdRoom1.getID());
         assertEquals(room1.getName(), createdRoom1.getName());
         assertEquals(room1.getCapacity(), createdRoom1.getCapacity());
 
-        Room createdRoom2 = roomService.createRoom(room2);
+        Room createdRoom2 = roomService.createRoom(room2.getName(), room2.getCapacity());
         assertNotNull(createdRoom2);
-        assertEquals(room1.getID(), createdRoom2.getID());
-        assertEquals(room1.getName(), createdRoom2.getName());
-        assertEquals(room1.getCapacity(), createdRoom2.getCapacity());
+        assertEquals(room2.getID(), createdRoom2.getID());
+        assertEquals(room2.getName(), createdRoom2.getName());
+        assertEquals(room2.getCapacity(), createdRoom2.getCapacity());
     }
 
     @Test

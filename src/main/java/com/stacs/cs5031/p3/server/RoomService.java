@@ -2,7 +2,7 @@ package com.stacs.cs5031.p3.server;
 
 public class RoomService {
 
-    public Room createRoom(Room room) {
+    public Room createRoom(String name, int capacity) {
         return new Room();
     }
 
