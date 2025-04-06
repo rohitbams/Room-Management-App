@@ -4,9 +4,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,9 +25,9 @@ public class RoomRepositoryTest {
 
     @BeforeEach
     public void setUp() {
-        room1 = new Room("Meeting Room 1", 4, true);
-        room2 = new Room("Meeting Room 2", 6, false);
-        room3 = new Room("Meeting Room 3", 8, true);
+        room1 = new Room(4);
+        room2 = new Room(6);
+        room3 = new Room(8);
         roomRepository.saveAll(Arrays.asList(room1, room2, room3));
     }
 
@@ -34,26 +36,38 @@ public class RoomRepositoryTest {
         // Release test data after each test method
         roomRepository.deleteAll();
     }
-
+    
     @Test
-    void shouldSaveRoom() {
-        Room room = new Room("Meeting Room", 10, false);
-        roomRepository.save(room);
-
-        List<Room> foundRooms = new ArrayList<>();
-        roomRepository.findAll().forEach(foundRooms::add);
-        assertTrue(foundRooms.contains(room));
+    void shouldSaveAndFindRooms() {
+        // room1, room2, room3 are already saved in setUp()
+        List<Room> foundRooms = StreamSupport.stream(roomRepository.findAll().spliterator(), false)
+        .collect(Collectors.toList());
+        
+        assertTrue(foundRooms.contains(room1), "room1 should be saved");
+        assertTrue(foundRooms.contains(room2), "room2 should be saved");
+        assertTrue(foundRooms.contains(room3), "room3 should be saved");
+    }
+    
+    @Test
+    void shouldReturnCorrectRoomCount_whenOneRoomIsSaved() {
+        roomRepository.deleteAll(); // clear repository
+        roomRepository.save(new Room(3));
+        long roomCount = StreamSupport.stream(roomRepository.findAll().spliterator(), false).count();
+        assertEquals(1, roomCount);
     }
 
     @Test
-    void shouldFindAllRooms() {
-        List<Room> foundRooms = new ArrayList<>();
-        roomRepository.findAll().forEach(foundRooms::add);
+    void shouldReturnCorrectRoomCount_whenMultipleRoomsAreSaved() {
+        // three rooms are saved in setUp()
+        long roomCount = StreamSupport.stream(roomRepository.findAll().spliterator(), false).count();
+        assertEquals(3, roomCount);
         
-        assertEquals(3, foundRooms.size(), "Should have saved 3 rooms");
-        assertTrue(foundRooms.contains(room1), "Should contain room1");
-        assertTrue(foundRooms.contains(room2), "Should contain room2");
-        assertTrue(foundRooms.contains(room3), "Should contain room3");
+        roomRepository.deleteAll(); // Clear up repository
+        // save two rooms
+        roomRepository.save(new Room(5));
+        roomRepository.save(new Room(5));
+        roomCount = StreamSupport.stream(roomRepository.findAll().spliterator(), false).count();
+        assertEquals(2, roomCount);
     }
 
     @Test
@@ -62,33 +76,67 @@ public class RoomRepositoryTest {
         assertNotNull(foundRoom);
         assertEquals(room1.getName(), foundRoom.getName());
         assertEquals(room1.getCapacity(), foundRoom.getCapacity());
-        assertEquals(room1.isItBooked(), foundRoom.isItBooked());
+        assertEquals(room1.isAvailable(), foundRoom.isAvailable());
     }
     
     @Test
     void shouldFindAvailableRooms() {
         List<Room> availableRooms = roomRepository.findByAvailability(true);
-        assertEquals(2, availableRooms.size());
-        assertFalse(availableRooms.stream().anyMatch(Room::isItBooked)); // Does not return unavailable rooms
+
+        // all rooms saved in setup() are available by default
+        assertTrue(availableRooms.contains(room1));
+        assertTrue(availableRooms.contains(room2));
+        assertTrue(availableRooms.contains(room3));
+        assertEquals(3, availableRooms.size());
     }
     
     @Test
     void shouldFindUnavailableRooms() {
         List<Room> unAvailableRooms = roomRepository.findByAvailability(false);
-        assertEquals(1, unAvailableRooms.size());
-        assertTrue(unAvailableRooms.stream().allMatch(Room::isItBooked));
+
+        // all rooms saved in setup() are available
+        assertEquals(0, unAvailableRooms.size());
     }
 
     @Test
     void shouldRemoveRoomById() {
         roomRepository.removeById(room1.getID());
 
-        Iterable<Room> foundRooms = roomRepository.findAll();
-        List<Room> roomList = new ArrayList<>();
-        foundRooms.forEach(roomList::add);
-        assertEquals(2, roomList.size(), "Should have 2 rooms saved after removing 1");
-        assertFalse(roomList.contains(room1), "Should not contain room1 after removing it");
-        assertTrue(roomList.contains(room2), "Should contain room2 after removing room1");
-        assertTrue(roomList.contains(room3), "Should contain room3 after removing room1");
+        List<Room> foundRooms = StreamSupport.stream(roomRepository.findAll().spliterator(), false)
+                .collect(Collectors.toList());
+        
+        assertEquals(2, foundRooms.size(), "Should have 2 rooms saved after removing 1");
+        assertFalse(foundRooms.contains(room1), "Should not contain room1 after removing it");
+        assertTrue(foundRooms.contains(room2), "Should contain room2 after removing room1");
+        assertTrue(foundRooms.contains(room3), "Should contain room3 after removing room1");
+    }
+    
+    @Test
+    void shouldUpdateAvailability_whenRoomIsBooked() {
+        Room savedRoom = roomRepository.findById(room1.getID()).orElse(null);
+        assertTrue(savedRoom.isAvailable(), "Room should be available initially");
+
+        savedRoom.bookRoom(); // Set availability to false
+        roomRepository.save(savedRoom);
+
+        Room updatedRoom = roomRepository.findById(savedRoom.getID()).orElse(null);
+        assertNotNull(updatedRoom, "Room should still exist after updating availability");
+        assertFalse(updatedRoom.isAvailable(), "Room should be unavailable after booking");
+    }
+    
+    @Test
+    void shouldUpdateAvailability_whenRoomIsMadeAvailable() {
+        Room savedRoom = roomRepository.findById(room1.getID()).orElse(null);
+        assertNotNull(savedRoom);
+        savedRoom.bookRoom(); // Set availability to false
+        roomRepository.save(savedRoom);
+        assertFalse(savedRoom.isAvailable());
+        
+        savedRoom.makeAvailable(); // Set availability to true
+        roomRepository.save(savedRoom);
+
+        Room updatedRoom = roomRepository.findById(savedRoom.getID()).orElse(null);
+        assertNotNull(updatedRoom, "Room should still exist after updating availability");
+        assertTrue(updatedRoom.isAvailable(), "Room should be available after update");
     }
 }
