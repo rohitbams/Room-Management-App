@@ -4,7 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-
+import jakarta.persistence.PostPersist;
 
 @Entity
 public class Room {
@@ -13,21 +13,29 @@ public class Room {
     private int id;
     private String name;
     private int capacity;
-    private boolean availability; // If available, return true
+    private boolean availability;
 
     // this constructor exists only because JPA requires a default constructor
     // not used directly
     protected Room() {}
     
     // the constructor used to create Room instances, and save them to database
-    public Room(String name, int capacity, boolean availability) {
-        this.name = name;
+    public Room(int capacity) {
         this.capacity = capacity;
-        this.availability = availability;
+        this.availability = true;
+        generateName();
     }
 
-    public boolean isItBooked() {
-        return !availability;
+    public boolean isAvailable() {
+        return availability;
+    }
+
+    public void bookRoom() {
+        this.availability = false;
+    }
+
+    public void makeAvailable() {
+        this.availability = true;
     }
 
     public int getID() {
@@ -40,5 +48,10 @@ public class Room {
 
     public int getCapacity() {
         return capacity;
+    }
+
+    @PostPersist
+    private void generateName() {
+        this.name = "Room " + id;
     }
 }

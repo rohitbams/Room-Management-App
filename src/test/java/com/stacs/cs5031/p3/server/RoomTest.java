@@ -10,31 +10,45 @@ public class RoomTest {
     
     @BeforeEach
     void setup() {
-        room = new Room("meeting_room", 3, true);
+        room = new Room(3);
     }
 
     void shouldCreateRoom() {
         assertNotNull(room, "room should not be null");
     }
-
+    
     void shouldGetRoomID() {
-        assertEquals(3, room.getID(), "room ID should be 3");
+        assertNotNull(room.getID(), "room ID should not be null");
     }
-
+    
     void shouldGetRoomName() {
-        assertEquals("meeting_room", room.getName(), "room name should be 'meeting_room'");
+        assertNotNull(room.getName(), "room name should not be null");
+        assertEquals("Room " + String.valueOf(room.getID()), room.getName(), "room name should be 'Room + <ID>'");
     }
 
     void shouldGetRoomCapacity() {
         assertEquals(3, room.getCapacity(), "room capacity should be 3");
     }
 
-    void shouldReturnFalse_whenRoomIsNotBooked() {
-        assertEquals(false, room.isItBooked(), "room should not be booked");
+    void shouldReturnTrue_whenRoomIsAvailable() {
+        assertEquals(true, room.isAvailable(), "room should be available");
     }
 
-    void shouldReturnTrue_whenRoomIsBooked() {
-        room = new Room("meeting_room", 3, false); // set availability to false
-        assertEquals(false, room.isItBooked(), "room should not be booked");
+    void shouldMakeAvailable() {
+        room.bookRoom();
+        assertEquals(false, room.isAvailable(), "room should not be available after booking");
+        room.makeAvailable();
+        assertEquals(true, room.isAvailable(), "room should be available after being made available");
+    }
+    
+    void shouldBookRoom() {
+        assertEquals(true, room.isAvailable(), "room should be available before booking");
+        room.bookRoom();
+        assertEquals(false, room.isAvailable(), "room should not be available after booking");
+    }
+    
+    void shouldReturnFalse_whenRoomIsUnavailable() {
+        room.bookRoom();
+        assertEquals(false, room.isAvailable(), "room should not be available after booking");
     }
 }
