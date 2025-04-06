@@ -1,12 +1,22 @@
 package com.stacs.cs5031.p3.server;
 
+import java.util.ArrayList;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
 public class RoomService {
 
-    public Room createRoom(String name, int capacity, boolean availability) {
-        return new Room();
+    @Autowired
+    private RoomRepository roomRepository;
+
+    // TODO should throw exception
+    public boolean createRoom(int capacity) {
+        Room room = new Room(capacity);
+        roomRepository.save(room);
+        return (roomRepository.findById(room.getID()) != null);
     }
 
-    public Object getName(Room room) {
+    public String getName(Room room) {
         return null;
     }
 
@@ -14,8 +24,29 @@ public class RoomService {
         return 0;
     }
 
-    public Object getCapacity(Room room) {
+    public int getCapacity(Room room) {
+        return 0;
+    }
+
+    public Room findRoomById(int i) {
         return null;
+    }
+
+    public ArrayList<Room> findAllRooms() {
+        return null;
+    }
+
+    public ArrayList<Room> findAvailableRooms() {
+        return null;
+    }
+
+    // returns true if success
+    public boolean bookRoom() {
+        return false;
+    }
+
+    public boolean makeRoomAvailable() {
+        return false;
     }
     
 }
