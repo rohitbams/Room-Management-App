@@ -46,8 +46,7 @@ public class RoomService {
                 .collect(Collectors.toList());
     }
 
-    public RoomDTO bookRoom(Room room) throws RoomNotAvailableException, RoomNotFoundException {
-        int id = room.getID();
+    public RoomDTO bookRoom(int id) throws RoomNotAvailableException, RoomNotFoundException {
         Room roomEntity = roomRepository.findById(id)
                 .orElseThrow(() -> new RoomNotFoundException("Room not found: " + id));
 
@@ -62,8 +61,7 @@ public class RoomService {
         return mapToDTO(roomEntity);
     }
 
-    public RoomDTO makeRoomAvailable(Room room) {
-        int id = room.getID();
+    public RoomDTO makeRoomAvailable(int id) {
         Room roomEntity = roomRepository.findById(id)
                 .orElseThrow(() -> new RoomNotFoundException("Room not found: " + id));
 

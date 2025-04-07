@@ -139,7 +139,7 @@ public class RoomServiceTest {
     @Test
     void shouldBookRoom() {
         when(roomRepository.findById(1)).thenReturn(Optional.of(testRoom));
-        RoomDTO result = roomService.bookRoom(testRoom);
+        RoomDTO result = roomService.bookRoom(testRoom.getID());
         
         assertNotNull(result, "Result should not be null");
         assertEquals(testRoomDTO.getId(), result.getId(), "ID should match");
@@ -156,7 +156,7 @@ public class RoomServiceTest {
         unavailableRoom.bookRoom(); // Set availability to false
         when(roomRepository.findById(2)).thenReturn(Optional.of(unavailableRoom));
 
-        assertThrows(RoomNotAvailableException.class, () -> roomService.bookRoom(unavailableRoom));
+        assertThrows(RoomNotAvailableException.class, () -> roomService.bookRoom(unavailableRoom.getID()));
         verify(roomRepository).findById(2);
     }
 
@@ -168,7 +168,7 @@ public class RoomServiceTest {
         unavailableRoom.bookRoom(); // Set availability to false
         when(roomRepository.findById(2)).thenReturn(Optional.of(unavailableRoom));
         
-        RoomDTO result = roomService.makeRoomAvailable(unavailableRoom);
+        RoomDTO result = roomService.makeRoomAvailable(unavailableRoom.getID());
         
         assertNotNull(result, "Result should not be null");
         assertEquals(unavailableRoom.getID(), result.getId(), "ID should match");
