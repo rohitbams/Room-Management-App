@@ -97,6 +97,7 @@ public class RoomServiceTest {
     void shouldThrowRoomNotFoundException_whenRoomDoesNotExist() {
         when(roomRepository.findById(999)).thenReturn(Optional.empty());
         assertThrows(RoomNotFoundException.class, () -> roomService.findRoomById(999));
+        verify(roomRepository).findById(999);
     }
 
     @Test
@@ -137,6 +138,7 @@ public class RoomServiceTest {
     
     @Test
     void shouldBookRoom() {
+        when(roomRepository.findById(1)).thenReturn(Optional.of(testRoom));
         RoomDTO result = roomService.bookRoom(testRoom);
         
         assertNotNull(result, "Result should not be null");
@@ -144,25 +146,34 @@ public class RoomServiceTest {
         assertEquals(testRoomDTO.getName(), result.getName(), "Name should match");
         assertEquals(testRoomDTO.getCapacity(), result.getCapacity(), "Capacity should match");
         assertFalse(result.isAvailable(), "Room should be unavailable after booking");
+        verify(roomRepository).findById(1);
     }
     
     @Test
     void shouldThrowException_whenBookingUnavailableRoom() {
         Room unavailableRoom = new Room(10);
-        unavailableRoom.bookRoom(); // Set its availability to false
+        ReflectionTestUtils.setField(unavailableRoom, "id", 2);
+        unavailableRoom.bookRoom(); // Set availability to false
+        when(roomRepository.findById(2)).thenReturn(Optional.of(unavailableRoom));
+
         assertThrows(RoomNotAvailableException.class, () -> roomService.bookRoom(unavailableRoom));
+        verify(roomRepository).findById(2);
     }
-    
+
     @Test
     void shouldMakeRoomAvailable() {
-        Room unavailableRoom = new Room(10);
-        unavailableRoom.bookRoom(); // Set its availability to false
+        Room unavailableRoom = new Room(10); // Available initially
+        ReflectionTestUtils.setField(unavailableRoom, "id", 2);
+        ReflectionTestUtils.setField(unavailableRoom, "name", "Unavailable Room");
+        unavailableRoom.bookRoom(); // Set availability to false
+        when(roomRepository.findById(2)).thenReturn(Optional.of(unavailableRoom));
+        
         RoomDTO result = roomService.makeRoomAvailable(unavailableRoom);
         
         assertNotNull(result, "Result should not be null");
-        assertEquals(testRoomDTO.getId(), result.getId(), "ID should match");
-        assertEquals(testRoomDTO.getName(), result.getName(), "Name should match");
-        assertEquals(testRoomDTO.getCapacity(), result.getCapacity(), "Capacity should match");
+        assertEquals(unavailableRoom.getID(), result.getId(), "ID should match");
+        assertEquals(unavailableRoom.getName(), result.getName(), "Name should match");
+        assertEquals(unavailableRoom.getCapacity(), result.getCapacity(), "Capacity should match");
         assertTrue(result.isAvailable(), "Room should be available after being made available");
     }
 }

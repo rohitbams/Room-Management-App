@@ -1,52 +1,84 @@
 package com.stacs.cs5031.p3.server;
 
-import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.stereotype.Service;
+// verify entity exists
+// After database operations, it might map the Entity back to a DTO 
+// and return it to the controller
+@Service
 public class RoomService {
 
+    private final RoomRepository roomRepository;
+
     @Autowired
-    private RoomRepository roomRepository;
-
-    // TODO should throw exception
-    public boolean createRoom(int capacity) {
-        Room room = new Room(capacity);
-        roomRepository.save(room);
-        return (roomRepository.findById(room.getID()) != null);
-    }
-
-    public String getName(Room room) {
-        return null;
-    }
-
-    public int getID(Room room) {
-        return 0;
-    }
-
-    public int getCapacity(Room room) {
-        return 0;
-    }
-
-    public Room findRoomById(int i) {
-        return null;
-    }
-
-    public ArrayList<Room> findAllRooms() {
-        return null;
-    }
-
-    public ArrayList<Room> findAvailableRooms() {
-        return null;
-    }
-
-    // returns true if success
-    public boolean bookRoom() {
-        return false;
-    }
-
-    public boolean makeRoomAvailable() {
-        return false;
+    public RoomService(RoomRepository roomRepository) {
+        this.roomRepository = roomRepository;
     }
     
+    public RoomDTO createRoom(int capacity) throws IllegalArgumentException {
+        // validate user-provided data
+        if (capacity <= 1) {
+            throw new IllegalArgumentException("Room capacity must be at least 1");
+        }
+        Room roomEntity = roomRepository.save(new Room(capacity));
+        return mapToDTO(roomEntity);
+    }
+
+    public RoomDTO findRoomById(int id) throws RoomNotFoundException {
+        Room room = roomRepository.findById(id)
+                .orElseThrow(() -> new RoomNotFoundException("Room not found: " + id));
+        return mapToDTO(room);
+    }
+
+    public List<RoomDTO> findAllRooms(){
+        return StreamSupport.stream(roomRepository.findAll().spliterator(), false)
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<RoomDTO> findAvailableRooms() {
+        return StreamSupport.stream(roomRepository.findByAvailability(true).spliterator(), false)
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    public RoomDTO bookRoom(Room room) throws RoomNotAvailableException, RoomNotFoundException {
+        int id = room.getID();
+        Room roomEntity = roomRepository.findById(id)
+                .orElseThrow(() -> new RoomNotFoundException("Room not found: " + id));
+
+        // if room is already booked, throw exception
+        if (!roomEntity.isAvailable()) {
+            throw new RoomNotAvailableException("Room " + id + " is already booked");
+        }
+
+        // if room is not booked
+        roomEntity.bookRoom();
+        roomRepository.save(roomEntity);
+        return mapToDTO(roomEntity);
+    }
+
+    public RoomDTO makeRoomAvailable(Room room) {
+        int id = room.getID();
+        Room roomEntity = roomRepository.findById(id)
+                .orElseThrow(() -> new RoomNotFoundException("Room not found: " + id));
+
+        // if room is already available, do nothing
+        if (!roomEntity.isAvailable()) {
+            roomEntity.makeAvailable();
+            roomRepository.save(roomEntity);
+        }
+
+        return mapToDTO(roomEntity);
+    }
+
+    // FIXME DTOs should not be single use?
+    private RoomDTO mapToDTO(Room room) {
+        return new RoomDTO(room.getID(), room.getName(), room.getCapacity(), room.isAvailable());
+    }
+
 }
