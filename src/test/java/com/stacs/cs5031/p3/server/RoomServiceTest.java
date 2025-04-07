@@ -1,18 +1,18 @@
 package com.stacs.cs5031.p3.server;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.any;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
+import java.util.List;
 import java.util.Optional;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 // Coordinate booking a room (checking availability, updating database)
 // Handle complex search criteria for rooms
@@ -24,69 +24,145 @@ public class RoomServiceTest {
 
     @Mock
     private RoomRepository roomRepository;
-    private Room room1;
-    private Room room2;
-    private Room room3;
+    private Room testRoom;
+    private RoomDTO testRoomDTO;
 
     @InjectMocks
     private RoomService roomService;
 
     @BeforeEach
     void setup() {
-        room1 = new Room("Meeting Room1", 10, false);
-        room2 = new Room("Meeting Room2", 3, true);
-        room3 = new Room("Meeting Room3", 8, false);
+        testRoom = new Room(20);
+
+        /*
+        * In production, these fields are set by:
+        * - id: JPA's @GeneratedValue strategy
+        * - name: @PostPersist callback
+        * Using ReflectionTestUtils to simulate this behaviour for testing
+        */
+        ReflectionTestUtils.setField(testRoom, "id", 1);
+        ReflectionTestUtils.setField(testRoom, "name", "Test Room");
+        
+        // Expected DTO after mapping
+        testRoomDTO = new RoomDTO(1, "Test Room", 20, true);
+
+        // stub repository behaviour
+        // when(roomRepository.save(testRoom)).thenReturn(testRoom);
+        // when room entity exists
+        // when(roomRepository.findById(1)).thenReturn(Optional.of(testRoom));
     }
 
     @Test
     void shouldCreateRoom() {
-        when(roomRepository.save(any(Room.class))).thenReturn(room1).thenReturn(room2);
-        Room createdRoom1 = roomService.createRoom(room1.getName(), room1.getCapacity(), !room1.isItBooked());
-        assertNotNull(createdRoom1);
-        assertEquals(room1.getID(), createdRoom1.getID());
-        assertEquals(room1.getName(), createdRoom1.getName());
-        assertEquals(room1.getCapacity(), createdRoom1.getCapacity());
+        when(roomRepository.save(any(Room.class))).thenReturn(testRoom);
+        RoomDTO result = roomService.createRoom(testRoom.getCapacity());
 
-        Room createdRoom2 = roomService.createRoom(room2.getName(), room2.getCapacity(), !room2.isItBooked());
-        assertNotNull(createdRoom2);
-        assertEquals(room2.getID(), createdRoom2.getID());
-        assertEquals(room2.getName(), createdRoom2.getName());
-        assertEquals(room2.getCapacity(), createdRoom2.getCapacity());
+        assertNotNull(result);
+        assertEquals(testRoomDTO.getId(), result.getId());
+        assertEquals(testRoomDTO.getName(), result.getName());
+        assertEquals(testRoomDTO.getCapacity(), result.getCapacity());
+        assertEquals(testRoomDTO.isAvailable(), result.isAvailable());
+
+        verify(roomRepository).save(any(Room.class));
+    }
+    
+    @Test
+    void shouldThrowException_whenRoomCapacityIsZero() {
+        assertThrows(IllegalArgumentException.class, 
+            () -> roomService.createRoom(0),
+            "Should throw exception for room with zero capacity");
     }
 
     @Test
-    void shouldGetRoomName() {
-        when(roomRepository.findById(room1.getID())).thenReturn(Optional.of(room1)).thenReturn(Optional.of(room2)).thenReturn(Optional.of(room3)); //TODO what if NullPointerException is thrown
-        assertEquals("Meeting Room1", roomService.getName(room1));
-        assertEquals("Meeting Room2", roomService.getName(room2));
-        assertEquals("Meeting Room3", roomService.getName(room3));
+    void shouldThrowException_whenRoomCapacityIsNegative() {
+        assertThrows(IllegalArgumentException.class, 
+            () -> roomService.createRoom(-1),
+            "Should throw exception for room with negative capacity");
+    }
+
+    @Test
+    void shouldFindRoomById_whenRoomExists() {
+        // testRoom is initialised in setUp(), will not return empty
+        when(roomRepository.findById(1)).thenReturn(Optional.of(testRoom));
+        RoomDTO result = roomService.findRoomById(1);
+        
+        assertNotNull(result, "Result should not be null");
+        assertEquals(testRoomDTO.getId(), result.getId(), "ID should match");
+        assertEquals(testRoomDTO.getName(), result.getName(), "Name should match");
+        assertEquals(testRoomDTO.getCapacity(), result.getCapacity(), "Capacity should match");
+        assertTrue(result.isAvailable(), "Room should be available");
     }
     
     @Test
-    void shouldGetRoomId() {
-        assertEquals(room1.getID(), roomService.getID(room1));
-        assertEquals(room2.getID(), roomService.getID(room2));
-        assertEquals(room3.getID(), roomService.getID(room3));
+    void shouldThrowRoomNotFoundException_whenRoomDoesNotExist() {
+        when(roomRepository.findById(999)).thenReturn(Optional.empty());
+        assertThrows(RoomNotFoundException.class, () -> roomService.findRoomById(999));
+    }
+
+    @Test
+    void shouldFindAllRooms() {
+        when(roomRepository.findAll()).thenReturn(List.of(testRoom));
+        List<RoomDTO> result = roomService.findAllRooms();
+        
+        assertNotNull(result, "Result list should not be null");
+        assertFalse(result.isEmpty(), "Result list should not be empty");
+    
+        RoomDTO resultDto = result.get(0);
+
+        assertEquals(1, result.size());
+        assertEquals(testRoomDTO.getId(), resultDto.getId());
+        assertEquals(testRoomDTO.getName(), resultDto.getName());
+        assertEquals(testRoomDTO.getCapacity(), resultDto.getCapacity());
+        assertEquals(testRoomDTO.isAvailable(), resultDto.isAvailable());
+        verify(roomRepository).findAll();
     }
     
     @Test
-    void shouldGetRoomCapacity() {
-        when(roomRepository.findById(room1.getID())).thenReturn(Optional.of(room1)).thenReturn(Optional.of(room2)).thenReturn(Optional.of(room3));
-        assertEquals(10, roomService.getCapacity(room1));
-        assertEquals(3, roomService.getCapacity(room2));
-        assertEquals(8, roomService.getCapacity(room3));
+    void shouldFindAvailableRooms() {
+        when(roomRepository.findByAvailability(true)).thenReturn(List.of(testRoom));
+        List<RoomDTO> result = roomService.findAvailableRooms();
+
+        assertNotNull(result, "Result list should not be null");
+        assertFalse(result.isEmpty(), "Result list should not be empty");
+    
+        RoomDTO resultDto = result.get(0);
+
+        assertEquals(1, result.size());
+        assertEquals(testRoomDTO.getId(), resultDto.getId());
+        assertEquals(testRoomDTO.getName(), resultDto.getName());
+        assertEquals(testRoomDTO.getCapacity(), resultDto.getCapacity());
+        assertEquals(testRoomDTO.isAvailable(), resultDto.isAvailable());
+        verify(roomRepository).findByAvailability(true);
     }
     
     @Test
-    void shouldReturnFalse_whenRoomIsNotBooked() {
-        when(roomRepository.findById(room2.getID())).thenReturn(Optional.of(room2));
-        assertEquals(false, roomService.getCapacity(room2));
+    void shouldBookRoom() {
+        RoomDTO result = roomService.bookRoom(testRoom);
+        
+        assertNotNull(result, "Result should not be null");
+        assertEquals(testRoomDTO.getId(), result.getId(), "ID should match");
+        assertEquals(testRoomDTO.getName(), result.getName(), "Name should match");
+        assertEquals(testRoomDTO.getCapacity(), result.getCapacity(), "Capacity should match");
+        assertFalse(result.isAvailable(), "Room should be unavailable after booking");
     }
     
     @Test
-    void shouldReturnTrue_whenRoomIsBooked() {
-        when(roomRepository.findById(room1.getID())).thenReturn(Optional.of(room1)).thenReturn(Optional.of(room3));
-        assertEquals(false, roomService.getCapacity(room1));
-        assertEquals(false, roomService.getCapacity(room3));
+    void shouldThrowException_whenBookingUnavailableRoom() {
+        Room unavailableRoom = new Room(10);
+        unavailableRoom.bookRoom(); // Set its availability to false
+        assertThrows(RoomNotAvailableException.class, () -> roomService.bookRoom(unavailableRoom));
+    }
+    
+    @Test
+    void shouldMakeRoomAvailable() {
+        Room unavailableRoom = new Room(10);
+        unavailableRoom.bookRoom(); // Set its availability to false
+        RoomDTO result = roomService.makeRoomAvailable(unavailableRoom);
+        
+        assertNotNull(result, "Result should not be null");
+        assertEquals(testRoomDTO.getId(), result.getId(), "ID should match");
+        assertEquals(testRoomDTO.getName(), result.getName(), "Name should match");
+        assertEquals(testRoomDTO.getCapacity(), result.getCapacity(), "Capacity should match");
+        assertTrue(result.isAvailable(), "Room should be available after being made available");
     }
 }
