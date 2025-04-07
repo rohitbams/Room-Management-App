@@ -1,4 +1,4 @@
-package com.stacs.cs5031.p3.server;
+package com.stacs.cs5031.p3.server.dto;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import com.stacs.cs5031.p3.server.dto.RoomDTO;
 
 public class RoomDtoTest {
     private RoomDTO roomDTO;

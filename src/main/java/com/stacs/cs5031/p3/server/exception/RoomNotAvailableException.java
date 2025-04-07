@@ -1,4 +1,4 @@
-package com.stacs.cs5031.p3.server;
+package com.stacs.cs5031.p3.server.exception;
 
 public class RoomNotAvailableException extends RuntimeException {
     public RoomNotAvailableException(String message) {

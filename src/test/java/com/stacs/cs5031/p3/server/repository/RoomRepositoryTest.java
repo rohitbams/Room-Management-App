@@ -1,4 +1,4 @@
-package com.stacs.cs5031.p3.server;
+package com.stacs.cs5031.p3.server.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -14,6 +14,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+
+import com.stacs.cs5031.p3.server.model.Room;
+import com.stacs.cs5031.p3.server.repository.RoomRepository;
 
 @DataJpaTest
 public class RoomRepositoryTest {

@@ -1,4 +1,4 @@
-package com.stacs.cs5031.p3.server;
+package com.stacs.cs5031.p3.server.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

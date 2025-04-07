@@ -1,4 +1,4 @@
-package com.stacs.cs5031.p3.server;
+package com.stacs.cs5031.p3.server.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -13,6 +13,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import com.stacs.cs5031.p3.server.dto.RoomDTO;
+import com.stacs.cs5031.p3.server.exception.RoomNotAvailableException;
+import com.stacs.cs5031.p3.server.exception.RoomNotFoundException;
+import com.stacs.cs5031.p3.server.model.Room;
+import com.stacs.cs5031.p3.server.repository.RoomRepository;
+import com.stacs.cs5031.p3.server.service.RoomService;
 
 // Coordinate booking a room (checking availability, updating database)
 // Handle complex search criteria for rooms

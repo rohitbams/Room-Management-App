@@ -1,4 +1,4 @@
-package com.stacs.cs5031.p3.server;
+package com.stacs.cs5031.p3.server.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -6,6 +6,12 @@ import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.stacs.cs5031.p3.server.dto.RoomDTO;
+import com.stacs.cs5031.p3.server.exception.RoomNotAvailableException;
+import com.stacs.cs5031.p3.server.exception.RoomNotFoundException;
+import com.stacs.cs5031.p3.server.model.Room;
+import com.stacs.cs5031.p3.server.repository.RoomRepository;
 // verify entity exists
 // After database operations, it might map the Entity back to a DTO 
 // and return it to the controller
@@ -61,7 +67,7 @@ public class RoomService {
         return mapToDTO(roomEntity);
     }
 
-    public RoomDTO makeRoomAvailable(int id) {
+    public RoomDTO makeRoomAvailable(int id) throws RoomNotFoundException{
         Room roomEntity = roomRepository.findById(id)
                 .orElseThrow(() -> new RoomNotFoundException("Room not found: " + id));
 
