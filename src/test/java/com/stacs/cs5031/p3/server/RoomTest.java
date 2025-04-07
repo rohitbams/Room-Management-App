@@ -1,9 +1,13 @@
 package com.stacs.cs5031.p3.server;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 public class RoomTest {
     private Room room;
@@ -11,44 +15,45 @@ public class RoomTest {
     @BeforeEach
     void setup() {
         room = new Room(3);
+
+        // Simulate the database persistence behavior
+        ReflectionTestUtils.setField(room, "id", 1);
+        ReflectionTestUtils.setField(room, "name", "Room 1");
     }
 
+    @Test
     void shouldCreateRoom() {
         assertNotNull(room, "room should not be null");
     }
     
+    @Test
     void shouldGetRoomID() {
-        assertNotNull(room.getID(), "room ID should not be null");
+        assertEquals(1, room.getID(), "room ID should be 1");
     }
     
+    @Test
     void shouldGetRoomName() {
-        assertNotNull(room.getName(), "room name should not be null");
-        assertEquals("Room " + String.valueOf(room.getID()), room.getName(), "room name should be 'Room + <ID>'");
+        assertEquals("Room 1", room.getName(), "room name should be 'Room 1'");
+    }
+    
+    @Test
+    void shouldBeAvailableByDefault() {
+        assertTrue(room.isAvailable(), "room should be available by default");
     }
 
+    @Test
     void shouldGetRoomCapacity() {
         assertEquals(3, room.getCapacity(), "room capacity should be 3");
     }
-
-    void shouldReturnTrue_whenRoomIsAvailable() {
-        assertEquals(true, room.isAvailable(), "room should be available");
-    }
-
-    void shouldMakeAvailable() {
+    
+    @Test
+    void shouldToggleAvailability() {
+        assertTrue(room.isAvailable(), "room should be available initially");
+        
         room.bookRoom();
-        assertEquals(false, room.isAvailable(), "room should not be available after booking");
+        assertFalse(room.isAvailable(), "room should not be available after booking");
+        
         room.makeAvailable();
-        assertEquals(true, room.isAvailable(), "room should be available after being made available");
-    }
-    
-    void shouldBookRoom() {
-        assertEquals(true, room.isAvailable(), "room should be available before booking");
-        room.bookRoom();
-        assertEquals(false, room.isAvailable(), "room should not be available after booking");
-    }
-    
-    void shouldReturnFalse_whenRoomIsUnavailable() {
-        room.bookRoom();
-        assertEquals(false, room.isAvailable(), "room should not be available after booking");
+        assertTrue(room.isAvailable(), "room should be available after being made available");
     }
 }
