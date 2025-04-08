@@ -12,6 +12,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.stacs.cs5031.p3.server.dto.RoomDTO;
@@ -19,7 +21,6 @@ import com.stacs.cs5031.p3.server.exception.RoomNotAvailableException;
 import com.stacs.cs5031.p3.server.exception.RoomNotFoundException;
 import com.stacs.cs5031.p3.server.model.Room;
 import com.stacs.cs5031.p3.server.repository.RoomRepository;
-import com.stacs.cs5031.p3.server.service.RoomService;
 
 // Coordinate booking a room (checking availability, updating database)
 // Handle complex search criteria for rooms
@@ -49,7 +50,7 @@ public class RoomServiceTest {
         */
         ReflectionTestUtils.setField(testRoom, "id", 1);
         ReflectionTestUtils.setField(testRoom, "name", "Test Room");
-        
+
         // Expected DTO after mapping
         testRoomDTO = new RoomDTO(1, "Test Room", 20, true);
 
@@ -72,19 +73,19 @@ public class RoomServiceTest {
 
         verify(roomRepository).save(any(Room.class));
     }
-    
+
     @Test
     void shouldThrowException_whenRoomCapacityIsZero() {
-        assertThrows(IllegalArgumentException.class, 
-            () -> roomService.createRoom(0),
-            "Should throw exception for room with zero capacity");
+        assertThrows(IllegalArgumentException.class,
+                () -> roomService.createRoom(0),
+                "Should throw exception for room with zero capacity");
     }
 
     @Test
     void shouldThrowException_whenRoomCapacityIsNegative() {
-        assertThrows(IllegalArgumentException.class, 
-            () -> roomService.createRoom(-1),
-            "Should throw exception for room with negative capacity");
+        assertThrows(IllegalArgumentException.class,
+                () -> roomService.createRoom(-1),
+                "Should throw exception for room with negative capacity");
     }
 
     @Test
@@ -92,14 +93,14 @@ public class RoomServiceTest {
         // testRoom is initialised in setUp(), will not return empty
         when(roomRepository.findById(1)).thenReturn(Optional.of(testRoom));
         RoomDTO result = roomService.findRoomById(1);
-        
+
         assertNotNull(result, "Result should not be null");
         assertEquals(testRoomDTO.getId(), result.getId(), "ID should match");
         assertEquals(testRoomDTO.getName(), result.getName(), "Name should match");
         assertEquals(testRoomDTO.getCapacity(), result.getCapacity(), "Capacity should match");
         assertTrue(result.isAvailable(), "Room should be available");
     }
-    
+
     @Test
     void shouldThrowRoomNotFoundException_whenRoomDoesNotExist() {
         when(roomRepository.findById(999)).thenReturn(Optional.empty());
@@ -107,14 +108,15 @@ public class RoomServiceTest {
         verify(roomRepository).findById(999);
     }
 
+    @WithMockUser(roles="ADMIN")
     @Test
-    void shouldFindAllRooms() {
+    void shouldFindAllRoomsWithAdminRole() {
         when(roomRepository.findAll()).thenReturn(List.of(testRoom));
         List<RoomDTO> result = roomService.findAllRooms();
-        
+
         assertNotNull(result, "Result list should not be null");
         assertFalse(result.isEmpty(), "Result list should not be empty");
-    
+
         RoomDTO resultDto = result.get(0);
 
         assertEquals(1, result.size());
@@ -124,7 +126,15 @@ public class RoomServiceTest {
         assertEquals(testRoomDTO.isAvailable(), resultDto.isAvailable());
         verify(roomRepository).findAll();
     }
-    
+
+    //FIXME test fails, authorisation issue
+    @WithMockUser(roles="WRONG")
+    @Test
+    void shouldDenyAccess_whenFindAllRoomsWithWrongRole() {
+        assertThrows(AccessDeniedException.class,
+                () -> roomService.findAllRooms());
+    }
+
     @Test
     void shouldFindAvailableRooms() {
         when(roomRepository.findByAvailability(true)).thenReturn(List.of(testRoom));
@@ -132,7 +142,7 @@ public class RoomServiceTest {
 
         assertNotNull(result, "Result list should not be null");
         assertFalse(result.isEmpty(), "Result list should not be empty");
-    
+
         RoomDTO resultDto = result.get(0);
 
         assertEquals(1, result.size());
@@ -142,12 +152,12 @@ public class RoomServiceTest {
         assertEquals(testRoomDTO.isAvailable(), resultDto.isAvailable());
         verify(roomRepository).findByAvailability(true);
     }
-    
+
     @Test
     void shouldBookRoom() {
         when(roomRepository.findById(1)).thenReturn(Optional.of(testRoom));
         RoomDTO result = roomService.bookRoom(testRoom.getID());
-        
+
         assertNotNull(result, "Result should not be null");
         assertEquals(testRoomDTO.getId(), result.getId(), "ID should match");
         assertEquals(testRoomDTO.getName(), result.getName(), "Name should match");
@@ -155,7 +165,7 @@ public class RoomServiceTest {
         assertFalse(result.isAvailable(), "Room should be unavailable after booking");
         verify(roomRepository).findById(1);
     }
-    
+
     @Test
     void shouldThrowException_whenBookingUnavailableRoom() {
         Room unavailableRoom = new Room(10);
@@ -174,13 +184,34 @@ public class RoomServiceTest {
         ReflectionTestUtils.setField(unavailableRoom, "name", "Unavailable Room");
         unavailableRoom.bookRoom(); // Set availability to false
         when(roomRepository.findById(2)).thenReturn(Optional.of(unavailableRoom));
-        
+
         RoomDTO result = roomService.makeRoomAvailable(unavailableRoom.getID());
-        
+
         assertNotNull(result, "Result should not be null");
         assertEquals(unavailableRoom.getID(), result.getId(), "ID should match");
         assertEquals(unavailableRoom.getName(), result.getName(), "Name should match");
         assertEquals(unavailableRoom.getCapacity(), result.getCapacity(), "Capacity should match");
         assertTrue(result.isAvailable(), "Room should be available after being made available");
+    }
+
+    @WithMockUser(roles="ADMIN")
+    @Test
+    void shouldRemoveRoomWithAdminRole() {
+        when(roomRepository.findById(1)).thenReturn(Optional.of(testRoom));
+        roomService.deleteRoomById(1);
+    }
+
+    @WithMockUser(roles="ADMIN")
+    @Test
+    void shouldThrowRoomNotFoundException_whenRemoveNonexistingRoomWithAdminRole() {
+        assertThrows(RoomNotFoundException.class, () -> roomService.deleteRoomById(2));
+    }
+
+    //FIXME test fails, authorisation issue
+    @WithMockUser(roles="WRONG")
+    @Test
+    void shouldDenyAccess_whenRemoveRoomWithWrongRole() {
+        assertThrows(AccessDeniedException.class,
+                () -> roomService.deleteRoomById(1));
     }
 }

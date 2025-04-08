@@ -5,6 +5,9 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.stereotype.Service;
 
 import com.stacs.cs5031.p3.server.dto.RoomDTO;
@@ -40,33 +43,36 @@ public class RoomService {
         return mapToDTO(room);
     }
 
+    // FIXME authorisation doenst work
+    // Only admin can view all rooms
+    @PreAuthorize("hasRole('ADMIN')")
     public List<RoomDTO> findAllRooms(){
         return StreamSupport.stream(roomRepository.findAll().spliterator(), false)
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
+        .map(this::mapToDTO)
+        .collect(Collectors.toList());
     }
-
+    
     public List<RoomDTO> findAvailableRooms() {
         return StreamSupport.stream(roomRepository.findByAvailability(true).spliterator(), false)
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
+        .map(this::mapToDTO)
+        .collect(Collectors.toList());
     }
-
+    
     public RoomDTO bookRoom(int id) throws RoomNotAvailableException, RoomNotFoundException {
         Room roomEntity = roomRepository.findById(id)
-                .orElseThrow(() -> new RoomNotFoundException("Room not found: " + id));
-
+        .orElseThrow(() -> new RoomNotFoundException("Room not found: " + id));
+        
         // if room is already booked, throw exception
         if (!roomEntity.isAvailable()) {
             throw new RoomNotAvailableException("Room " + id + " is already booked");
         }
-
+        
         // if room is not booked
         roomEntity.bookRoom();
         roomRepository.save(roomEntity);
         return mapToDTO(roomEntity);
     }
-
+    
     public RoomDTO makeRoomAvailable(int id) throws RoomNotFoundException{
         Room roomEntity = roomRepository.findById(id)
                 .orElseThrow(() -> new RoomNotFoundException("Room not found: " + id));
@@ -80,9 +86,16 @@ public class RoomService {
         return mapToDTO(roomEntity);
     }
 
-    // FIXME DTOs should not be single use?
     private RoomDTO mapToDTO(Room room) {
         return new RoomDTO(room.getID(), room.getName(), room.getCapacity(), room.isAvailable());
     }
 
+    // Only admin can delete a room
+    @PreAuthorize("hasRole('ADMIN')")
+    public void deleteRoomById(int id) throws RoomNotFoundException {
+        Room roomEntity = roomRepository.findById(id)
+                .orElseThrow(() -> new RoomNotFoundException("Room not found: " + id));
+
+        roomRepository.delete(roomEntity);
+    }
 }
