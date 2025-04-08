@@ -1,5 +1,5 @@
 
-package com.stacs.cs5031.p3.server;
+package com.stacs.cs5031.p3.server.controller;
 
 import javax.persistence.*;
 import java.util.ArrayList;

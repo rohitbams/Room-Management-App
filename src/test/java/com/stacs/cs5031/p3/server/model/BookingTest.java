@@ -6,6 +6,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.stacs.cs5031.p3.server.controller.Booking;
+
 import java.util.Date;
 import java.util.Calendar;
 
