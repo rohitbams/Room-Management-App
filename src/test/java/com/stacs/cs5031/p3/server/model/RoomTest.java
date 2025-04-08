@@ -4,23 +4,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
-
-import com.stacs.cs5031.p3.server.model.Room;
 
 public class RoomTest {
     private Room room;
     
     @BeforeEach
     void setup() {
-        room = new Room(3);
+        room = new Room("Room 1", 3);
 
         // Simulate the database persistence behavior
         ReflectionTestUtils.setField(room, "id", 1);
-        ReflectionTestUtils.setField(room, "name", "Room 1");
     }
 
     @Test

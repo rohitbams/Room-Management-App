@@ -40,7 +40,7 @@ public class RoomServiceTest {
 
     @BeforeEach
     void setup() {
-        testRoom = new Room(20);
+        testRoom = new Room("Test Room", 20);
 
         /*
         * In production, these fields are set by:
@@ -49,7 +49,6 @@ public class RoomServiceTest {
         * Using ReflectionTestUtils to simulate this behaviour for testing
         */
         ReflectionTestUtils.setField(testRoom, "id", 1);
-        ReflectionTestUtils.setField(testRoom, "name", "Test Room");
 
         // Expected DTO after mapping
         testRoomDTO = new RoomDTO(1, "Test Room", 20, true);
@@ -168,7 +167,7 @@ public class RoomServiceTest {
 
     @Test
     void shouldThrowException_whenBookingUnavailableRoom() {
-        Room unavailableRoom = new Room(10);
+        Room unavailableRoom = new Room("Test Room", 10);
         ReflectionTestUtils.setField(unavailableRoom, "id", 2);
         unavailableRoom.bookRoom(); // Set availability to false
         when(roomRepository.findById(2)).thenReturn(Optional.of(unavailableRoom));
@@ -179,7 +178,7 @@ public class RoomServiceTest {
 
     @Test
     void shouldMakeRoomAvailable() {
-        Room unavailableRoom = new Room(10); // Available initially
+        Room unavailableRoom = new Room("Test Room", 10); // Available initially
         ReflectionTestUtils.setField(unavailableRoom, "id", 2);
         ReflectionTestUtils.setField(unavailableRoom, "name", "Unavailable Room");
         unavailableRoom.bookRoom(); // Set availability to false

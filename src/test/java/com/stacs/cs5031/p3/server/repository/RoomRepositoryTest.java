@@ -28,9 +28,9 @@ public class RoomRepositoryTest {
 
     @BeforeEach
     public void setUp() {
-        room1 = new Room(4);
-        room2 = new Room(6);
-        room3 = new Room(8);
+        room1 = new Room("Room 1", 4);
+        room2 = new Room("Room 2", 6);
+        room3 = new Room("Room 3", 8);
         roomRepository.saveAll(Arrays.asList(room1, room2, room3));
     }
 
@@ -54,7 +54,7 @@ public class RoomRepositoryTest {
     @Test
     void shouldReturnCorrectRoomCount_whenOneRoomIsSaved() {
         roomRepository.deleteAll(); // clear repository
-        roomRepository.save(new Room(3));
+        roomRepository.save(new Room("New Room", 3));
         long roomCount = StreamSupport.stream(roomRepository.findAll().spliterator(), false).count();
         assertEquals(1, roomCount);
     }
@@ -67,8 +67,8 @@ public class RoomRepositoryTest {
         
         roomRepository.deleteAll(); // Clear up repository
         // save two rooms
-        roomRepository.save(new Room(5));
-        roomRepository.save(new Room(5));
+        roomRepository.save(new Room("Room 4", 5));
+        roomRepository.save(new Room("Room 5", 5));
         roomCount = StreamSupport.stream(roomRepository.findAll().spliterator(), false).count();
         assertEquals(2, roomCount);
     }
@@ -103,11 +103,10 @@ public class RoomRepositoryTest {
 
     @Test
     void shouldRemoveRoomById() {
-        roomRepository.removeById(room1.getID());
+        roomRepository.deleteById(room1.getID());
 
         List<Room> foundRooms = StreamSupport.stream(roomRepository.findAll().spliterator(), false)
                 .collect(Collectors.toList());
-        
         assertEquals(2, foundRooms.size(), "Should have 2 rooms saved after removing 1");
         assertFalse(foundRooms.contains(room1), "Should not contain room1 after removing it");
         assertTrue(foundRooms.contains(room2), "Should contain room2 after removing room1");

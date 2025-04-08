@@ -4,7 +4,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.PostPersist;
 
 @Entity
 public class Room {
@@ -20,10 +19,10 @@ public class Room {
     protected Room() {}
     
     // the constructor used to create Room instances, and save them to database
-    public Room(int capacity) {
+    public Room(String name, int capacity) {
+        this.name = name;
         this.capacity = capacity;
         this.availability = true;
-        generateName();
     }
 
     public boolean isAvailable() {
@@ -48,10 +47,5 @@ public class Room {
 
     public int getCapacity() {
         return capacity;
-    }
-
-    @PostPersist
-    private void generateName() {
-        this.name = "Room " + id;
     }
 }
