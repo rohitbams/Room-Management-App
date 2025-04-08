@@ -26,18 +26,34 @@ public class RoomController {
     private RoomService roomService;
 
     @GetMapping("/all")
-    public List<RoomDto> getAllRooms() {
-        return roomService.findAllRooms();
+    public ResponseEntity<List<RoomDto>> getAllRooms() {
+        List<RoomDto> rooms = roomService.findAllRooms();
+        
+        if (rooms.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        
+        return ResponseEntity.ok(rooms);
     }
 
     @GetMapping("/{id}")
-    public RoomDto getRoom(@PathVariable int id) {
-        return roomService.findRoomById(id);
+    public ResponseEntity<RoomDto> getRoom(@PathVariable int id) {
+        try {
+            RoomDto foundRoom = roomService.findRoomById(id);
+            return ResponseEntity.ok(foundRoom);
+        } catch (RoomNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/available")
-    public List<RoomDto> getAvailableRooms() {
-        return roomService.findAvailableRooms();
+    public ResponseEntity<List<RoomDto>> getAvailableRooms() {
+        List<RoomDto> rooms = roomService.findAvailableRooms();
+        if (rooms.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(rooms);
     }
 
     @PostMapping("/{id}/book")
