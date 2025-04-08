@@ -11,5 +11,4 @@ import com.stacs.cs5031.p3.server.model.Room;
 public interface RoomRepository extends CrudRepository<Room, Integer> {
 
     public List<Room> findByAvailability(boolean availability);
-    public List<Room> removeById(int id);
 }
