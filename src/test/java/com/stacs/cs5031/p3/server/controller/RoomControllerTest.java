@@ -6,18 +6,17 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import java.util.Arrays;
 import java.util.List;
-
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.stacs.cs5031.p3.server.dto.RoomDto;
 import com.stacs.cs5031.p3.server.service.RoomService;
@@ -28,7 +27,7 @@ public class RoomControllerTest {
     @Autowired
     private MockMvc mvc;
     
-    @MockitoBean
+    @Mock
     private RoomService roomService;
 
     @Test
@@ -36,7 +35,7 @@ public class RoomControllerTest {
         RoomDto expectedResult = new RoomDto(1, "Room 1", 10, true);
         when(roomService.findRoomById(1)).thenReturn(expectedResult);
 
-        mvc.perform(get("/rooms/1")
+        mvc.perform(MockMvcRequestBuilders.get("/rooms/1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -99,7 +98,7 @@ public class RoomControllerTest {
         RoomDto expectedRoom = new RoomDto(1, "Room 1", 10, true);
         when(roomService.bookRoom(1)).thenReturn(expectedRoom);
         
-        mvc.perform(post("/rooms/{id}/book")
+        mvc.perform(post("/rooms/1/book")
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -107,7 +106,7 @@ public class RoomControllerTest {
             .andExpect(jsonPath("$.name", is("Room 1")))
             .andExpect(jsonPath("$.capacity", is(10)))
             .andExpect(jsonPath("$.available", is(true)));
-        }
+    }
 
 
 }
