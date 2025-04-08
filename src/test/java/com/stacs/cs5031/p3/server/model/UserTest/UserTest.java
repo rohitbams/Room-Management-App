@@ -27,14 +27,30 @@ public class UserTest {
 
     @Test
     void shouldGetUsername() {
-        assertEquals("johndoe", user.getUsername(), "User's username should be 'alicebob'");
+        assertEquals("alicebob", user.getUsername(), "User's username should be 'alicebob'");
     }
 
     @Test
     void shouldGetPassword() {
-        assertEquals("password123", user.getPassword(), "User's password should be 'qwerty'");
+        assertEquals("qwerty", user.getPassword(), "User's password should be 'qwerty'");
     }
 
+    @Test
+    void shouldSetUsername() {
+        user.setUsername("newusername");
+        assertEquals("newusername", user.getUsername(), "username should be updated to 'newusername'");
+    }
 
+    @Test
+    void shouldSetName() {
+        user.setName("Jane Doe");
+        assertEquals("Jane Doe", user.getName(), "name should be updated to 'Jane Doe'");
+    }
+
+    @Test
+    void shouldSetPassword() {
+        user.setPassword("newpassword");
+        assertEquals("newpassword", user.getPassword(), "password should be updated to 'newpassword'");
+    }
 
 }
