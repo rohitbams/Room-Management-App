@@ -6,9 +6,10 @@ import java.util.stream.StreamSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
-import com.stacs.cs5031.p3.server.dto.RoomDTO;
+import com.stacs.cs5031.p3.server.dto.RoomDto;
 import com.stacs.cs5031.p3.server.exception.RoomNotAvailableException;
 import com.stacs.cs5031.p3.server.exception.RoomNotFoundException;
+import com.stacs.cs5031.p3.server.mapper.RoomDtoMapper;
 import com.stacs.cs5031.p3.server.model.Room;
 import com.stacs.cs5031.p3.server.repository.RoomRepository;
 
@@ -22,37 +23,37 @@ public class RoomService {
         this.roomRepository = roomRepository;
     }
     
-    public RoomDTO createRoom(int capacity) throws IllegalArgumentException {
+    public RoomDto createRoom(int capacity) throws IllegalArgumentException {
         // validate user-provided data
         if (capacity <= 1) {
             throw new IllegalArgumentException("Room capacity must be at least 1");
         }
         Room roomEntity = roomRepository.save(new Room("Test Room", capacity));
-        return mapToDTO(roomEntity);
+        return RoomDtoMapper.mapToDTO(roomEntity);
     }
 
-    public RoomDTO findRoomById(int id) throws RoomNotFoundException {
+    public RoomDto findRoomById(int id) throws RoomNotFoundException {
         Room room = roomRepository.findById(id)
                 .orElseThrow(() -> new RoomNotFoundException("Room not found: " + id));
-        return mapToDTO(room);
+        return RoomDtoMapper.mapToDTO(room);
     }
 
     // FIXME fix authorisation
     // Only admin can view all rooms
     @PreAuthorize("hasRole('ADMIN')")
-    public List<RoomDTO> findAllRooms(){
+    public List<RoomDto> findAllRooms(){
         return StreamSupport.stream(roomRepository.findAll().spliterator(), false)
-        .map(this::mapToDTO)
+        .map(RoomDtoMapper::mapToDTO)
         .collect(Collectors.toList());
     }
     
-    public List<RoomDTO> findAvailableRooms() {
+    public List<RoomDto> findAvailableRooms() {
         return StreamSupport.stream(roomRepository.findByAvailability(true).spliterator(), false)
-        .map(this::mapToDTO)
+        .map(RoomDtoMapper::mapToDTO)
         .collect(Collectors.toList());
     }
     
-    public RoomDTO bookRoom(int id) throws RoomNotAvailableException, RoomNotFoundException {
+    public RoomDto bookRoom(int id) throws RoomNotAvailableException, RoomNotFoundException {
         Room roomEntity = roomRepository.findById(id)
         .orElseThrow(() -> new RoomNotFoundException("Room not found: " + id));
         
@@ -64,10 +65,10 @@ public class RoomService {
         // if room is not booked
         roomEntity.bookRoom();
         roomRepository.save(roomEntity);
-        return mapToDTO(roomEntity);
+        return RoomDtoMapper.mapToDTO(roomEntity);
     }
     
-    public RoomDTO makeRoomAvailable(int id) throws RoomNotFoundException{
+    public RoomDto makeRoomAvailable(int id) throws RoomNotFoundException{
         Room roomEntity = roomRepository.findById(id)
                 .orElseThrow(() -> new RoomNotFoundException("Room not found: " + id));
 
@@ -77,11 +78,7 @@ public class RoomService {
             roomRepository.save(roomEntity);
         }
 
-        return mapToDTO(roomEntity);
-    }
-
-    private RoomDTO mapToDTO(Room room) {
-        return new RoomDTO(room.getID(), room.getName(), room.getCapacity(), room.isAvailable());
+        return RoomDtoMapper.mapToDTO(roomEntity);
     }
 
     // FIXME fix authorisation

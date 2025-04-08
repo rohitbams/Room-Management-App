@@ -19,7 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.stacs.cs5031.p3.server.dto.RoomDTO;
+import com.stacs.cs5031.p3.server.dto.RoomDto;
 import com.stacs.cs5031.p3.server.service.RoomService;
 
 @WebMvcTest(RoomController.class)
@@ -33,7 +33,7 @@ public class RoomControllerTest {
 
     @Test
     void shouldGetRoom() throws Exception {
-        RoomDTO expectedResult = new RoomDTO(1, "Room 1", 10, true);
+        RoomDto expectedResult = new RoomDto(1, "Room 1", 10, true);
         when(roomService.findRoomById(1)).thenReturn(expectedResult);
 
         mvc.perform(get("/rooms/1")
@@ -49,10 +49,10 @@ public class RoomControllerTest {
     @Test
     void shouldGetAllRooms() throws Exception {
         // given
-        List<RoomDTO> expectedRooms = Arrays.asList(
-            new RoomDTO(1, "Room 1", 10, true),
-            new RoomDTO(2, "Room 2", 20, true),
-            new RoomDTO(3, "Room 3", 30, false)
+        List<RoomDto> expectedRooms = Arrays.asList(
+            new RoomDto(1, "Room 1", 10, true),
+            new RoomDto(2, "Room 2", 20, true),
+            new RoomDto(3, "Room 3", 30, false)
         );
         when(roomService.findAllRooms()).thenReturn(expectedRooms);
 
@@ -73,10 +73,10 @@ public class RoomControllerTest {
     @Test
     void shouldGetAvailableRooms() throws Exception {
         // given
-        List<RoomDTO> expectedRooms = Arrays.asList(
-            new RoomDTO(1, "Room 1", 10, true),
-            new RoomDTO(2, "Room 2", 20, true),
-            new RoomDTO(3, "Room 3", 30, false)
+        List<RoomDto> expectedRooms = Arrays.asList(
+            new RoomDto(1, "Room 1", 10, true),
+            new RoomDto(2, "Room 2", 20, true),
+            new RoomDto(3, "Room 3", 30, false)
         );
         when(roomService.findAvailableRooms()).thenReturn(expectedRooms);
     
@@ -92,22 +92,22 @@ public class RoomControllerTest {
                 .andExpect(jsonPath("$[1].available", is(true)))
                 .andExpect(jsonPath("$[2].id", is(3)))
                 .andExpect(jsonPath("$[2].available", is(false)));
-            }
-            
-            @Test
-            void shouldBookRoom() throws Exception {
-                RoomDTO expectedRoom = new RoomDTO(1, "Room 1", 10, true);
-                when(roomService.bookRoom(1)).thenReturn(expectedRoom);
-                
-                mvc.perform(post("/rooms/{id}/book")
-                    .contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isOk())
-                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(jsonPath("$.id", is(1)))
-                    .andExpect(jsonPath("$.name", is("Room 1")))
-                    .andExpect(jsonPath("$.capacity", is(10)))
-                    .andExpect(jsonPath("$.available", is(true)));
-                }
+    }
+    
+    @Test
+    void shouldBookRoom() throws Exception {
+        RoomDto expectedRoom = new RoomDto(1, "Room 1", 10, true);
+        when(roomService.bookRoom(1)).thenReturn(expectedRoom);
+        
+        mvc.perform(post("/rooms/{id}/book")
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.id", is(1)))
+            .andExpect(jsonPath("$.name", is("Room 1")))
+            .andExpect(jsonPath("$.capacity", is(10)))
+            .andExpect(jsonPath("$.available", is(true)));
+        }
 
 
 }

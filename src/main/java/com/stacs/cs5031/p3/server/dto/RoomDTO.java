@@ -1,13 +1,13 @@
 package com.stacs.cs5031.p3.server.dto;
 
-public class RoomDTO {
+public class RoomDto {
     // immutable DTO
     private final int id;
     private final String name;
     private final int capacity;
     private final boolean availability;
 
-    public RoomDTO(int id, String name, int capacity, boolean availability) {
+    public RoomDto(int id, String name, int capacity, boolean availability) {
         this.id = id;
         this.name = name;
         this.capacity = capacity;

@@ -7,14 +7,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.stacs.cs5031.p3.server.dto.RoomDTO;
+import com.stacs.cs5031.p3.server.dto.RoomDto;
 
 public class RoomDtoTest {
-    private RoomDTO roomDTO;
+    private RoomDto roomDTO;
     
     @BeforeEach
     void setUp() {
-        roomDTO = new RoomDTO(1, "Room 1", 10, true);
+        roomDTO = new RoomDto(1, "Room 1", 10, true);
     }
     
     @Test
@@ -42,8 +42,8 @@ public class RoomDtoTest {
 
     @Test
     void shouldCheckAvailability() {
-        RoomDTO availableRoom = new RoomDTO(1, "Room 1", 10, true);
-        RoomDTO unavailableRoom = new RoomDTO(2, "Room 2", 15, false);
+        RoomDto availableRoom = new RoomDto(1, "Room 1", 10, true);
+        RoomDto unavailableRoom = new RoomDto(2, "Room 2", 15, false);
         
         assertTrue(availableRoom.isAvailable(), "Room should be available");
         assertFalse(unavailableRoom.isAvailable(), "Room should be unavailable");

@@ -16,7 +16,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.stacs.cs5031.p3.server.dto.RoomDTO;
+import com.stacs.cs5031.p3.server.dto.RoomDto;
 import com.stacs.cs5031.p3.server.exception.RoomNotAvailableException;
 import com.stacs.cs5031.p3.server.exception.RoomNotFoundException;
 import com.stacs.cs5031.p3.server.model.Room;
@@ -33,7 +33,7 @@ public class RoomServiceTest {
     @Mock
     private RoomRepository roomRepository;
     private Room testRoom;
-    private RoomDTO testRoomDTO;
+    private RoomDto testRoomDTO;
 
     @InjectMocks
     private RoomService roomService;
@@ -51,7 +51,7 @@ public class RoomServiceTest {
         ReflectionTestUtils.setField(testRoom, "id", 1);
 
         // Expected DTO after mapping
-        testRoomDTO = new RoomDTO(1, "Test Room", 20, true);
+        testRoomDTO = new RoomDto(1, "Test Room", 20, true);
 
         // stub repository behaviour
         // when(roomRepository.save(testRoom)).thenReturn(testRoom);
@@ -62,7 +62,7 @@ public class RoomServiceTest {
     @Test
     void shouldCreateRoom() {
         when(roomRepository.save(any(Room.class))).thenReturn(testRoom);
-        RoomDTO result = roomService.createRoom(testRoom.getCapacity());
+        RoomDto result = roomService.createRoom(testRoom.getCapacity());
 
         assertNotNull(result);
         assertEquals(testRoomDTO.getId(), result.getId());
@@ -91,7 +91,7 @@ public class RoomServiceTest {
     void shouldFindRoomById_whenRoomExists() {
         // testRoom is initialised in setUp(), will not return empty
         when(roomRepository.findById(1)).thenReturn(Optional.of(testRoom));
-        RoomDTO result = roomService.findRoomById(1);
+        RoomDto result = roomService.findRoomById(1);
 
         assertNotNull(result, "Result should not be null");
         assertEquals(testRoomDTO.getId(), result.getId(), "ID should match");
@@ -111,12 +111,12 @@ public class RoomServiceTest {
     @Test
     void shouldFindAllRoomsWithAdminRole() {
         when(roomRepository.findAll()).thenReturn(List.of(testRoom));
-        List<RoomDTO> result = roomService.findAllRooms();
+        List<RoomDto> result = roomService.findAllRooms();
 
         assertNotNull(result, "Result list should not be null");
         assertFalse(result.isEmpty(), "Result list should not be empty");
 
-        RoomDTO resultDto = result.get(0);
+        RoomDto resultDto = result.get(0);
 
         assertEquals(1, result.size());
         assertEquals(testRoomDTO.getId(), resultDto.getId());
@@ -137,12 +137,12 @@ public class RoomServiceTest {
     @Test
     void shouldFindAvailableRooms() {
         when(roomRepository.findByAvailability(true)).thenReturn(List.of(testRoom));
-        List<RoomDTO> result = roomService.findAvailableRooms();
+        List<RoomDto> result = roomService.findAvailableRooms();
 
         assertNotNull(result, "Result list should not be null");
         assertFalse(result.isEmpty(), "Result list should not be empty");
 
-        RoomDTO resultDto = result.get(0);
+        RoomDto resultDto = result.get(0);
 
         assertEquals(1, result.size());
         assertEquals(testRoomDTO.getId(), resultDto.getId());
@@ -155,7 +155,7 @@ public class RoomServiceTest {
     @Test
     void shouldBookRoom() {
         when(roomRepository.findById(1)).thenReturn(Optional.of(testRoom));
-        RoomDTO result = roomService.bookRoom(testRoom.getID());
+        RoomDto result = roomService.bookRoom(testRoom.getID());
 
         assertNotNull(result, "Result should not be null");
         assertEquals(testRoomDTO.getId(), result.getId(), "ID should match");
@@ -184,7 +184,7 @@ public class RoomServiceTest {
         unavailableRoom.bookRoom(); // Set availability to false
         when(roomRepository.findById(2)).thenReturn(Optional.of(unavailableRoom));
 
-        RoomDTO result = roomService.makeRoomAvailable(unavailableRoom.getID());
+        RoomDto result = roomService.makeRoomAvailable(unavailableRoom.getID());
 
         assertNotNull(result, "Result should not be null");
         assertEquals(unavailableRoom.getID(), result.getId(), "ID should match");

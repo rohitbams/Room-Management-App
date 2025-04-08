@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.stacs.cs5031.p3.server.dto.RoomDTO;
+import com.stacs.cs5031.p3.server.dto.RoomDto;
 import com.stacs.cs5031.p3.server.exception.RoomNotAvailableException;
 import com.stacs.cs5031.p3.server.exception.RoomNotFoundException;
 import com.stacs.cs5031.p3.server.service.RoomService;
@@ -24,20 +24,20 @@ public class RoomController {
     private RoomService roomService;
 
     @GetMapping("/all")
-    public List<RoomDTO> getAllRooms() {
+    public List<RoomDto> getAllRooms() {
         return roomService.findAllRooms();
     }
 
     @GetMapping("/available")
-    public List<RoomDTO> getAvailableRooms() {
+    public List<RoomDto> getAvailableRooms() {
         return roomService.findAvailableRooms();
     }
 
     @PostMapping("/{id}/book")
-    public ResponseEntity<RoomDTO> bookRoom(@PathVariable int id) {
+    public ResponseEntity<RoomDto> bookRoom(@PathVariable int id) {
         try {
             // service returns DTO
-            RoomDTO bookedRoom = roomService.bookRoom(id);
+            RoomDto bookedRoom = roomService.bookRoom(id);
             return ResponseEntity.ok(bookedRoom);
         } catch (RoomNotAvailableException e) {
             return ResponseEntity.badRequest().build();
@@ -47,9 +47,9 @@ public class RoomController {
     }
 
     @PostMapping("/{id}/makeAvailable")
-    public ResponseEntity<RoomDTO> makeRoomAvailable(@PathVariable int id) {
+    public ResponseEntity<RoomDto> makeRoomAvailable(@PathVariable int id) {
         try {
-            RoomDTO availableRoom = roomService.makeRoomAvailable(id);
+            RoomDto availableRoom = roomService.makeRoomAvailable(id);
             return ResponseEntity.ok(availableRoom);
         } catch (RoomNotFoundException e) {
             return ResponseEntity.notFound().build();
