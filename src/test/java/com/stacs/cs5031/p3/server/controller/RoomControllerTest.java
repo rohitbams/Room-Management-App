@@ -8,6 +8,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import java.util.Arrays;
 import java.util.List;
+
+import javax.print.attribute.standard.Media;
+
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import org.junit.jupiter.api.Test;
@@ -20,6 +23,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.stacs.cs5031.p3.server.dto.RoomDto;
+import com.stacs.cs5031.p3.server.exception.RoomNotAvailableException;
+import com.stacs.cs5031.p3.server.exception.RoomNotFoundException;
 import com.stacs.cs5031.p3.server.service.RoomService;
 
 @SpringBootTest
@@ -33,9 +38,8 @@ public class RoomControllerTest {
     private RoomService roomService;
 
     @Test
-    void shouldGetRoom() throws Exception {
-        RoomDto expectedResult = new RoomDto(1, "Room 1", 10, true);
-        when(roomService.findRoomById(1)).thenReturn(expectedResult);
+    void shouldGetRoomWithValidId() throws Exception {
+        when(roomService.findRoomById(1)).thenReturn(new RoomDto(1, "Room 1", 10, true));
 
         mvc.perform(MockMvcRequestBuilders.get("/rooms/1")
                 .accept(MediaType.APPLICATION_JSON))
@@ -46,18 +50,24 @@ public class RoomControllerTest {
                 .andExpect(jsonPath("$.capacity", is(10)))
                 .andExpect(jsonPath("$.available", is(true)));
     }
+
+    @Test
+    void shouldReturnNotFoundWithInvalidRoomId() throws Exception {
+        when(roomService.findRoomById(999)).thenThrow(RoomNotFoundException.class);
+
+        mvc.perform(MockMvcRequestBuilders.get("/rooms/999")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
     
     @Test
-    void shouldGetAllRooms() throws Exception {
-        // given
+    void shouldGetAllRooms_whenRoomsExist() throws Exception {
         List<RoomDto> expectedRooms = Arrays.asList(
-            new RoomDto(1, "Room 1", 10, true),
-            new RoomDto(2, "Room 2", 20, true),
-            new RoomDto(3, "Room 3", 30, false)
-        );
+                new RoomDto(1, "Room 1", 10, true),
+                new RoomDto(2, "Room 2", 20, true),
+                new RoomDto(3, "Room 3", 30, false));
         when(roomService.findAllRooms()).thenReturn(expectedRooms);
 
-        // when/then
         mvc.perform(get("/rooms/all")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -72,8 +82,25 @@ public class RoomControllerTest {
     }
     
     @Test
-    void shouldGetAvailableRooms() throws Exception {
-        // given
+    void shouldReturnNoContent_whenNoRoomExists() throws Exception {
+        when(roomService.findAllRooms()).thenReturn(List.of()); // return empty list
+
+        mvc.perform(get("/rooms/all")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void shouldReturnNoContent_whenNoRoomIsAvailable() throws Exception {
+        when(roomService.findAvailableRooms()).thenReturn(List.of()); // return empty list
+
+        mvc.perform(get("/rooms/available")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+    }
+    
+    @Test
+    void shouldGetAvailableRooms_whenAvailableRoomsExist() throws Exception {
         List<RoomDto> expectedRooms = Arrays.asList(
             new RoomDto(1, "Room 1", 10, true),
             new RoomDto(2, "Room 2", 20, true),
@@ -81,7 +108,6 @@ public class RoomControllerTest {
         );
         when(roomService.findAvailableRooms()).thenReturn(expectedRooms);
     
-        // when/then
         mvc.perform(get("/rooms/available")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -96,17 +122,48 @@ public class RoomControllerTest {
     }
     
     @Test
-    void shouldBookRoom() throws Exception {
-        RoomDto expectedRoom = new RoomDto(1, "Room 1", 10, true);
-        when(roomService.bookRoom(1)).thenReturn(expectedRoom);
-        
+    void shouldBookRoomWithValidId() throws Exception {
+        when(roomService.bookRoom(1)).thenReturn(new RoomDto(1, "Room 1", 10, true));
+
         mvc.perform(post("/rooms/1/book")
-            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.id", is(1)))
-            .andExpect(jsonPath("$.name", is("Room 1")))
-            .andExpect(jsonPath("$.capacity", is(10)))
-            .andExpect(jsonPath("$.available", is(true)));
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id", is(1)))
+                .andExpect(jsonPath("$.name", is("Room 1")))
+                .andExpect(jsonPath("$.capacity", is(10)))
+                .andExpect(jsonPath("$.available", is(true)));
+    }
+    
+    @Test
+    void shouldReturnBadRequest_whenBookingUnavailableRoom() throws Exception {
+        when(roomService.bookRoom(2)).thenThrow(RoomNotAvailableException.class);
+        mvc.perform(post("/rooms/2/book")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldReturnNotFound_whenBookingRoomWithInvalidId() throws Exception {
+        when(roomService.bookRoom(999)).thenThrow(RoomNotFoundException.class);
+        mvc.perform(post("/rooms/999/book")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void shouldMakeRoomAvailable() throws Exception {
+        when(roomService.makeRoomAvailable(1)).thenReturn(new RoomDto(1, "Room 1", 10, true));
+        mvc.perform(post("/rooms/1/makeAvailable")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void shouldReturnNotFound_whenMakingRoomAvailableWithInvalidId() throws Exception {
+        when(roomService.makeRoomAvailable(999)).thenThrow(RoomNotFoundException.class);
+        mvc.perform(post("/rooms/999/makeAvailable")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 }
