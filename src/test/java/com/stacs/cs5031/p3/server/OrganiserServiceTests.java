@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.data.domain.Sort;
 
 import com.stacs.cs5031.p3.server.model.Organiser;
 import com.stacs.cs5031.p3.server.repository.OrganiserRepository;
