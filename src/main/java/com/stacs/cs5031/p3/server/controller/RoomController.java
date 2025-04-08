@@ -2,6 +2,7 @@ package com.stacs.cs5031.p3.server.controller;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,11 +22,17 @@ import com.stacs.cs5031.p3.server.service.RoomService;
 @RequestMapping("/rooms/")
 public class RoomController {
 
+    @Autowired
     private RoomService roomService;
 
     @GetMapping("/all")
     public List<RoomDto> getAllRooms() {
         return roomService.findAllRooms();
+    }
+
+    @GetMapping("/{id}")
+    public RoomDto getRoom(@PathVariable int id) {
+        return roomService.findRoomById(id);
     }
 
     @GetMapping("/available")

@@ -11,23 +11,25 @@ import java.util.List;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.stacs.cs5031.p3.server.dto.RoomDto;
 import com.stacs.cs5031.p3.server.service.RoomService;
 
-@WebMvcTest(RoomController.class)
+@SpringBootTest
+@AutoConfigureMockMvc
 public class RoomControllerTest {
 
     @Autowired
     private MockMvc mvc;
     
-    @Mock
+    @MockitoBean
     private RoomService roomService;
 
     @Test
@@ -36,7 +38,7 @@ public class RoomControllerTest {
         when(roomService.findRoomById(1)).thenReturn(expectedResult);
 
         mvc.perform(MockMvcRequestBuilders.get("/rooms/1")
-                .contentType(MediaType.APPLICATION_JSON))
+                .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is(1)))
@@ -107,6 +109,4 @@ public class RoomControllerTest {
             .andExpect(jsonPath("$.capacity", is(10)))
             .andExpect(jsonPath("$.available", is(true)));
     }
-
-
 }
