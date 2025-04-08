@@ -2,6 +2,10 @@ package com.stacs.cs5031.p3.server.model.User;
 
 import jakarta.persistence.*;
 
+/**
+ * The User class.
+ * This class handles user creation and integration in the database.
+ */
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 public class User {
