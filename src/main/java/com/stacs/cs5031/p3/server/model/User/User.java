@@ -26,7 +26,23 @@ public class User {
         this.username = username;
         this.password = password;
     }
-    
+
+    public Integer getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
 
 }
 
