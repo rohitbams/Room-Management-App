@@ -1,4 +1,4 @@
-package com.stacs.cs5031.p3.server.model.User;
+package com.stacs.cs5031.p3.server.model;
 
 import jakarta.persistence.*;
 
@@ -60,6 +60,3 @@ public class User {
     }
 
 }
-
-
-
