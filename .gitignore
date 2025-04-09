@@ -16,7 +16,6 @@ out/
 *.jar
 
 # Maven
-.mvn/
 mvnw
 mvnw.cmd
 
