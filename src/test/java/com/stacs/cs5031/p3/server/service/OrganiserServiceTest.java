@@ -1,4 +1,4 @@
-package com.stacs.cs5031.p3.server;
+package com.stacs.cs5031.p3.server.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -9,24 +9,27 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.stacs.cs5031.p3.server.Room;
+import com.stacs.cs5031.p3.server.RoomService;
 import com.stacs.cs5031.p3.server.model.Organiser;
 import com.stacs.cs5031.p3.server.repository.OrganiserRepository;
-import com.stacs.cs5031.p3.server.service.OrganiserService;
 
 /**
  * This class is responsible for testing the OrganiserService class.
  */
-public class OrganiserServiceTests {
+public class OrganiserServiceTest {
 
     private Organiser organiser1, organiser2; // Organiser objects for testing
     private OrganiserService organiserService; //organiser service
+    private RoomService roomService; //room service
 
     private OrganiserRepository organiserRepository; //mocked repository
 
     @BeforeEach
     void setUp(){
         organiserRepository = Mockito.mock(OrganiserRepository.class);
-        organiserService = new OrganiserService(organiserRepository);
+        roomService =  Mockito.mock(RoomService.class);
+        organiserService = new OrganiserService(organiserRepository, roomService);
         organiser1 = new Organiser( "James Dean", "james.dean", "password123");
         organiser1.setId(1);
         organiser2 = new Organiser( "Mary Dean", "mary.dean", "password123");
@@ -150,27 +153,34 @@ public class OrganiserServiceTests {
         assertEquals(organiser2, organiserService.getAllOrganisers().get(1));
     }
 
-    // @Test
-    // void shouldGetAllAvailableRoomsWithoutIssue(){
-    //     Room room1 = new Room("Room 1", true);
-    //     Room room2 = new Room("Room 2", true);
+    /**
+     * Tests that all available rooms can be retrieved successfully.
+     */
+    @Test
+    void shouldGetAllAvailableRoomsWithoutIssue(){
+        Room room1 = new Room(100);
+        Room room2 = new Room(300);
 
-    //     ArrayList<String> rooms = new ArrayList<>();
-    //     rooms.add(room1);
-    //     rooms.add(room2);
+        ArrayList<Room> rooms = new ArrayList<>();
+        rooms.add(room1);
+        rooms.add(room2);
 
-    //     Mockito.when(roomRepository.findByAvailbility(true)).thenReturn(rooms);
-    //     assertEquals(2, organiserService.getAvailableRooms().size());
-    //     assertEquals(room1.getName(), organiserService.getAvailableRooms().get(0).getName());
-    //     assertEquals(room2.getName(), organiserService.getAvailableRooms().get(1).getName());
-    // }
+        System.out.println("Rooms: " + room1.getID() + ", " + room2.getID());
+        Mockito.when(roomService.findAvailableRooms()).thenReturn(rooms);
+        assertEquals(2, organiserService.getAvailableRooms().size());
+        assertEquals(room1, organiserService.getAvailableRooms().get(0));
+        assertEquals(room2, organiserService.getAvailableRooms().get(1));
+    }
 
-    // @Test
-    // void shouldGetAllAvailableRoomsIfNoneExist(){
-    //     ArrayList<Room> rooms = new ArrayList<>();
-    //     Mockito.when(organiserRepository.findByAvailbility(true)).thenReturn(rooms);
-    //     assertEquals(0, organiserService.getAvailableRooms().size());
-    // }
+    /**
+     * Tests that all available rooms can be retrieved successfully. In this case, no rooms are available.
+     */
+    @Test
+    void shouldGetAllAvailableRoomsIfNoneExist(){
+        ArrayList<Room> rooms = new ArrayList<>();
+        Mockito.when(roomService.findAvailableRooms()).thenReturn(rooms);
+        assertEquals(0, organiserService.getAvailableRooms().size());
+    }
 
     @Test 
     void shouldGetAllBookingsWithoutIssue(){

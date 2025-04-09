@@ -1,15 +1,14 @@
-package com.stacs.cs5031.p3.server;
+package com.stacs.cs5031.p3.server.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import com.stacs.cs5031.p3.server.model.Organiser;
 
 /**
  *  This class is responsible for testing the Organiser class.
  */
-public class OrganiserTests{
+public class OrganiserTest{
 
     private Organiser organiser;
 

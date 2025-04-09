@@ -2,9 +2,10 @@ package com.stacs.cs5031.p3.server.service;
 
 import java.util.ArrayList;
 
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.stacs.cs5031.p3.server.Room;
+import com.stacs.cs5031.p3.server.RoomService;
 import com.stacs.cs5031.p3.server.model.Organiser;
 import com.stacs.cs5031.p3.server.repository.OrganiserRepository;
 
@@ -12,11 +13,13 @@ import com.stacs.cs5031.p3.server.repository.OrganiserRepository;
 public class OrganiserService {
 
     private OrganiserRepository organiserRepository;
+    private RoomService roomService;
     // private final RoomService roomService;
 
     // public OrganiserService(OrganiserRepository organiserRepository, RoomService roomService) {
-    public OrganiserService(OrganiserRepository organiserRepository) {
+    public OrganiserService(OrganiserRepository organiserRepository, RoomService roomService) {
         this.organiserRepository = organiserRepository;
+        this.roomService = roomService;
         //this.roomService = roomService;
     }
 
@@ -52,13 +55,13 @@ public class OrganiserService {
     }
     
 
-    // /**
-    //  * This method is used to get all the available rooms from the database.
-    //  * @return ArrayList<String> - List of all the available rooms.
-    //  */
-    // public ArrayList<String> getAvailableRooms() {
-    //     return new ArrayList<String>();
-    // }
+    /**
+     * This method is used to get all the available rooms from the database.
+     * @return ArrayList<String> - List of all the available rooms.
+     */
+    public ArrayList<Room> getAvailableRooms() {
+        return roomService.findAvailableRooms();
+    }
 
     // public ArrayList<String> getMyBookings() {
     //     return new ArrayList<String>();

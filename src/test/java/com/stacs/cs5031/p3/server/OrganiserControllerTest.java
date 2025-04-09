@@ -3,7 +3,6 @@ package com.stacs.cs5031.p3.server;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,7 +23,7 @@ import com.stacs.cs5031.p3.server.repository.OrganiserRepository;
  */
 @SpringBootTest
 @AutoConfigureMockMvc
-public class OrganiserControllerTests {
+public class OrganiserControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -33,7 +32,7 @@ public class OrganiserControllerTests {
     private OrganiserRepository organiserRepository;
 
     private Organiser organiser1, organiser2, organiser3, organiser4;
-    // private Room room1, room2;
+
 
     @BeforeEach
     void setUp() {
@@ -44,6 +43,10 @@ public class OrganiserControllerTests {
         organiser3 = new Organiser("Johnny Doe", "johnny.doe", "passwordABC");
     }
 
+    /**
+     * This test is responsible for testing that an organiser can be created without issue.
+     * @throws Exception
+     */
     @Test
     void shouldCreateOrganiser() throws Exception {
 
@@ -56,6 +59,12 @@ public class OrganiserControllerTests {
                 .andExpect(content().string("SUCCESS!"));
     }
 
+    /**
+     * This test is responsible for testing that an exception is thrown when the
+     * organiser information is invalid. I.e. username, name or password is
+     * null/empty.
+     * @throws Exception
+     */
     @Test
     void shouldNotCreateOrganiserIfCredentialAreInvalid() throws Exception {
 
@@ -86,6 +95,11 @@ public class OrganiserControllerTests {
                 .andExpect((content().string("Organiser password is invalid")));
     }
 
+    /**
+     * This test is reponsible for testing that all organisers can be retrieved from the
+     * database without issue.
+     * @throws Exception
+     */
     @Test
     void shouldGetAllOrganisers() throws Exception {
         this.mockMvc.perform(
@@ -113,6 +127,12 @@ public class OrganiserControllerTests {
 
     }
 
+    /**
+     * This test is responsible for testing that all organisers can be retrieved from the
+     * database without issue. In this case, there are no organisers in the database.
+     * 
+     * @throws Exception
+     */
     @Test
     void shouldGetAllOrganisersIfNoneExist() throws Exception {
         this.mockMvc.perform(
@@ -122,15 +142,15 @@ public class OrganiserControllerTests {
                 .andExpect(jsonPath("$").isEmpty());
     }
 
-    // @Test
-    // void shouldGetAllAvailableRooms() throws Exception {
-    // this.mockMvc.perform(
-    // get("/organisers/available-rooms"))
-    // .andExpect(status().isOk())
-    // .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-    // .andExpect(jsonPath("$.[0].id").value(room1.getID()))
-    // .andExpect(jsonPath("$.[1].id").value(room2.getID()));
-    // }
+//     @Test
+//     void shouldGetAllAvailableRooms() throws Exception {
+//         this.mockMvc.perform(
+//         get("/organisers/available-rooms"))
+//         .andExpect(status().isOk())
+//         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+//         .andExpect(jsonPath("$.[0].id").value(room1.getID()))
+//         .andExpect(jsonPath("$.[1].id").value(room2.getID()));
+//     }
 
     @Test
     void shouldGetAllBookingsWithoutIssue() {
