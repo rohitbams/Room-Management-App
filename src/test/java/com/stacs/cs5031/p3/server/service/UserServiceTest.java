@@ -83,5 +83,12 @@ public class UserServiceTest {
         verify(userRepository).findByUsername("testuser");
     }
 
+    @Test
+    void deleteUser_ShouldCallRepositoryDeleteById() {
+        doNothing().when(userRepository).deleteById(1);
+        userService.deleteUser(1);
+        verify(userRepository).deleteById(1);
+    }
+
 
 }
