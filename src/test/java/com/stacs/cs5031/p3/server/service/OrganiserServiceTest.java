@@ -8,14 +8,13 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-
-import com.stacs.cs5031.p3.server.Room;
-import com.stacs.cs5031.p3.server.RoomService;
+import com.stacs.cs5031.p3.server.dto.RoomDto;
 import com.stacs.cs5031.p3.server.model.Organiser;
 import com.stacs.cs5031.p3.server.repository.OrganiserRepository;
 
 /**
  * This class is responsible for testing the OrganiserService class.
+ * @author 190031593
  */
 public class OrganiserServiceTest {
 
@@ -30,10 +29,9 @@ public class OrganiserServiceTest {
         organiserRepository = Mockito.mock(OrganiserRepository.class);
         roomService =  Mockito.mock(RoomService.class);
         organiserService = new OrganiserService(organiserRepository, roomService);
-        organiser1 = new Organiser( "James Dean", "james.dean", "password123");
-        organiser1.setId(1);
+        organiser1 = new Organiser( "James Dean", "james.dean", "password123"); 
         organiser2 = new Organiser( "Mary Dean", "mary.dean", "password123");
-        organiser2.setId(2);
+
     }
 
     /**
@@ -134,23 +132,35 @@ public class OrganiserServiceTest {
 
         assertEquals("Organiser password is invalid", thrown.getMessage());
     }
-    
+
     /**
      * Tests that all organisers can be retrieved successfully.
      */
     @Test
     void shouldGetAllOrganisersWithoutIssue(){
+        Organiser organiser3 = Mockito.mock(Organiser.class);
+        Organiser organiser4 = Mockito.mock(Organiser.class);
         ArrayList<Organiser> organisers = new ArrayList<>();
        
         Mockito.when(organiserRepository.findAll()).thenReturn(organisers);
+
+        Mockito.when(organiser3.getName()).thenReturn("James Dean");
+        Mockito.when(organiser3.getUsername()).thenReturn("james.dean");
+        Mockito.when(organiser3.getId()).thenReturn(1);
+
+
+        Mockito.when(organiser4.getName()).thenReturn("Mary Dean");
+        Mockito.when(organiser4.getUsername()).thenReturn("mary.dean");
+        Mockito.when(organiser4.getId()).thenReturn(2);
+
         assertEquals(0, organiserService.getAllOrganisers().size());
 
-        organisers.add(organiser1);
-        organisers.add(organiser2);
+        organisers.add(organiser3);
+        organisers.add(organiser4);
 
         assertEquals(2, organiserService.getAllOrganisers().size());
-        assertEquals(organiser1, organiserService.getAllOrganisers().get(0));
-        assertEquals(organiser2, organiserService.getAllOrganisers().get(1));
+        assertEquals(organiser1.getUsername(), organiserService.getAllOrganisers().get(0).getUsername());
+        assertEquals(organiser2.getUsername(), organiserService.getAllOrganisers().get(1).getUsername());
     }
 
     /**
@@ -158,14 +168,13 @@ public class OrganiserServiceTest {
      */
     @Test
     void shouldGetAllAvailableRoomsWithoutIssue(){
-        Room room1 = new Room(100);
-        Room room2 = new Room(300);
+        RoomDto room1 = new RoomDto(1, "JCB 1.3", 100, true);
+        RoomDto room2 = new RoomDto(2, "JCB 2.2", 300, true);
 
-        ArrayList<Room> rooms = new ArrayList<>();
+        ArrayList<RoomDto> rooms = new ArrayList<>();
         rooms.add(room1);
         rooms.add(room2);
 
-        System.out.println("Rooms: " + room1.getID() + ", " + room2.getID());
         Mockito.when(roomService.findAvailableRooms()).thenReturn(rooms);
         assertEquals(2, organiserService.getAvailableRooms().size());
         assertEquals(room1, organiserService.getAvailableRooms().get(0));
@@ -177,13 +186,15 @@ public class OrganiserServiceTest {
      */
     @Test
     void shouldGetAllAvailableRoomsIfNoneExist(){
-        ArrayList<Room> rooms = new ArrayList<>();
+        ArrayList<RoomDto> rooms = new ArrayList<>();
         Mockito.when(roomService.findAvailableRooms()).thenReturn(rooms);
         assertEquals(0, organiserService.getAvailableRooms().size());
     }
 
     @Test 
     void shouldGetAllBookingsWithoutIssue(){
+
+
         
     }
 

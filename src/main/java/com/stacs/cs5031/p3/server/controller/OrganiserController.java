@@ -1,6 +1,7 @@
 package com.stacs.cs5031.p3.server.controller;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,15 +11,20 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.stacs.cs5031.p3.server.dto.OrganiserDto;
+import com.stacs.cs5031.p3.server.dto.RoomDto;
 import com.stacs.cs5031.p3.server.model.Organiser;
 import com.stacs.cs5031.p3.server.repository.RoomRepository;
 import com.stacs.cs5031.p3.server.service.OrganiserService;
+import com.stacs.cs5031.p3.server.service.RoomService;
 
 @RestController
 public class OrganiserController {
 
     @Autowired
     private OrganiserService organiserService;
+    @Autowired
+    private RoomService roomService;
 
     
     @PostMapping("/organiser/create-organiser")
@@ -33,8 +39,12 @@ public class OrganiserController {
         }
     }
 
+    /**
+     * TODO: do i need this????
+     * @return
+     */
     @GetMapping(value = "/organisers", produces = { "application/json" })
-    public ResponseEntity<ArrayList<Organiser>> getAllOrganisers() {
+    public ResponseEntity<ArrayList<OrganiserDto>> getAllOrganisers() {
         try{
             return ResponseEntity.status(HttpStatus.OK).body(organiserService.getAllOrganisers());
         }catch(Exception e) {
@@ -42,23 +52,34 @@ public class OrganiserController {
         }
     }
 
-    // @GetMapping(value = "/organiser/available-rooms", produces = { "application/json" })
-    // public ResponseEntity<ArrayList<String>> getAvailableRooms() {
-    //     // try{
-    //     //     return ResponseEntity.status(HttpStatus.OK).body(roomRepository.findByAvailbility(true));
-    //     // }catch(Exception e) {
-    //     //     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-    //     // }
-    // }
+    @GetMapping(value = "/organiser/available-rooms", produces = { "application/json" })
+    public ResponseEntity<ArrayList<RoomDto>> findAvailableRooms() {
+        try{
+            ArrayList<RoomDto> availableRooms =new ArrayList<>(roomService.findAvailableRooms());
+            return ResponseEntity.status(HttpStatus.OK).body(availableRooms);
+        }catch(Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
 
     // @GetMapping(value = "/organiser/my-bookings", produces = { "application/json" })
-    // public ResponseEntity<ArrayList<String>> getMyBookings() {
+    // public ResponseEntity<ArrayList<BookingDto>> getMyBookings() {
 
     // }
 
-    // @GetMapping(value = "/organiser/my-bookings/{bookingId}", produces = { "application/json" })
-    // public ResponseEntity<Booking> getMyBooking(@PathVariable int bookingId) {
+    // @GetMapping(value = "/organiser/{organiserId}/my-bookings/{bookingId}", produces = { "application/json" })
+    // public ResponseEntity<Booking> getBookingDetails(@PathVariable int bookingId, @PathVariable int organiserId) {
     //   // return ResponseEntity.status(HttpStatus.OK).body(bookingService.getBookingById(bookingId));
     // }
+
+    /**
+     * 
+     * @param bookingId
+     * @return
+     */
+    public ResponseEntity<String> cancelBooking(int bookingId) {
+
+        return null;
+    }
 
 }
