@@ -1,6 +1,5 @@
-package com.stacs.cs5031.p3.server.model.UserTest;
+package com.stacs.cs5031.p3.server.model;
 
-import com.stacs.cs5031.p3.server.model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
