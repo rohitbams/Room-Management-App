@@ -1,10 +1,11 @@
 package com.stacs.cs5031.p3.server.mapper;
 
-import com.stacs.cs5031.p3.server.Attendee;
-import com.stacs.cs5031.p3.server.Booking;
-import com.stacs.cs5031.p3.server.Organiser;
-import com.stacs.cs5031.p3.server.Room;
-import com.stacs.cs5031.p3.server.User;
+import com.stacs.cs5031.p3.server.controller.Booking;
+import com.stacs.cs5031.p3.server.model.Attendee;
+import com.stacs.cs5031.p3.server.model.Booking;
+import com.stacs.cs5031.p3.server.model.Organiser;
+import com.stacs.cs5031.p3.server.model.Room;
+import com.stacs.cs5031.p3.server.model.User;
 import com.stacs.cs5031.p3.server.dto.BookingDTO;
 import com.stacs.cs5031.p3.server.dto.RoomDTO;
 import com.stacs.cs5031.p3.server.dto.UserDTOs.AttendeeDTO;
