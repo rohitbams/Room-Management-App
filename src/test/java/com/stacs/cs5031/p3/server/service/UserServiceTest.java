@@ -66,4 +66,22 @@ public class UserServiceTest {
         verify(userRepository).save(testUser);
     }
 
+
+    @Test
+    void isUsernameTaken_ShouldReturnTrue_WhenUsernameExists() {
+        when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(testUser));
+        boolean result = userService.isUsernameTaken("testuser");
+        assertTrue(result);
+        verify(userRepository).findByUsername("testuser");
+    }
+
+    @Test
+    void isUsernameTaken_ShouldReturnFalse_WhenUsernameDoesNotExist() {
+        when(userRepository.findByUsername("testuser")).thenReturn(Optional.empty());
+        boolean result = userService.isUsernameTaken("testuser");
+        assertFalse(result);
+        verify(userRepository).findByUsername("testuser");
+    }
+
+
 }
