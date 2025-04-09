@@ -41,5 +41,21 @@ public class UserServiceTest {
         verify(userRepository).findById(1);
     }
 
+    @Test
+    void getUserById_ShouldReturnEmpty_WhenUserDoesNotExist() {
+        when(userRepository.findById(1)).thenReturn(Optional.empty());
+        Optional<User> result = userService.getUserById(1);
+        assertFalse(result.isPresent());
+        verify(userRepository).findById(1);
+    }
+
+    @Test
+    void getUserByUsername_ShouldReturnUser_WhenUserExists() {
+        when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(testUser));
+        Optional<User> result = userService.getUserByUsername("testuser");
+        assertTrue(result.isPresent());
+        assertEquals(testUser, result.get());
+        verify(userRepository).findByUsername("testuser");
+    }
 
 }
