@@ -1,6 +1,5 @@
 package com.stacs.cs5031.p3.server.mapper;
 
-import com.stacs.cs5031.p3.server.controller.Booking;
 import com.stacs.cs5031.p3.server.model.Attendee;
 import com.stacs.cs5031.p3.server.model.Booking;
 import com.stacs.cs5031.p3.server.model.Organiser;

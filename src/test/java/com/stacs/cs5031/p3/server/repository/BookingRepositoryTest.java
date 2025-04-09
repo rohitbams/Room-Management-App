@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import com.stacs.cs5031.p3.server.controller.Booking;
+import com.stacs.cs5031.p3.server.model.Booking;
 
 import java.util.Arrays;
 import java.util.Calendar;
