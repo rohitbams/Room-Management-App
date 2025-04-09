@@ -58,4 +58,12 @@ public class UserServiceTest {
         verify(userRepository).findByUsername("testuser");
     }
 
+    @Test
+    void registerUser_ShouldSaveAndReturnUser() {
+        when(userRepository.save(testUser)).thenReturn(testUser);
+        User result = userService.registerUser(testUser);
+        assertEquals(testUser, result);
+        verify(userRepository).save(testUser);
+    }
+
 }
