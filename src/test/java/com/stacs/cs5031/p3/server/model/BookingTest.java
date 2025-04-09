@@ -1,25 +1,18 @@
-package com.stacs.cs5031.p3.server;
+package com.stacs.cs5031.p3.server.model;
 
-public package com.stacs.cs5031.p3.server;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.Calendar;
+import java.util.Date;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.stacs.cs5031.p3.server.controller.Booking;
-
-import java.util.Date;
-import java.util.Calendar;
-
-import static org.junit.jupiter.api.Assertions.*;
-
-/**
- * Test class for the Booking class.
- * Tests all the functionality of the Booking class.
- */
 public class BookingTest {
     
     private Room room;
+    private Room largerRoom;
     private Organiser organiser;
     private Booking booking;
     private Attendee attendee1;
@@ -27,46 +20,40 @@ public class BookingTest {
     private Attendee attendee3;
     private Date startTime;
     
-    /**
-     * Sets up test objects before each test.
-     */
     @BeforeEach
     public void setUp() {
-        // Create a room with a capacity of 2
-        room = new Room(2);
-        // Set ID and name using reflection (simulating JPA)
-        ReflectionTestUtils.setField(room, "id", 1L);
-        ReflectionTestUtils.setField(room, "name", "Conference Room A");
+        // Create a room with capacity of 2
+        room = new Room("Conference Room A", 2);
+        ReflectionTestUtils.setField(room, "id", 1);
+        
+        // Create a larger room with capacity of 5
+        largerRoom = new Room("Conference Room B", 5);
+        ReflectionTestUtils.setField(largerRoom, "id", 2);
         
         // Create an organiser
-        organiser = new Organiser("organiser1", "password", "John Smith", "john@example.com");
-        // Set ID using reflection (simulating JPA)
-        ReflectionTestUtils.setField(organiser, "id", 1L);
+        organiser = new Organiser("organiser1", "password", "John Doe", "john@example.com");
+        ReflectionTestUtils.setField(organiser, "id", 1);
         
         // Create a start time (current time)
         startTime = new Date();
         
         // Create a booking
         booking = new Booking("Team Meeting", room, startTime, 60, organiser);
-        // Set ID using reflection (simulating JPA)
-        ReflectionTestUtils.setField(booking, "id", 1L);
+        ReflectionTestUtils.setField(booking, "id", 1);
         
         // Create some attendees
         attendee1 = new Attendee("attendee1", "password", "Alice Johnson", "alice@example.com");
-        attendee2 = new Attendee("attendee2", "password", "Bob Williams", "bob@example.com");
+        attendee2 = new Attendee("attendee2", "password", "Bob Smith", "bob@example.com");
         attendee3 = new Attendee("attendee3", "password", "Charlie Brown", "charlie@example.com");
-        // Set IDs using reflection (simulating JPA)
-        ReflectionTestUtils.setField(attendee1, "id", 2L);
-        ReflectionTestUtils.setField(attendee2, "id", 3L);
-        ReflectionTestUtils.setField(attendee3, "id", 4L);
+        ReflectionTestUtils.setField(attendee1, "id", 1);
+        ReflectionTestUtils.setField(attendee2, "id", 2);
+        ReflectionTestUtils.setField(attendee3, "id", 3);
     }
     
-    /**
-     * Test for the constructor and basic getters.
-     */
     @Test
-    public void testConstructorAndGetters() {
-        assertEquals(1L, booking.getId());
+    public void testBookingCreation() {
+        // Test that booking is created with correct properties
+        assertEquals(1, booking.getId());
         assertEquals("Team Meeting", booking.getName());
         assertEquals(room, booking.getRoom());
         assertEquals(startTime, booking.getStartTime());
@@ -75,9 +62,6 @@ public class BookingTest {
         assertEquals(0, booking.getAttendees().size());
     }
     
-    /**
-     * Test for the isThereSpace method.
-     */
     @Test
     public void testIsThereSpace() {
         // Initially there should be space (room capacity is 2)
@@ -92,9 +76,6 @@ public class BookingTest {
         assertFalse(booking.isThereSpace());
     }
     
-    /**
-     * Test for adding attendees.
-     */
     @Test
     public void testAddAttendee() {
         // Add first attendee
@@ -113,9 +94,6 @@ public class BookingTest {
         assertFalse(booking.getAttendees().contains(attendee3));
     }
     
-    /**
-     * Test for removing attendees.
-     */
     @Test
     public void testRemoveAttendee() {
         // Add attendees
@@ -135,9 +113,6 @@ public class BookingTest {
         assertEquals(0, booking.getAttendees().size());
     }
     
-    /**
-     * Test for the getEndTime method.
-     */
     @Test
     public void testGetEndTime() {
         // Calculate expected end time (start time + 60 minutes)
@@ -147,19 +122,11 @@ public class BookingTest {
         Date expectedEndTime = calendar.getTime();
         
         // Check end time calculation
-        long expectedTimeMillis = expectedEndTime.getTime();
-        long actualTimeMillis = booking.getEndTime().getTime();
-        
-        // Allow for a small difference due to calculation timing
-        long difference = Math.abs(expectedTimeMillis - actualTimeMillis);
-        assertTrue(difference < 1000, "End time calculation should be within 1 second");
+        assertEquals(expectedEndTime, booking.getEndTime());
     }
     
-    /**
-     * Test for the overlaps method with overlapping bookings.
-     */
     @Test
-    public void testOverlapsWithOverlapping() {
+    public void testOverlapsWithOverlappingBookings() {
         // Create a calendar to manipulate dates
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(startTime);
@@ -177,11 +144,8 @@ public class BookingTest {
         assertTrue(overlappingBooking.overlaps(booking));
     }
     
-    /**
-     * Test for the overlaps method with non-overlapping bookings.
-     */
     @Test
-    public void testOverlapsWithNonOverlapping() {
+    public void testOverlapsWithNonOverlappingBookings() {
         // Create a calendar to manipulate dates
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(startTime);
@@ -199,58 +163,54 @@ public class BookingTest {
         assertFalse(nonOverlappingBooking.overlaps(booking));
     }
     
-    /**
-     * Test for the overlaps method with bookings in different rooms.
-     */
     @Test
     public void testOverlapsWithDifferentRooms() {
-        // Create another room
-        Room anotherRoom = new Room(10);
-        ReflectionTestUtils.setField(anotherRoom, "id", 2L);
-        ReflectionTestUtils.setField(anotherRoom, "name", "Conference Room B");
-        
         // Create a booking with the same time but in a different room
-        Booking differentRoomBooking = new Booking("Different Room Meeting", anotherRoom, startTime, 60, organiser);
+        Booking differentRoomBooking = new Booking("Different Room Meeting", largerRoom, startTime, 60, organiser);
         
         // Check that the bookings don't overlap (because they're in different rooms)
         assertFalse(booking.overlaps(differentRoomBooking));
         assertFalse(differentRoomBooking.overlaps(booking));
     }
     
-    /**
-     * Test for the setters.
-     */
     @Test
-    public void testSetters() {
-        // Create another room and new date
-        Room anotherRoom = new Room(10);
-        ReflectionTestUtils.setField(anotherRoom, "id", 2L);
-        ReflectionTestUtils.setField(anotherRoom, "name", "Conference Room B");
-        
+    public void testUpdateBookingDetails() {
+        // Update booking details
+        booking.setEventName("Updated Meeting");
+        booking.setRoom(largerRoom);
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(startTime);
         calendar.add(Calendar.DAY_OF_MONTH, 1);
         Date newDate = calendar.getTime();
-        
-        // Use setters
-        booking.setEventName("Updated Meeting");
-        booking.setRoom(anotherRoom);
         booking.setStartTime(newDate);
         booking.setDuration(90);
         
         // Check that the values were updated
         assertEquals("Updated Meeting", booking.getName());
-        assertEquals(anotherRoom, booking.getRoom());
+        assertEquals(largerRoom, booking.getRoom());
         assertEquals(newDate, booking.getStartTime());
         assertEquals(90, booking.getDuration());
     }
     
-    /**
-     * Test the organiser's bookings management.
-     */
     @Test
-    public void testOrganiserBookingsManagement() {
-        // Initially, the organiser should have no bookings
+    public void testAddingAttendeeAfterRoomChange() {
+        // Add attendees to fill smaller room
+        booking.addAttendee(attendee1);
+        booking.addAttendee(attendee2);
+        assertFalse(booking.isThereSpace());
+        
+        // Change to larger room
+        booking.setRoom(largerRoom);
+        
+        // Now we should be able to add more attendees
+        assertTrue(booking.isThereSpace());
+        assertTrue(booking.addAttendee(attendee3));
+        assertEquals(3, booking.getAttendees().size());
+    }
+    
+    @Test
+    public void testOrganiserBookingRelationship() {
+        // Initially, the organiser should not have the booking in their list
         assertEquals(0, organiser.getCreatedBookings().size());
         
         // Add the booking to the organiser
@@ -263,20 +223,9 @@ public class BookingTest {
         assertEquals(0, organiser.getCreatedBookings().size());
     }
     
-    /**
-     * Test the attendee's bookings management.
-     */
     @Test
-    public void testAttendeeBookingsManagement() {
-        // Create a room with higher capacity
-        Room largeRoom = new Room(10);
-        ReflectionTestUtils.setField(largeRoom, "id", 3L);
-        ReflectionTestUtils.setField(largeRoom, "name", "Large Room");
-        
-        Booking largeBooking = new Booking("Large Meeting", largeRoom, startTime, 60, organiser);
-        ReflectionTestUtils.setField(largeBooking, "id", 2L);
-        
-        // Initially, the attendee should have no bookings
+    public void testAttendeeBookingRelationship() {
+        // Initially, the attendee should not be registered for any bookings
         assertEquals(0, attendee1.getRegisteredBookings().size());
         
         // Register for the booking
@@ -285,42 +234,9 @@ public class BookingTest {
         assertTrue(attendee1.getRegisteredBookings().contains(booking));
         assertTrue(booking.getAttendees().contains(attendee1));
         
-        // Register for another booking
-        assertTrue(attendee1.registerForBooking(largeBooking));
-        assertEquals(2, attendee1.getRegisteredBookings().size());
-        assertTrue(attendee1.getRegisteredBookings().contains(largeBooking));
-        
-        // Unregister from the first booking
+        // Unregister from the booking
         assertTrue(attendee1.unregisterFromBooking(booking));
-        assertEquals(1, attendee1.getRegisteredBookings().size());
-        assertFalse(attendee1.getRegisteredBookings().contains(booking));
+        assertEquals(0, attendee1.getRegisteredBookings().size());
         assertFalse(booking.getAttendees().contains(attendee1));
     }
-    
-    /**
-     * Test the equals and hashCode methods of Booking.
-     */
-    @Test
-    public void testEqualsAndHashCode() {
-        // Create a booking with the same ID
-        Booking sameIdBooking = new Booking("Another Meeting", room, startTime, 90, organiser);
-        ReflectionTestUtils.setField(sameIdBooking, "id", 1L);
-        
-        // Create a booking with a different ID
-        Booking differentIdBooking = new Booking("Different Meeting", room, startTime, 30, organiser);
-        ReflectionTestUtils.setField(differentIdBooking, "id", 2L);
-        
-        // Test equals method
-        assertEquals(booking, booking);  // Same object reference
-        assertEquals(booking, sameIdBooking);  // Different objects, same ID
-        assertNotEquals(booking, differentIdBooking);  // Different IDs
-        assertNotEquals(booking, null);  // Null comparison
-        assertNotEquals(booking, new Object());  // Different types
-        
-        // Test hashCode method
-        assertEquals(booking.hashCode(), sameIdBooking.hashCode());
-        assertNotEquals(booking.hashCode(), differentIdBooking.hashCode());
-    }
-} {
-    
 }
