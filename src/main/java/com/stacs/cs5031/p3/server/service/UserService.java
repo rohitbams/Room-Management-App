@@ -4,6 +4,8 @@ import com.stacs.cs5031.p3.server.model.User;
 import com.stacs.cs5031.p3.server.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -36,5 +38,8 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
 
 }
