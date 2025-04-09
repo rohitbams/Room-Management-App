@@ -2,7 +2,6 @@ package com.stacs.cs5031.p3.server.service;
 
 import com.stacs.cs5031.p3.server.model.User;
 import com.stacs.cs5031.p3.server.repository.UserRepository;
-import com.stacs.cs5031.p3.server.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -99,5 +98,4 @@ public class UserServiceTest {
         assertEquals(userList, result);
         verify(userRepository).findAll();
     }
-
 }
