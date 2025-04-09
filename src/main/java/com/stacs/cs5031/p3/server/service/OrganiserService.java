@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 import org.springframework.stereotype.Service;
 
-import com.stacs.cs5031.p3.server.Room;
-import com.stacs.cs5031.p3.server.RoomService;
+import com.stacs.cs5031.p3.server.model.Room;
+import com.stacs.cs5031.p3.server.service.RoomService;
 import com.stacs.cs5031.p3.server.model.Organiser;
 import com.stacs.cs5031.p3.server.repository.OrganiserRepository;
 
@@ -60,7 +60,8 @@ public class OrganiserService {
      * @return ArrayList<String> - List of all the available rooms.
      */
     public ArrayList<Room> getAvailableRooms() {
-        return roomService.findAvailableRooms();
+        //return roomService.findAvailableRooms();
+        return null;
     }
 
     // public ArrayList<String> getMyBookings() {
