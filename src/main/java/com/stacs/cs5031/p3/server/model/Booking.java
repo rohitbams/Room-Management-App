@@ -31,8 +31,8 @@ public class Booking {
     @ManyToOne
     private Organiser organiser;
     
-    @ManyToMany
-    private List<Attendee> attendees = new ArrayList<>();
+    // @ManyToMany
+    // private List<Attendee> attendees = new ArrayList<>();
     
     /**
      * Default constructor required by JPA.
@@ -157,52 +157,52 @@ public class Booking {
         this.organiser = organiser;
     }
     
-    /**
-     * Gets the list of attendees for this event.
-     * 
-     * @return The list of attendees
-     */
-    public List<Attendee> getAttendees() {
-        return attendees;
-    }
+    // /**
+    //  * Gets the list of attendees for this event.
+    //  * 
+    //  * @return The list of attendees
+    //  */
+    // public List<Attendee> getAttendees() {
+    //     return attendees;
+    // }
     
-    /**
-     * Checks if there is space available in the room for more attendees.
-     * 
-     * @return true if there is space, false if the room is at capacity
-     */
-    public boolean isThereSpace() {
-        return attendees.size() < room.getCapacity();
-    }
+    // /**
+    //  * Checks if there is space available in the room for more attendees.
+    //  * 
+    //  * @return true if there is space, false if the room is at capacity
+    //  */
+    // public boolean isThereSpace() {
+    //     return attendees.size() < room.getCapacity();
+    // }
     
-    /**
-     * Adds an attendee to the booking if there is space available.
-     * 
-     * @param attendee The attendee to add
-     * @return true if the attendee was added successfully, false if there was no space
-     */
-    public boolean addAttendee(Attendee attendee) {
-        if (attendees.contains(attendee)) {
-            return false; // Already registered
-        }
+    // /**
+    //  * Adds an attendee to the booking if there is space available.
+    //  * 
+    //  * @param attendee The attendee to add
+    //  * @return true if the attendee was added successfully, false if there was no space
+    //  */
+    // public boolean addAttendee(Attendee attendee) {
+    //     if (attendees.contains(attendee)) {
+    //         return false; // Already registered
+    //     }
         
-        if (isThereSpace()) {
-            attendees.add(attendee);
-            return true;
-        }
+    //     if (isThereSpace()) {
+    //         attendees.add(attendee);
+    //         return true;
+    //     }
         
-        return false;
-    }
+    //     return false;
+    // }
     
-    /**
-     * Removes an attendee from the booking.
-     * 
-     * @param attendee The attendee to remove
-     * @return true if the attendee was removed, false if they were not registered
-     */
-    public boolean removeAttendee(Attendee attendee) {
-        return attendees.remove(attendee);
-    }
+    // /**
+    //  * Removes an attendee from the booking.
+    //  * 
+    //  * @param attendee The attendee to remove
+    //  * @return true if the attendee was removed, false if they were not registered
+    //  */
+    // public boolean removeAttendee(Attendee attendee) {
+    //     return attendees.remove(attendee);
+    // }
     
     /**
      * Calculates the end time of the event based on start time and duration.
@@ -235,14 +235,14 @@ public class Booking {
         return (this.startTime.before(otherEnd) && thisEnd.after(other.startTime));
     }
     
-    /**
-     * Gets the current number of attendees.
-     * 
-     * @return The number of attendees
-     */
-    public int getCurrentAttendeeCount() {
-        return attendees.size();
-    }
+    // /**
+    //  * Gets the current number of attendees.
+    //  * 
+    //  * @return The number of attendees
+    //  */
+    // public int getCurrentAttendeeCount() {
+    //     return attendees.size();
+    // }
     
     /**
      * Gets the maximum capacity for the booking (from the room).
@@ -274,7 +274,7 @@ public class Booking {
                ", startTime=" + startTime + 
                ", duration=" + duration + " mins" + 
                ", organiser=" + (organiser != null ? organiser.getUsername() : "null") + 
-               ", attendees=" + (attendees != null ? attendees.size() : 0) + 
+            //    ", attendees=" + (attendees != null ? attendees.size() : 0) + 
                "]";
     }
 }
