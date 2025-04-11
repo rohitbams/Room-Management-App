@@ -15,9 +15,9 @@ public class BookingTest {
     private Room largerRoom;
     private Organiser organiser;
     private Booking booking;
-    private Attendee attendee1;
-    private Attendee attendee2;
-    private Attendee attendee3;
+    //private Attendee attendee1;
+    //private Attendee attendee2;
+    //private Attendee attendee3;
     private Date startTime;
     
     @BeforeEach
@@ -31,7 +31,7 @@ public class BookingTest {
         ReflectionTestUtils.setField(largerRoom, "id", 2);
         
         // Create an organiser
-        organiser = new Organiser("organiser1", "password", "John Doe", "john@example.com");
+        //organiser = new Organiser("organiser1", "password", "John Doe", "john@example.com");
         ReflectionTestUtils.setField(organiser, "id", 1);
         
         // Create a start time (current time)
@@ -42,12 +42,12 @@ public class BookingTest {
         ReflectionTestUtils.setField(booking, "id", 1);
         
         // Create some attendees
-        attendee1 = new Attendee("attendee1", "password", "Alice Johnson", "alice@example.com");
+       /*  attendee1 = new Attendee("attendee1", "password", "Alice Johnson", "alice@example.com");
         attendee2 = new Attendee("attendee2", "password", "Bob Smith", "bob@example.com");
         attendee3 = new Attendee("attendee3", "password", "Charlie Brown", "charlie@example.com");
         ReflectionTestUtils.setField(attendee1, "id", 1);
         ReflectionTestUtils.setField(attendee2, "id", 2);
-        ReflectionTestUtils.setField(attendee3, "id", 3);
+        ReflectionTestUtils.setField(attendee3, "id", 3); */
     }
     
     @Test
