@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 /**
  * The User class.
  * This class handles user creation and integration in the database.
+ * It is used to represent the user.
  */
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
