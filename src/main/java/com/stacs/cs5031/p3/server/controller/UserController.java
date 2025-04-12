@@ -1,6 +1,7 @@
 package com.stacs.cs5031.p3.server.controller;
 
 import com.stacs.cs5031.p3.server.dto.LoginRequest;
+import com.stacs.cs5031.p3.server.dto.RegistrationRequest;
 import com.stacs.cs5031.p3.server.dto.UserDto;
 import com.stacs.cs5031.p3.server.exception.UserAlreadyExistsException;
 import com.stacs.cs5031.p3.server.exception.UserNotFoundException;
@@ -33,9 +34,9 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody User user) {
+    public ResponseEntity<?> registerUser(@RequestBody RegistrationRequest request) {
         try {
-            User savedUser = userService.registerUser(user);
+            User savedUser = userService.registerUser(request);
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(UserDtoMapper.mapToDTO(savedUser));
         } catch (UserAlreadyExistsException e) {
