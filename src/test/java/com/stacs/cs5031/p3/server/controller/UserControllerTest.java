@@ -61,5 +61,12 @@ public class UserControllerTest {
         verify(userService).getAllUsers();
     }
 
+    @Test
+    void shouldReturnUserById_whenUserExists() throws Exception {
+        when(userService.getUserById(1)).thenReturn(testUser);
+        mockMvc.perform(get("/api/users/1"))
+                .andExpect(status().isOk());
+        verify(userService).getUserById(1);
+    }
 
 }

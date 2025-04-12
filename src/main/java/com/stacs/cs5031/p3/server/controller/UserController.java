@@ -2,6 +2,7 @@ package com.stacs.cs5031.p3.server.controller;
 
 import com.stacs.cs5031.p3.server.dto.UserDto;
 import com.stacs.cs5031.p3.server.exception.UserAlreadyExistsException;
+import com.stacs.cs5031.p3.server.exception.UserNotFoundException;
 import com.stacs.cs5031.p3.server.mapper.UserDtoMapper;
 import com.stacs.cs5031.p3.server.model.User;
 import com.stacs.cs5031.p3.server.service.UserService;
@@ -50,6 +51,16 @@ public class UserController {
                 .map(UserDtoMapper::mapToDTO)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(userDtos);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<UserDto> getUserById(@PathVariable Integer id) {
+        try {
+            User user = userService.getUserById(id);
+            return ResponseEntity.ok(UserDtoMapper.mapToDTO(user));
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
 }
