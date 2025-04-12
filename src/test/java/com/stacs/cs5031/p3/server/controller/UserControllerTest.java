@@ -1,6 +1,7 @@
 package com.stacs.cs5031.p3.server.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.stacs.cs5031.p3.server.exception.UserNotFoundException;
 import com.stacs.cs5031.p3.server.model.User;
 import com.stacs.cs5031.p3.server.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -69,4 +70,27 @@ public class UserControllerTest {
         verify(userService).getUserById(1);
     }
 
+    @Test
+    void shouldReturnNotFound_whenUserIdDoesNotExist() throws Exception {
+        when(userService.getUserById(1000)).thenThrow(new UserNotFoundException(1000));
+        mockMvc.perform(get("/api/users/1000"))
+                .andExpect(status().isNotFound());
+        verify(userService).getUserById(1000);
+    }
+
+    @Test
+    void shouldReturnUserByUsername_whenUserExists() throws Exception {
+        when(userService.getUserByUsername("johndoe")).thenReturn(testUser);
+        mockMvc.perform(get("/api/users/by-username/johndoe"))
+                .andExpect(status().isOk());
+        verify(userService).getUserByUsername("johndoe");
+    }
+
+    @Test
+    void shouldReturnNotFound_whenUsernameDoesNotExist() throws Exception {
+        when(userService.getUserByUsername("unknown")).thenThrow(new UserNotFoundException("unknown"));
+        mockMvc.perform(get("/api/users/by-username/unknown"))
+                .andExpect(status().isNotFound());
+        verify(userService).getUserByUsername("unknown");
+    }
 }

@@ -63,4 +63,15 @@ public class UserController {
         }
     }
 
+    @GetMapping("/by-username/{username}")
+    public ResponseEntity<UserDto> getUserByUsername(@PathVariable String username) {
+        try {
+            User user = userService.getUserByUsername(username);
+            return ResponseEntity.ok(UserDtoMapper.mapToDTO(user));
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+
 }
