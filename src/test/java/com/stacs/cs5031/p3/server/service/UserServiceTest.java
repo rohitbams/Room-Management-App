@@ -1,5 +1,7 @@
 package com.stacs.cs5031.p3.server.service;
 
+import com.stacs.cs5031.p3.server.exception.UserAlreadyExistsException;
+import com.stacs.cs5031.p3.server.exception.UserNotFoundException;
 import com.stacs.cs5031.p3.server.model.User;
 import com.stacs.cs5031.p3.server.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,12 +12,9 @@ import org.mockito.MockitoAnnotations;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 public class UserServiceTest {
 
@@ -36,37 +35,43 @@ public class UserServiceTest {
     @Test
     void getUserById_ShouldReturnUser_WhenUserExists() {
         when(userRepository.findById(1)).thenReturn(Optional.of(testUser));
-        Optional<User> result = userService.getUserById(1);
-        assertTrue(result.isPresent());
-        assertEquals(testUser, result.get());
+        User result = userService.getUserById(1);
+        assertEquals(testUser, result);
         verify(userRepository).findById(1);
     }
 
     @Test
     void getUserById_ShouldReturnEmpty_WhenUserDoesNotExist() {
         when(userRepository.findById(1)).thenReturn(Optional.empty());
-        Optional<User> result = userService.getUserById(1);
-        assertFalse(result.isPresent());
+        assertThrows(UserNotFoundException.class, () -> userService.getUserById(1));
         verify(userRepository).findById(1);
     }
 
     @Test
     void getUserByUsername_ShouldReturnUser_WhenUserExists() {
         when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(testUser));
-        Optional<User> result = userService.getUserByUsername("testuser");
-        assertTrue(result.isPresent());
-        assertEquals(testUser, result.get());
+        User result = userService.getUserByUsername("testuser");
+        assertEquals(testUser, result);
         verify(userRepository).findByUsername("testuser");
     }
 
     @Test
-    void registerUser_ShouldSaveAndReturnUser() {
+    void registerUser_ShouldSaveAndReturnUser_WhenUsernameNotTaken() {
+        when(userRepository.findByUsername("testuser")).thenReturn(Optional.empty());
         when(userRepository.save(testUser)).thenReturn(testUser);
         User result = userService.registerUser(testUser);
         assertEquals(testUser, result);
+        verify(userRepository).findByUsername("testuser");
         verify(userRepository).save(testUser);
     }
 
+    @Test
+    void registerUser_ShouldThrowException_WhenUsernameAlreadyTaken() {
+        when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(testUser));
+        assertThrows(UserAlreadyExistsException.class, () -> userService.registerUser(testUser));
+        verify(userRepository).findByUsername("testuser");
+        verify(userRepository, never()).save(testUser);
+    }
 
     @Test
     void isUsernameTaken_ShouldReturnTrue_WhenUsernameExists() {

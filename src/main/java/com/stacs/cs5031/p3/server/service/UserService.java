@@ -1,5 +1,7 @@
 package com.stacs.cs5031.p3.server.service;
 
+import com.stacs.cs5031.p3.server.exception.UserAlreadyExistsException;
+import com.stacs.cs5031.p3.server.exception.UserNotFoundException;
 import com.stacs.cs5031.p3.server.model.User;
 import com.stacs.cs5031.p3.server.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,9 @@ public class UserService {
 
     // register user
     public User registerUser(User user) {
+        if (isUsernameTaken(user.getUsername())) {
+            throw new UserAlreadyExistsException(user.getUsername());
+        }
         return userRepository.save(user);
     }
 
@@ -34,13 +39,15 @@ public class UserService {
     }
 
     // find user by ID
-    public Optional<User> getUserById(Integer id) {
-        return userRepository.findById(id);
+    public User getUserById(Integer id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(id));
     }
 
     // find user by username
-    public Optional<User> getUserByUsername(String username) {
-        return userRepository.findByUsername(username);
+    public User getUserByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException(username));
     }
 
     // delete user
