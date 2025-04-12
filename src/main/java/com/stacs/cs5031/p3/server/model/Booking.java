@@ -1,11 +1,15 @@
 package com.stacs.cs5031.p3.server.model;
 
-import jakarta.persistence.*;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 /**
  * Entity representing a booking in the system.
@@ -31,9 +35,10 @@ public class Booking {
     @ManyToOne
     private Organiser organiser;
     
+    /* Attendee to be implemented first 
     @ManyToMany
     private List<Attendee> attendees = new ArrayList<>();
-    
+    */
     /**
      * Default constructor required by JPA.
      */
@@ -162,18 +167,18 @@ public class Booking {
      * 
      * @return The list of attendees
      */
-    public List<Attendee> getAttendees() {
-        return attendees;
-    }
+    //public List<Attendee> getAttendees() {
+    //    return attendees;
+    //}
     
     /**
      * Checks if there is space available in the room for more attendees.
      * 
      * @return true if there is space, false if the room is at capacity
      */
-    public boolean isThereSpace() {
-        return attendees.size() < room.getCapacity();
-    }
+    //public boolean isThereSpace() {
+    //    return attendees.size() < room.getCapacity();
+    //}
     
     /**
      * Adds an attendee to the booking if there is space available.
@@ -181,7 +186,7 @@ public class Booking {
      * @param attendee The attendee to add
      * @return true if the attendee was added successfully, false if there was no space
      */
-    public boolean addAttendee(Attendee attendee) {
+   /* public boolean addAttendee(Attendee attendee) {
         if (attendees.contains(attendee)) {
             return false; // Already registered
         }
@@ -192,7 +197,7 @@ public class Booking {
         }
         
         return false;
-    }
+    } */ 
     
     /**
      * Removes an attendee from the booking.
@@ -200,9 +205,9 @@ public class Booking {
      * @param attendee The attendee to remove
      * @return true if the attendee was removed, false if they were not registered
      */
-    public boolean removeAttendee(Attendee attendee) {
-        return attendees.remove(attendee);
-    }
+   // public boolean removeAttendee(Attendee attendee) {
+   //     return attendees.remove(attendee);
+   // }
     
     /**
      * Calculates the end time of the event based on start time and duration.
@@ -240,9 +245,9 @@ public class Booking {
      * 
      * @return The number of attendees
      */
-    public int getCurrentAttendeeCount() {
-        return attendees.size();
-    }
+   // public int getCurrentAttendeeCount() {
+   //     return attendees.size();
+   // }
     
     /**
      * Gets the maximum capacity for the booking (from the room).
@@ -260,9 +265,10 @@ public class Booking {
         Booking booking = (Booking) o;
         return id == booking.id;
     }
-    
+   
+    /*
     @Override
-    public int hashCode() {
+     public int hashCode() {
         return Objects.hash(id);
     }
     
@@ -276,5 +282,5 @@ public class Booking {
                ", organiser=" + (organiser != null ? organiser.getUsername() : "null") + 
                ", attendees=" + (attendees != null ? attendees.size() : 0) + 
                "]";
-    }
+    } */
 }
