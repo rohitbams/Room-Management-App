@@ -2,8 +2,10 @@ package com.stacs.cs5031.p3.server.service;
 
 import com.stacs.cs5031.p3.server.exception.UserAlreadyExistsException;
 import com.stacs.cs5031.p3.server.exception.UserNotFoundException;
+import com.stacs.cs5031.p3.server.model.Organiser;
 import com.stacs.cs5031.p3.server.model.User;
 import com.stacs.cs5031.p3.server.repository.UserRepository;
+import com.stacs.cs5031.p3.server.dto.RegistrationRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -25,13 +27,35 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    // register user
-    public User registerUser(User user) {
-        if (isUsernameTaken(user.getUsername())) {
-            throw new UserAlreadyExistsException(user.getUsername());
-        }
-        return userRepository.save(user);
-    }
+    /**
+     * This method registers a new user based on the registration request.
+     * It creates either an Organiser or Attendee based on the role specified.
+     *
+     * @param request The registration request containing user details and role
+     * @return The saved user entity
+     * @throws UserAlreadyExistsException If a user with the requested username already exists
+     */
+//    public User registerUser(RegistrationRequest request) {
+//        if (isUsernameTaken(request.getUsername())) {
+//            throw new UserAlreadyExistsException(request.getUsername());
+//        }
+//
+//        User newUser;
+//        if (request.getRole().equals("ORGANISER")) {
+//            newUser = new Organiser(
+//                    request.getName(),
+//                    request.getUsername(),
+//                    request.getPassword()
+//            );
+//        } else {
+//            newUser = new Attendee(
+//                    request.getName(),
+//                    request.getUsername(),
+//                    request.getPassword()
+//            );
+//        }
+//        return userRepository.save(newUser);
+//    }
 
     // check for pre-registered username
     public boolean isUsernameTaken(String username) {
