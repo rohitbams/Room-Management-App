@@ -14,9 +14,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
 import java.util.Arrays;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -129,16 +127,13 @@ public class UserControllerTest {
     @Test
     void shouldLoginSuccessfully_withValidCredentials() throws Exception {
         when(userService.getUserByUsername("johndoe")).thenReturn(testUser);
-
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setUsername("johndoe");
         loginRequest.setPassword("password123");
-
         mockMvc.perform(post("/api/users/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isOk());
-
         verify(userService).getUserByUsername("johndoe");
     }
 
@@ -149,12 +144,10 @@ public class UserControllerTest {
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setUsername("johndoe");
         loginRequest.setPassword("wrongpassword");
-
         mockMvc.perform(post("/api/users/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isUnauthorized());
-
         verify(userService).getUserByUsername("johndoe");
     }
 
@@ -165,12 +158,10 @@ public class UserControllerTest {
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setUsername("unknown");
         loginRequest.setPassword("anypassword");
-
         mockMvc.perform(post("/api/users/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isUnauthorized());
-
         verify(userService).getUserByUsername("unknown");
     }
 
