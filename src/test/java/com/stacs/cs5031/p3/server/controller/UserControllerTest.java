@@ -11,9 +11,13 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import java.util.Arrays;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -34,10 +38,28 @@ public class UserControllerTest {
     void setup() {
         MockitoAnnotations.openMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(userController).build();
-
         testUser = new User("John Doe", "johndoe", "password123");
     }
 
+    @Test
+    void shouldRegisterNewUser_whenUsernameNotTaken() throws Exception {
+        when(userService.registerUser(any(User.class))).thenReturn(testUser);
+        User newUser = new User("New User", "newuser", "password");
+        mockMvc.perform(post("/api/users/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(newUser)))
+                .andExpect(status().isCreated());
+        verify(userService).registerUser(any(User.class));
+    }
+
+    @Test
+    void shouldReturnAllUsers() throws Exception {
+        User user2 = new User("Jane Doe", "janedoe", "password456");
+        when(userService.getAllUsers()).thenReturn(Arrays.asList(testUser, user2));
+        mockMvc.perform(get("/api/users"))
+                .andExpect(status().isOk());
+        verify(userService).getAllUsers();
+    }
 
 
 }
