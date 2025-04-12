@@ -1,5 +1,6 @@
 package com.stacs.cs5031.p3.server.controller;
 
+import com.stacs.cs5031.p3.server.dto.LoginRequest;
 import com.stacs.cs5031.p3.server.dto.UserDto;
 import com.stacs.cs5031.p3.server.exception.UserAlreadyExistsException;
 import com.stacs.cs5031.p3.server.exception.UserNotFoundException;
@@ -82,6 +83,29 @@ public class UserController {
         } catch (UserNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+        try {
+            User user = userService.getUserByUsername(loginRequest.getUsername());
+
+            if (user.getPassword().equals(loginRequest.getPassword())) {
+                return ResponseEntity.ok(UserDtoMapper.mapToDTO(user));
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body("Invalid password");
+            }
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Invalid username");
+        }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(@RequestHeader("Authorization") String logoutRequest) {
+        return ResponseEntity.ok("Logged out successfully");
     }
 
 }
