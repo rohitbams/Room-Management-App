@@ -20,7 +20,7 @@ public class OrganiserController {
     @Autowired
     private OrganiserService organiserService;
 
-    
+
     @PostMapping("/organiser/create-organiser")
     public ResponseEntity<String> createOrganiser(@RequestBody Organiser organiser) {
         try{

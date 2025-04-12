@@ -2,10 +2,11 @@ package com.stacs.cs5031.p3.server.service;
 
 import java.util.ArrayList;
 
+import com.stacs.cs5031.p3.server.model.Room;
 import org.springframework.stereotype.Service;
 
-import com.stacs.cs5031.p3.server.Room;
-import com.stacs.cs5031.p3.server.RoomService;
+//import com.stacs.cs5031.p3.server.model.Room;
+import com.stacs.cs5031.p3.server.service.RoomService;
 import com.stacs.cs5031.p3.server.model.Organiser;
 import com.stacs.cs5031.p3.server.repository.OrganiserRepository;
 
@@ -30,7 +31,7 @@ public class OrganiserService {
 
         String name = organiser.getName();
         String username = organiser.getUsername();
-        String password = organiser.getPassword(); 
+        String password = organiser.getPassword();
 
         if (name == null || name.isEmpty()) {
             throw new IllegalArgumentException("Organiser name is invalid");
@@ -53,7 +54,7 @@ public class OrganiserService {
     public ArrayList<Organiser> getAllOrganisers() {
         return new ArrayList<Organiser>(organiserRepository.findAll());
     }
-    
+
 
     /**
      * This method is used to get all the available rooms from the database.
