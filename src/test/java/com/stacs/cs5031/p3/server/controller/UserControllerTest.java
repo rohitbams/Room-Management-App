@@ -16,10 +16,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.Arrays;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class UserControllerTest {
@@ -93,4 +91,26 @@ public class UserControllerTest {
                 .andExpect(status().isNotFound());
         verify(userService).getUserByUsername("unknown");
     }
+
+    @Test
+    void shouldDeleteUser_whenUserExists() throws Exception {
+        when(userService.getUserById(1)).thenReturn(testUser);
+        doNothing().when(userService).deleteUser(1);
+        mockMvc.perform(delete("/api/users/1"))
+                .andExpect(status().isNoContent());
+        verify(userService).getUserById(1);
+        verify(userService).deleteUser(1);
+    }
+
+    @Test
+    void shouldReturnNotFound_whenDeletingNonExistentUser() throws Exception {
+        when(userService.getUserById(1000)).thenThrow(new UserNotFoundException(1000));
+        mockMvc.perform(delete("/api/users/1000"))
+                .andExpect(status().isNotFound());
+        verify(userService).getUserById(1000);
+        verify(userService, never()).deleteUser(1000);
+    }
+
+
+
 }
