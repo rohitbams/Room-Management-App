@@ -45,6 +45,17 @@ public class AttendeeTest {
     }
 
     @Test
-    void shouldUpdateAttendee() {}
+    void shouldDeregisterFromBooking() {
+        attendee.registerForBooking(booking);
+        assertEquals(1, attendee.getRegisteredBookings().size(), "should have one registered booking initially");
+        attendee.deRegisterFromBooking(booking);
+        assertTrue(attendee.getRegisteredBookings().isEmpty(), "should have no registered bookings after deregistering");
+    }
 
+    @Test
+    void shouldNotRegisterForSameBookingTwice() {
+        attendee.registerForBooking(booking);
+        attendee.registerForBooking(booking); // Register again
+        assertEquals(1, attendee.getRegisteredBookings().size(), "should have only one booking registration");
+    }
 }

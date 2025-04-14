@@ -27,9 +27,9 @@ public class Attendee extends User {
     /**
      * Constructor for attendee.
      *
-     * @param name
-     * @param username
-     * @param password
+     * @param name name of attendee
+     * @param username attendee's username
+     * @param password attendee's password
      */
     public Attendee(String name, String username, String password) {
         super(name, username, password);
@@ -45,7 +45,7 @@ public class Attendee extends User {
     }
 
     /**
-     * Registers the attendee for a booking.
+     * Register the attendee for a booking.
      * Will not add the booking if the attendee is already registered.
      *
      * @param booking The booking to register for
@@ -54,6 +54,15 @@ public class Attendee extends User {
         if (!registeredBookings.contains(booking)) {
             registeredBookings.add(booking);
         }
+    }
+
+    /**
+     * Cancel registration for a booking.
+     *
+     * @param booking The booking to deregister from
+     */
+    public void deRegisterFromBooking(Booking booking) {
+        registeredBookings.remove(booking);
     }
 
 }
