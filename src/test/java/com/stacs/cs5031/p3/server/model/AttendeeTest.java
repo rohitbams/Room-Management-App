@@ -5,8 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Date;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class AttendeeTest {
 
@@ -33,5 +32,19 @@ public class AttendeeTest {
         assertEquals("password123", attendee.getPassword(), "password should match");
     }
 
+    @Test
+    void shouldHaveEmptyBookingsListByDefault() {
+        assertTrue(attendee.getRegisteredBookings().isEmpty(), "registered bookings should be empty initially");
+    }
+
+    @Test
+    void shouldRegisterForBooking() {
+        attendee.registerForBooking(booking);
+        assertEquals(1, attendee.getRegisteredBookings().size(), "should have one registered booking");
+        assertTrue(attendee.getRegisteredBookings().contains(booking), "should contain the registered booking");
+    }
+
+    @Test
+    void shouldUpdateAttendee() {}
 
 }

@@ -24,10 +24,36 @@ public class Attendee extends User {
         super();
     }
 
+    /**
+     * Constructor for attendee.
+     *
+     * @param name
+     * @param username
+     * @param password
+     */
     public Attendee(String name, String username, String password) {
         super(name, username, password);
     }
 
+    /**
+     * Get the bookings attendee has registered for.
+     *
+     * * @return List of registered bookings
+     */
+    public List<Booking> getRegisteredBookings() {
+        return registeredBookings;
+    }
 
+    /**
+     * Registers the attendee for a booking.
+     * Will not add the booking if the attendee is already registered.
+     *
+     * @param booking The booking to register for
+     */
+    public void registerForBooking(Booking booking) {
+        if (!registeredBookings.contains(booking)) {
+            registeredBookings.add(booking);
+        }
+    }
 
 }
