@@ -81,5 +81,13 @@ public class AttendeeRepositoryTest {
         assertEquals("Hannah Montana concert", registeredBookings.get(0).getName());
     }
 
+    @Test
+    public void shouldFindAvailableBookings() {
+        List<Booking> availableBookings = attendeeRepository.findAvailableBookings(attendee.getId());
+        assertNotNull(availableBookings);
+        assertEquals(1, availableBookings.size());
+        assertEquals("Hannah Montana concert", availableBookings.get(0).getName());
+    }
+
 
 }
