@@ -2,6 +2,7 @@ package com.stacs.cs5031.p3.server.service;
 
 import com.stacs.cs5031.p3.server.exception.BookingFullException;
 import com.stacs.cs5031.p3.server.exception.BookingNotFoundException;
+import com.stacs.cs5031.p3.server.exception.ResourceUnavailableException;
 import com.stacs.cs5031.p3.server.exception.UserNotFoundException;
 import com.stacs.cs5031.p3.server.model.Attendee;
 import com.stacs.cs5031.p3.server.model.Booking;
@@ -79,35 +80,66 @@ public class AttendeeService {
         return attendeeRepository.findUnavailableBookings(attendeeId);
     }
 
-//    /**
-//     * Register an attendee for a booking.
-//     *
-//     * @param attendeeId The attendee ID
-//     * @param bookingId The booking ID
-//     * @return The updated booking
-//     * @throws UserNotFoundException if attendee is not found
-//     * @throws BookingNotFoundException if booking is not found
-//     * @throws BookingFullException if booking is already at capacity
-//     */
-//    @Transactional
-//    public Booking registerForBooking(Integer attendeeId, Integer bookingId) {
-//        Attendee attendee = getAttendeeById(attendeeId);
-//        Booking booking = bookingRepository.findById(bookingId)
-//                .orElseThrow(() -> new BookingNotFoundException(bookingId));
-//
-//        if (attendee.getRegisteredBookings().contains(booking)) {
-//            throw new IllegalStateException("Attendee is already registered for this booking");
-//        }
-//        if (!booking.isThereSpace()) {
-//            throw new BookingFullException(bookingId);
-//        }
-//
-//        attendee.registerForBooking(booking);
-//        booking.addAttendee(attendee);
-//
-//        attendeeRepository.save(attendee);
-//        return bookingRepository.save(booking);
-//    }
+    /**
+     * Register an attendee for a booking.
+     *
+     * @param attendeeId The attendee ID
+     * @param bookingId The booking ID
+     * @return The updated booking
+     * @throws UserNotFoundException if attendee is not found
+     * @throws BookingNotFoundException if booking is not found
+     * @throws BookingFullException if booking is already at capacity
+     */
+
+    @Transactional
+    public Booking registerForBooking(Integer attendeeId, Integer bookingId) {
+        Attendee attendee = getAttendeeById(attendeeId);
+
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new BookingNotFoundException(bookingId));
+
+        if (attendee.getRegisteredBookings().contains(booking)) {
+            throw new IllegalStateException("Attendee is already registered for this booking");
+        }
+
+        if (booking.getAttendees().size() >= booking.getRoom().getCapacity()) {
+            throw new ResourceUnavailableException("Booking is at full capacity");
+        }
+
+        attendee.getRegisteredBookings().add(booking);
+        booking.getAttendees().add(attendee);
+
+        attendeeRepository.save(attendee);
+        return bookingRepository.save(booking);
+    }
+
+    /**
+     * De-register an attendee from an existing registered event.
+     *
+     * @param attendeeId attendee ID
+     * @param bookingId booking ID
+     * @return updated booking
+     */
+    @Transactional
+    public Booking deregisterFromBooking(Integer attendeeId, int bookingId) {
+        Attendee attendee = getAttendeeById(attendeeId);
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new BookingNotFoundException(bookingId));
+
+        if (!attendee.getRegisteredBookings().contains(booking)) {
+            throw new IllegalStateException("Attendee is not registered for this booking");
+        }
+
+//        attendee.getRegisteredBookings().remove(booking);
+//        booking.getAttendees().remove(attendee);
+        attendee.deRegisterFromBooking(booking);
+        booking.removeAttendee(attendee);
+
+        attendeeRepository.save(attendee);
+        return bookingRepository.save(booking);
+    }
+
+
 
 
 

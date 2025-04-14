@@ -14,7 +14,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.*;
-
+import static org.mockito.ArgumentMatchers.any;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -111,21 +111,42 @@ public class AttendeeServiceTest {
     }
 
 
+    @Test
+    void registerForBooking_ShouldRegisterAttendee_WhenBookingHasSpace() {
+        when(attendeeRepository.findById(1)).thenReturn(Optional.of(attendee));
+        when(bookingRepository.findById(1)).thenReturn(Optional.of(booking));
+        when(attendeeRepository.save(any(Attendee.class))).thenReturn(attendee);
+        when(bookingRepository.save(any(Booking.class))).thenReturn(booking);
+        Booking result = attendeeService.registerForBooking(1, 1);
+        assertNotNull(result);
+        verify(attendeeRepository).findById(1);
+        verify(bookingRepository).findById(1);
+        verify(attendeeRepository).save(attendee);
+        verify(bookingRepository).save(booking);
+    }
 
-//    @Test
-//    void registerForBooking_ShouldRegisterAttendee_WhenBookingHasSpace() {
-//        when(attendeeRepository.findById(1)).thenReturn(Optional.of(attendee));
-//        when(bookingRepository.findById(1)).thenReturn(Optional.of(booking));
-//        when(attendeeRepository.save(any(Attendee.class))).thenReturn(attendee);
-//        when(bookingRepository.save(any(Booking.class))).thenReturn(booking);
-//        booking.getRoom().getCapacity();
-//        Booking result = attendeeService.registerForBooking(1, 1);
-//        assertNotNull(result);
-//        verify(attendeeRepository).findById(1);
-//        verify(bookingRepository).findById(1);
-//        verify(attendeeRepository).save(attendee);
-//        verify(bookingRepository).save(booking);
-//    }
+    @Test
+    void deregisterFromBooking_shouldRemoveBookingFromAttendee_whenRegistered() {
+        Integer attendeeId = 1;
+        int bookingId = 1;
+        when(attendeeRepository.findById(attendeeId)).thenReturn(Optional.of(attendee));
+        when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
+        when(bookingRepository.save(any(Booking.class))).thenReturn(booking);
+
+        Set<Booking> registeredBookings = new HashSet<>();
+        registeredBookings.add(booking);
+        attendee.setRegisteredBookings(registeredBookings);
+        Set<Attendee> attendees = new HashSet<>();
+        attendees.add(attendee);
+        booking.setAttendees(attendees);
+
+        Booking result = attendeeService.deregisterFromBooking(attendeeId, bookingId);
+        assertEquals(booking, result);
+        assertEquals(0, attendee.getRegisteredBookings().size());
+        assertEquals(0, booking.getAttendees().size());
+        verify(attendeeRepository).save(attendee);
+        verify(bookingRepository).save(booking);
+    }
 
 
 }
