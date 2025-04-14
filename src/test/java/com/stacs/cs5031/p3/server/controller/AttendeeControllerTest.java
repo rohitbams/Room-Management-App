@@ -83,4 +83,13 @@ public class AttendeeControllerTest {
         assertNotNull(response.getBody());
     }
 
+    @Test
+    void getUnavailableBookings_ShouldReturnBookings() {
+        List<Booking> bookings = Arrays.asList(booking);
+        when(attendeeService.getUnavailableBookings(1)).thenReturn(bookings);
+        ResponseEntity<?> response = attendeeController.getUnavailableBookings(1);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+    }
+
 }

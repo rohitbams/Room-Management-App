@@ -79,4 +79,21 @@ public class AttendeeController {
         }
     }
 
+    /**
+     * Get all unavailable bookings for an attendee.
+     *
+     * @param id The attendee ID
+     * @return List of unavailable booking DTOs
+     */
+    @GetMapping("/{id}/unavailable-bookings")
+    public ResponseEntity<?> getUnavailableBookings(@PathVariable Integer id) {
+        try {
+            List<Booking> bookings = attendeeService.getUnavailableBookings(id);
+            return ResponseEntity.ok(BookingDtoMapper.mapToDTOList(bookings));
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+
 }
