@@ -37,6 +37,13 @@ public class AttendeeService {
                 .orElseThrow(() -> new UserNotFoundException(id));
     }
 
+    /**
+     * Gets an attendee by username.
+     *
+     * @param username The attendee username
+     * @return The attendee
+     * @throws UserNotFoundException if attendee is not found
+     */
     public Attendee getAttendeeByUsername(String username) {
         Attendee attendee = attendeeRepository.findByUsername(username);
         if (attendee == null) {

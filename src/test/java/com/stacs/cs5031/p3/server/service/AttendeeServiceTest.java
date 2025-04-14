@@ -13,10 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Arrays;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
@@ -90,6 +87,17 @@ public class AttendeeServiceTest {
         assertEquals(booking, result.get(0));
         verify(attendeeRepository).findById(1);
         verify(attendeeRepository).findAvailableBookings(1);
+    }
+
+    @Test
+    void getUnavailableBookings_shouldReturnUnavailableBookings() {
+        Integer attendeeId = 1;
+        when(attendeeRepository.findById(attendeeId)).thenReturn(Optional.of(attendee));
+        List<Booking> unavailableBookings = Collections.singletonList(booking);
+        when(attendeeRepository.findUnavailableBookings(attendeeId)).thenReturn(unavailableBookings);
+        List<Booking> result = attendeeService.getUnavailableBookings(attendeeId);
+        assertEquals(unavailableBookings, result);
+        verify(attendeeRepository).findUnavailableBookings(attendeeId);
     }
 
     @Test
