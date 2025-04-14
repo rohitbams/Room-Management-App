@@ -64,6 +64,23 @@ public class AttendeeServiceTest {
     }
 
     @Test
+    void getAttendeeByUsername_shouldReturnAttendee_whenAttendeeExists() {
+        when(attendeeRepository.findByUsername("theboywholived")).thenReturn(attendee);
+        Attendee result = attendeeService.getAttendeeByUsername("theboywholived");
+        assertEquals(attendee, result);
+        verify(attendeeRepository).findByUsername("theboywholived");
+    }
+
+    @Test
+    void getAttendeeByUsername_shouldThrowUserNotFoundException_whenAttendeeDoesNotExist() {
+        when(attendeeRepository.findByUsername("nonexistent")).thenReturn(null);
+        assertThrows(UserNotFoundException.class, () -> {
+            attendeeService.getAttendeeByUsername("nonexistent");
+        });
+        verify(attendeeRepository).findByUsername("nonexistent");
+    }
+
+    @Test
     void getAvailableBookings_ShouldReturnBookings() {
         when(attendeeRepository.findById(1)).thenReturn(Optional.of(attendee));
         when(attendeeRepository.findAvailableBookings(1)).thenReturn(Arrays.asList(booking));
@@ -74,6 +91,24 @@ public class AttendeeServiceTest {
         verify(attendeeRepository).findById(1);
         verify(attendeeRepository).findAvailableBookings(1);
     }
+
+
+
+
+//    @Test
+//    void registerForBooking_ShouldRegisterAttendee_WhenBookingHasSpace() {
+//        when(attendeeRepository.findById(1)).thenReturn(Optional.of(attendee));
+//        when(bookingRepository.findById(1)).thenReturn(Optional.of(booking));
+//        when(attendeeRepository.save(any(Attendee.class))).thenReturn(attendee);
+//        when(bookingRepository.save(any(Booking.class))).thenReturn(booking);
+//        booking.getRoom().getCapacity();
+//        Booking result = attendeeService.registerForBooking(1, 1);
+//        assertNotNull(result);
+//        verify(attendeeRepository).findById(1);
+//        verify(bookingRepository).findById(1);
+//        verify(attendeeRepository).save(attendee);
+//        verify(bookingRepository).save(booking);
+//    }
 
 
 }
