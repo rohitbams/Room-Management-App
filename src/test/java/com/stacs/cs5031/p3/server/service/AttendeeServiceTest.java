@@ -16,8 +16,7 @@ import org.mockito.MockitoAnnotations;
 import java.util.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class AttendeeServiceTest {
     @Mock
@@ -146,6 +145,29 @@ public class AttendeeServiceTest {
         assertEquals(0, booking.getAttendees().size());
         verify(attendeeRepository).save(attendee);
         verify(bookingRepository).save(booking);
+    }
+
+    @Test
+    void getRegisteredBookings_shouldReturnBookings_whenAttendeeExists() {
+        Integer attendeeId = 1;
+        when(attendeeRepository.findById(attendeeId)).thenReturn(Optional.of(attendee));
+        List<Booking> bookings = Arrays.asList(booking);
+        when(attendeeRepository.findRegisteredBookings(attendeeId)).thenReturn(bookings);
+        List<Booking> result = attendeeService.getRegisteredBookings(attendeeId);
+        assertEquals(bookings, result);
+        verify(attendeeRepository).findById(attendeeId);
+        verify(attendeeRepository).findRegisteredBookings(attendeeId);
+    }
+
+    @Test
+    void getRegisteredBookings_shouldThrowUserNotFoundException_whenAttendeeDoesNotExist() {
+        Integer attendeeId = 10;
+        when(attendeeRepository.findById(attendeeId)).thenReturn(Optional.empty());
+        assertThrows(UserNotFoundException.class, () -> {
+            attendeeService.getRegisteredBookings(attendeeId);
+        });
+        verify(attendeeRepository).findById(attendeeId);
+        verify(attendeeRepository, never()).findRegisteredBookings(any());
     }
 
 

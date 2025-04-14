@@ -14,6 +14,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * The AttendeeService class.
+ * This class implements attendee-specific operations including
+ * transactions, validation, and business logic.
+ */
 @Service
 public class AttendeeService {
 
@@ -81,6 +86,17 @@ public class AttendeeService {
     }
 
     /**
+     * Get all bookings an attendee has registered for.
+     *
+     * @param attendeeId attendee ID
+     * @return List of all bookings an attendee has registered for.
+     */
+    public List<Booking> getRegisteredBookings(Integer attendeeId) {
+        getAttendeeById(attendeeId);
+        return attendeeRepository.findRegisteredBookings(attendeeId);
+    }
+
+    /**
      * Register an attendee for a booking.
      *
      * @param attendeeId The attendee ID
@@ -119,6 +135,7 @@ public class AttendeeService {
      * @param attendeeId attendee ID
      * @param bookingId booking ID
      * @return updated booking
+     * @throws IllegalStateException if attendee is not registered on the event
      */
     @Transactional
     public Booking deregisterFromBooking(Integer attendeeId, int bookingId) {
