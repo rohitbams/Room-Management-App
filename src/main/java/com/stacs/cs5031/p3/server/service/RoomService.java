@@ -23,12 +23,12 @@ public class RoomService {
         this.roomRepository = roomRepository;
     }
     
-    public RoomDto createRoom(int capacity) throws IllegalArgumentException {
+    public RoomDto createRoom(String name, int capacity) throws IllegalArgumentException {
         // validate user-provided data
         if (capacity <= 1) {
             throw new IllegalArgumentException("Room capacity must be at least 1");
         }
-        Room roomEntity = roomRepository.save(new Room("Test Room", capacity));
+        Room roomEntity = roomRepository.save(new Room(name, capacity));
         return RoomDtoMapper.mapToDTO(roomEntity);
     }
 
