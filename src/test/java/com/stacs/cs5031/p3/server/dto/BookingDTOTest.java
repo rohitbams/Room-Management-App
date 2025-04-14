@@ -10,13 +10,13 @@
 //import org.junit.jupiter.api.Test;
 //
 ///**
-// * Test class for BookingDTO.
+// * Test class for BookingDto.
 // */
-//public class BookingDTOTest {
+//public class BookingDtoTest {
 //
-//    private BookingDTO bookingDTO;
+//    private BookingDto bookingDTO;
 //    private Date startTime;
-//    private List<AttendeeDTO> attendees;
+//    private List<AttendeeDto> attendees;
 //
 //    @BeforeEach
 //    public void setUp() {
@@ -24,11 +24,11 @@
 //
 //        // Create some attendee DTOs for testing
 //        attendees = new ArrayList<>();
-//        attendees.add(new AttendeeDTO(1L, "attendee1", "Alice Johnson", "alice@example.com", null));
-//        attendees.add(new AttendeeDTO(2L, "attendee2", "Bob Smith", "bob@example.com", null));
+//        attendees.add(new AttendeeDto(1, "attendee1", "Alice Johnson", 1, null));
+//        attendees.add(new AttendeeDto(2, "attendee2", "Bob Smith", 2, null));
 //
 //        // Create a booking DTO with all fields
-//        bookingDTO = new BookingDTO(
+//        bookingDTO = new BookingDto(
 //            1L,                  // id
 //            "Team Meeting",      // eventName
 //            2L,                  // roomId
@@ -62,7 +62,7 @@
 //    @Test
 //    public void testNoArgsConstructor() {
 //        // Create a DTO using no-args constructor
-//        BookingDTO emptyDTO = new BookingDTO();
+//        BookingDto emptyDTO = new BookingDto();
 //
 //        // Assert all fields are null or default values
 //        assertNull(emptyDTO.getId());
@@ -81,7 +81,7 @@
 //    @Test
 //    public void testSetters() {
 //        // Create a DTO using no-args constructor
-//        BookingDTO dto = new BookingDTO();
+//        BookingDto dto = new BookingDto();
 //
 //        // Set values using setters
 //        dto.setId(5L);
@@ -93,7 +93,7 @@
 //        dto.setDuration(90);
 //        dto.setOrganiserId(7L);
 //        dto.setOrganiserName("Jane Organiser");
-//        List<AttendeeDTO> newAttendees = new ArrayList<>();
+//        List<AttendeeDto> newAttendees = new ArrayList<>();
 //        dto.setAttendees(newAttendees);
 //        dto.setCurrentAttendees(0);
 //        dto.setMaxCapacity(15);
@@ -115,7 +115,7 @@
 //    @Test
 //    public void testBookingRequest() {
 //        // Create a booking request
-//        BookingDTO.BookingRequest request = new BookingDTO.BookingRequest();
+//        BookingDto.BookingRequest request = new BookingDto.BookingRequest();
 //        request.setEventName("Request Meeting");
 //        request.setRoomId(8L);
 //        request.setStartTime(startTime);
@@ -131,7 +131,7 @@
 //    @Test
 //    public void testEqualsAndHashCode() {
 //        // Create a copy of the bookingDTO with the same ID
-//        BookingDTO sameDTOWithSameId = new BookingDTO(
+//        BookingDto sameDTOWithSameId = new BookingDto(
 //            1L,                      // Same ID
 //            "Different Meeting",     // Different name
 //            4L,                      // Different roomId
@@ -146,7 +146,7 @@
 //        );
 //
 //        // Create a different DTO with a different ID
-//        BookingDTO differentDTO = new BookingDTO(
+//        BookingDto differentDTO = new BookingDto(
 //            99L,                     // Different ID
 //            bookingDTO.getEventName(),
 //            bookingDTO.getRoomId(),

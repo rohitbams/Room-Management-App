@@ -1,5 +1,6 @@
 //package com.stacs.cs5031.p3.server.service;
 //
+//import com.stacs.cs5031.p3.server.model.Attendee;
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.stereotype.Service;
 //import org.springframework.transaction.annotation.Transactional;
@@ -8,7 +9,7 @@
 //import com.stacs.cs5031.p3.server.model.Room;
 ////import com.stacs.cs5031.p3.server.model.Attendee;
 //import com.stacs.cs5031.p3.server.model.Organiser;
-//import com.stacs.cs5031.p3.server.dto.BookingDTO;
+//import com.stacs.cs5031.p3.server.dto.BookingDto;
 //import com.stacs.cs5031.p3.server.exception.BookingConflictException;
 //import com.stacs.cs5031.p3.server.exception.EntityNotFoundException;
 //import com.stacs.cs5031.p3.server.exception.ResourceUnavailableException;
@@ -135,7 +136,7 @@
 //
 //    @Override
 //    @Transactional
-//    public Booking createBooking(BookingDTO bookingDTO, Long organiserId) {
+//    public Booking createBooking(BookingDto bookingDTO, Long organiserId) {
 //        // Get room - convert Long to int
 //        Room room = roomService.getRoomById(bookingDTO.getRoomId().intValue())
 //                .orElseThrow(() -> new EntityNotFoundException("Room not found with ID: " + bookingDTO.getRoomId()));

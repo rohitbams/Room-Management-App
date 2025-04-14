@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.stacs.cs5031.p3.server.service.AttendeeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -34,7 +35,7 @@ public class AdminTest {
     private OrganiserService organiserService;
 
     // @MockitoBean
-    // private AttendeeService attendeeService;
+     private AttendeeService attendeeService;
 
 
     @BeforeEach

@@ -15,9 +15,9 @@
 //    private Room largerRoom;
 //    private Organiser organiser;
 //    private Booking booking;
-//    //private Attendee attendee1;
-//    //private Attendee attendee2;
-//    //private Attendee attendee3;
+//    private Attendee attendee1;
+//    private Attendee attendee2;
+//    private Attendee attendee3;
 //    private Date startTime;
 //
 //    @BeforeEach
@@ -31,7 +31,7 @@
 //        ReflectionTestUtils.setField(largerRoom, "id", 2);
 //
 //        // Create an organiser
-//        //organiser = new Organiser("organiser1", "password", "John Doe", "john@example.com");
+////        organiser = new Organiser("organiser1", "password", "John Doe", "john@example.com");
 //        ReflectionTestUtils.setField(organiser, "id", 1);
 //
 //        // Create a start time (current time)

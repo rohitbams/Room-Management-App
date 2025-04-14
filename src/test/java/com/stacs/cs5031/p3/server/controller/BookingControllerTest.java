@@ -29,9 +29,9 @@
 //import org.springframework.test.web.servlet.MockMvc;
 //
 //import com.fasterxml.jackson.databind.ObjectMapper;
-//import com.stacs.cs5031.p3.server.dto.BookingDTO;
-//import com.stacs.cs5031.p3.server.dto.BookingDTO.BookingRequest;
-//import com.stacs.cs5031.p3.server.dto.UserDTOs.AttendeeDTO;
+//import com.stacs.cs5031.p3.server.dto.BookingDto;
+//import com.stacs.cs5031.p3.server.dto.BookingDto.BookingRequest;
+//import com.stacs.cs5031.p3.server.dto.AttendeeDto;
 //import com.stacs.cs5031.p3.server.exception.BookingConflictException;
 //import com.stacs.cs5031.p3.server.exception.EntityNotFoundException;
 //import com.stacs.cs5031.p3.server.exception.ResourceUnavailableException;
@@ -58,25 +58,25 @@
 //    @MockitoBean
 //    private UserService userService;
 //
-//    private BookingDTO testBooking1;
-//    private BookingDTO testBooking2;
+//    private BookingDto testBooking1;
+//    private BookingDto testBooking2;
 //    private BookingRequest testBookingRequest;
-//    private List<AttendeeDTO> attendees;
+//    private List<AttendeeDto> attendees;
 //
 //    @BeforeEach
 //    void setup() {
 //        // Create test attendees
-//        AttendeeDTO attendee1 = new AttendeeDTO(1L, "attendee1", "Alice Johnson", "alice@example.com", List.of(1L));
-//        AttendeeDTO attendee2 = new AttendeeDTO(2L, "attendee2", "Bob Smith", "bob@example.com", List.of(1L, 2L));
+//        AttendeeDto attendee1 = new AttendeeDto(1L, "attendee1", "Alice Johnson", 1, List.of(1L));
+//        AttendeeDto attendee2 = new AttendeeDto(2L, "attendee2", "Bob Smith", 2, List.of(1L, 2L));
 //        attendees = Arrays.asList(attendee1, attendee2);
 //
 //        // Create test bookings
-//        testBooking1 = new BookingDTO(
+//        testBooking1 = new BookingDto(
 //            1L, "Team Meeting", 1L, "Conference Room A", new Date(), 60,
 //            1L, "John Organiser", attendees, 2, 10
 //        );
 //
-//        testBooking2 = new BookingDTO(
+//        testBooking2 = new BookingDto(
 //            2L, "Project Planning", 2L, "Meeting Room B", new Date(), 90,
 //            1L, "John Organiser", List.of(), 0, 8
 //        );
@@ -115,7 +115,7 @@
 //
 //    @Test
 //    void shouldGetAllBookings_whenBookingsExist() throws Exception {
-//        List<BookingDTO> expectedBookings = Arrays.asList(testBooking1, testBooking2);
+//        List<BookingDto> expectedBookings = Arrays.asList(testBooking1, testBooking2);
 //        when(bookingService.getAllBookings()).thenReturn(expectedBookings);
 //
 //        mvc.perform(get("/api/bookings")
@@ -265,7 +265,7 @@
 //
 //    @Test
 //    void shouldGetBookingsByRoom() throws Exception {
-//        List<BookingDTO> roomBookings = Arrays.asList(testBooking1);
+//        List<BookingDto> roomBookings = Arrays.asList(testBooking1);
 //        when(bookingService.getBookingsByRoom(1L)).thenReturn(roomBookings);
 //
 //        mvc.perform(get("/api/bookings/room/1"))
@@ -277,7 +277,7 @@
 //
 //    @Test
 //    void shouldGetBookingsByOrganiser() throws Exception {
-//        List<BookingDTO> organiserBookings = Arrays.asList(testBooking1, testBooking2);
+//        List<BookingDto> organiserBookings = Arrays.asList(testBooking1, testBooking2);
 //        when(bookingService.getBookingsByOrganiser(1L)).thenReturn(organiserBookings);
 //
 //        mvc.perform(get("/api/bookings/organiser/1"))
@@ -289,7 +289,7 @@
 //
 //    @Test
 //    void shouldGetBookingsByAttendee() throws Exception {
-//        List<BookingDTO> attendeeBookings = Arrays.asList(testBooking1);
+//        List<BookingDto> attendeeBookings = Arrays.asList(testBooking1);
 //        when(bookingService.getBookingsByAttendee(1L)).thenReturn(attendeeBookings);
 //
 //        mvc.perform(get("/api/bookings/attendee/1"))
