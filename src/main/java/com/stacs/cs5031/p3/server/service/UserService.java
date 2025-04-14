@@ -2,6 +2,7 @@ package com.stacs.cs5031.p3.server.service;
 
 import com.stacs.cs5031.p3.server.exception.UserAlreadyExistsException;
 import com.stacs.cs5031.p3.server.exception.UserNotFoundException;
+import com.stacs.cs5031.p3.server.model.Attendee;
 import com.stacs.cs5031.p3.server.model.Organiser;
 import com.stacs.cs5031.p3.server.model.User;
 import com.stacs.cs5031.p3.server.repository.UserRepository;
@@ -31,7 +32,7 @@ public class UserService {
      * This method registers a new user based on the registration request.
      * It creates either an Organiser or Attendee based on the role specified.
      *
-     * @param request The registration request containing user details and role
+//     * @param request The registration request containing user details and role
      * @return The saved user entity
      * @throws UserAlreadyExistsException If a user with the requested username already exists
      */

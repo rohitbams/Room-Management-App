@@ -1,12 +1,6 @@
 package com.stacs.cs5031.p3.server.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
+import jakarta.persistence.*;
 
 /**
  * The User class.
@@ -14,6 +8,7 @@ import jakarta.persistence.InheritanceType;
  * It is used to represent the user.
  */
 @Entity
+@Table(name = "app_user")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class User {
 

@@ -6,6 +6,11 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+/**
+ * The UserRepository class.
+ * This class directly interfaces with the database and extends the JpaRepository class.
+ * which contains methods for querying, saving, updating, and deleting data.
+ */
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<User> findByUsername(String username);

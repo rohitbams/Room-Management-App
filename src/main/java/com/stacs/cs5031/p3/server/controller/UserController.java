@@ -33,17 +33,17 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody RegistrationRequest request) {
-        try {
-            User savedUser = userService.registerUser(request);
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(UserDtoMapper.mapToDTO(savedUser));
-        } catch (UserAlreadyExistsException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(e.getMessage());
-        }
-    }
+//    @PostMapping("/register")
+//    public ResponseEntity<?> registerUser(@RequestBody RegistrationRequest request) {
+//        try {
+//            User savedUser = userService.registerUser(request);
+//            return ResponseEntity.status(HttpStatus.CREATED)
+//                    .body(UserDtoMapper.mapToDTO(savedUser));
+//        } catch (UserAlreadyExistsException e) {
+//            return ResponseEntity.status(HttpStatus.CONFLICT)
+//                    .body(e.getMessage());
+//        }
+//    }
 
     @GetMapping
     public ResponseEntity<List<UserDto>> getAllUsers() {

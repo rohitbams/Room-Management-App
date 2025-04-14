@@ -2,6 +2,7 @@ package com.stacs.cs5031.p3.server.service;
 
 import java.util.ArrayList;
 
+import com.stacs.cs5031.p3.server.model.Booking;
 import org.springframework.stereotype.Service;
 
 import com.stacs.cs5031.p3.server.model.Room;
@@ -64,19 +65,19 @@ public class OrganiserService {
         return null;
     }
 
-    // public ArrayList<String> getMyBookings() {
-    //     return new ArrayList<String>();
-    // }
+     public ArrayList<String> getMyBookings() {
+         return new ArrayList<String>();
+     }
 
-    // public ArrayList<Booking> getMyBooking(int bookingId) {
-    //     return new ArrayList<Booking>();
-    // }
+     public ArrayList<Booking> getMyBooking(int bookingId) {
+         return new ArrayList<Booking>();
+     }
 
-    // public String cancelBooking(int bookingId) {
-    //     return "Booking cancelled";
-    // }
+     public String cancelBooking(int bookingId) {
+         return "Booking cancelled";
+     }
 
-    // public String createBooking(Booking booking, int organiserId) {
-    //     return "Booking created";
-    // }
+     public String createBooking(Booking booking, int organiserId) {
+         return "Booking created";
+     }
 }

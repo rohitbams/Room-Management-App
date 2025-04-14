@@ -3,6 +3,7 @@ package com.stacs.cs5031.p3.server.model;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Attendee model class.
@@ -57,12 +58,21 @@ public class Attendee extends User {
     }
 
     /**
-     * Cancel registration for a booking.
+     * Cancel registration from a booking.
      *
      * @param booking The booking to deregister from
      */
     public void deRegisterFromBooking(Booking booking) {
         registeredBookings.remove(booking);
     }
+
+    // creates a new ArrayList containing all elements from the Set
+    public void setRegisteredBookings(Set<Booking> registeredBookings) {
+        this.registeredBookings = new ArrayList<>(registeredBookings);
+    }
+
+//    public void setRegisteredBookings(Set<Booking> registeredBookings) {
+//        this.registeredBookings = registeredBookings;
+//    }
 
 }
