@@ -116,5 +116,19 @@ public class AttendeeControllerTest {
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
+    @Test
+    void deregisterFromBooking_ShouldReturnBooking_WhenSuccess() {
+        when(attendeeService.deregisterFromBooking(1, 1)).thenReturn(booking);
+        ResponseEntity<?> response = attendeeController.deregisterFromBooking(1, 1);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+    }
+
+    @Test
+    void cancelRegistration_ShouldReturnNotFound_WhenBookingNotFound() {
+        when(attendeeService.deregisterFromBooking(1, 1)).thenThrow(new BookingNotFoundException(1));
+        ResponseEntity<?> response = attendeeController.deregisterFromBooking(1, 1);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
 
 }

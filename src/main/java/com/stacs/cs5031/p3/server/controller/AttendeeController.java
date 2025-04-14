@@ -135,5 +135,25 @@ public class AttendeeController {
         }
     }
 
+    /**
+     * De-register from a booking that was pre-registered by the attendee.
+     *
+     * @param attendeeId The attendee ID
+     * @param bookingId The booking ID
+     * @return The updated booking DTO
+     */
+    @DeleteMapping("/{attendeeId}/cancel/{bookingId}")
+    public ResponseEntity<?> deregisterFromBooking(
+            @PathVariable Integer attendeeId,
+            @PathVariable Integer bookingId) {
 
+        try {
+            Booking booking = attendeeService.deregisterFromBooking(attendeeId, bookingId);
+            return ResponseEntity.ok(BookingDtoMapper.mapToDTO(booking));
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Attendee not found: " + e.getMessage());
+        } catch (BookingNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Booking not found: " + e.getMessage());
+        }
+    }
 }
