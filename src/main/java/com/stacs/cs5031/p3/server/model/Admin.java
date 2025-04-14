@@ -3,6 +3,7 @@ package com.stacs.cs5031.p3.server.model;
 import java.util.ArrayList;
 
 import com.stacs.cs5031.p3.server.dto.RoomDto;
+import com.stacs.cs5031.p3.server.exception.RoomNotFoundException;
 import com.stacs.cs5031.p3.server.service.OrganiserService;
 import com.stacs.cs5031.p3.server.service.RoomService;
 
@@ -45,14 +46,24 @@ public class Admin extends User {
     // }
 
     public ArrayList<Organiser> getOrganisers() {
-        return new ArrayList<>();
+        return organiserService.getAllOrganisers();
     }
 
     public boolean addRoom(Room room) {
-        return false;
+        try {
+            roomService.createRoom(room.getName(), room.getCapacity());
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
     }
 
     public boolean removeRoom(int roomId) {
-        return false;
+        try {
+            roomService.deleteRoomById(roomId);
+            return true;
+        } catch (RoomNotFoundException e) {
+            return false;
+        }
     }
 }

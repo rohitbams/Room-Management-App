@@ -143,6 +143,6 @@ public class AdminTest {
     void shouldReturnFalse_whenRemoveRoomWithInvalidRoomId() {
         int inValidRoomId = 999;
         doThrow(RoomNotFoundException.class).when(roomService).deleteRoomById(inValidRoomId);
-        assertEquals(true, admin.removeRoom(inValidRoomId));
+        assertEquals(false, admin.removeRoom(inValidRoomId));
     }
 }

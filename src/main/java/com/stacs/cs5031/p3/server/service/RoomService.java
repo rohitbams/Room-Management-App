@@ -23,7 +23,6 @@ public class RoomService {
         this.roomRepository = roomRepository;
     }
     
-    //TODO pass in room name
     public RoomDto createRoom(String name, int capacity) throws IllegalArgumentException {
         // validate user-provided data
         if (capacity <= 1) {
