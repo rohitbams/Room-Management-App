@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import java.util.Date;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -29,6 +30,7 @@ public class AttendeeRepositoryTest {
     private Booking availableBooking;
     private Booking registeredBooking;
     private Booking fullBooking;
+    private String eventName = "Hannah Montana concert";
 
     @BeforeEach
     public void setup() {
@@ -41,10 +43,10 @@ public class AttendeeRepositoryTest {
         organiser = new Organiser("Jackson Stewart", "jackson", "jacksonstewart123");
         entityManager.persist(organiser);
 
-        availableBooking = new Booking("Hannah Montana concert", room, new Date(), 60, organiser);
+        availableBooking = new Booking(eventName, room, new Date(), 60, organiser);
         entityManager.persist(availableBooking);
 
-        registeredBooking = new Booking("Hannah Montana concert", room, new Date(), 60, organiser);
+        registeredBooking = new Booking(eventName, room, new Date(), 60, organiser);
         entityManager.persist(registeredBooking);
         attendee.getRegisteredBookings().add(registeredBooking);
         entityManager.persist(attendee);
@@ -71,7 +73,13 @@ public class AttendeeRepositoryTest {
         assertEquals("hannahmontana", found.getUsername());
     }
 
-
+    @Test
+    public void shouldFindRegisteredBookings() {
+        List<Booking> registeredBookings = attendeeRepository.findRegisteredBookings(attendee.getId());
+        assertNotNull(registeredBookings);
+        assertEquals(1, registeredBookings.size());
+        assertEquals("Hannah Montana concert", registeredBookings.get(0).getName());
+    }
 
 
 }
