@@ -92,6 +92,15 @@ public class AttendeeServiceTest {
         verify(attendeeRepository).findAvailableBookings(1);
     }
 
+    @Test
+    void getAllAttendees_shouldReturnAllAttendees() {
+        List<Attendee> attendees = Arrays.asList(attendee, new Attendee("Ron Weasley", "ronaldw", "brokenwand"));
+        when(attendeeRepository.findAll()).thenReturn(attendees);
+        List<Attendee> result = attendeeService.getAllAttendees();
+        assertEquals(attendees, result);
+        assertEquals(2, result.size());
+        verify(attendeeRepository).findAll();
+    }
 
 
 
