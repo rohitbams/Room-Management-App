@@ -31,7 +31,10 @@ public interface AttendeeRepository extends JpaRepository<Attendee, Integer> {
             "AND SIZE(booking.attendees) < booking.room.capacity")
     List<Booking> findAvailableBookings(Integer attendeeId);
 
-
+    @Query("SELECT booking FROM Booking booking WHERE booking NOT IN " +
+            "(SELECT registered_booking FROM Attendee attendee JOIN attendee.registeredBookings registered_booking WHERE attendee.id = ?1) " +
+            "AND SIZE(booking.attendees) >= booking.room.capacity")
+    List<Booking> findUnavailableBookings(Integer attendeeId);
 
 
 

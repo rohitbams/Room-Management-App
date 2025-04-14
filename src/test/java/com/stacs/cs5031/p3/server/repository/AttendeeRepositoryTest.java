@@ -12,8 +12,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import java.util.Date;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 public class AttendeeRepositoryTest {
@@ -74,6 +73,12 @@ public class AttendeeRepositoryTest {
     }
 
     @Test
+    public void nonExistentAttendeeShouldReturnNull() {
+        Attendee found = attendeeRepository.findByUsername("billyraystewart");
+        assertNull(found);
+    }
+
+    @Test
     public void shouldFindRegisteredBookings() {
         List<Booking> registeredBookings = attendeeRepository.findRegisteredBookings(attendee.getId());
         assertNotNull(registeredBookings);
@@ -87,6 +92,14 @@ public class AttendeeRepositoryTest {
         assertNotNull(availableBookings);
         assertEquals(1, availableBookings.size());
         assertEquals("Hannah Montana concert", availableBookings.get(0).getName());
+    }
+
+    @Test
+    public void shouldFindUnavailableBookings() {
+        List<Booking> unavailableBookings = attendeeRepository.findUnavailableBookings(attendee.getId());
+        assertNotNull(unavailableBookings);
+        assertEquals(1, unavailableBookings.size());
+        assertEquals("Full Event", unavailableBookings.get(0).getName());
     }
 
 
