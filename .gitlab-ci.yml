@@ -1,6 +1,6 @@
 # This file is a CI/CD Configuration file for the project. This has been adapted from the sample file
 
-image: maven:3.9-openjdk-21
+image: maven:3.9-eclipse-temurin-21
 
 stages:          # List of stages for jobs, and their order of execution
   - test
