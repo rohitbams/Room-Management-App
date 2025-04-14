@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.stacs.cs5031.p3.server.dto.RoomDto;
 import com.stacs.cs5031.p3.server.exception.RoomNotFoundException;
+import com.stacs.cs5031.p3.server.service.AttendeeService;
 import com.stacs.cs5031.p3.server.service.OrganiserService;
 import com.stacs.cs5031.p3.server.service.RoomService;
 
@@ -23,27 +24,25 @@ public class Admin extends User {
     private String password;
     private RoomService roomService; // Dependency for managing rooms
     private OrganiserService organiserService; // Dependency for managing organisers
-    // private AttendeeService attendeeService;
+    private AttendeeService attendeeService;
 
     public Admin() {
     }
     
-    //TODO add attendeeservice field
-    public Admin(String name, String username, String password, RoomService roomService, OrganiserService organiserService) {
+    public Admin(String name, String username, String password, RoomService roomService, OrganiserService organiserService, AttendeeService attendeeService) {
         super(name, username, password);
         this.roomService = roomService;
         this.organiserService = organiserService;
-        // this.attendeeService = attendeeService;
+        this.attendeeService = attendeeService;
     }
 
     public ArrayList<RoomDto> getAllRooms() {
         return new ArrayList<>(roomService.findAllRooms());
     }
     
-    //TODO
-    // public ArrayList<Attendee> getAttendees() {
-    //     return new ArrayList<>();
-    // }
+    public ArrayList<Attendee> getAttendees() {
+        return new ArrayList<>(attendeeService.getAllAttendees());
+    }
 
     public ArrayList<Organiser> getOrganisers() {
         return organiserService.getAllOrganisers();

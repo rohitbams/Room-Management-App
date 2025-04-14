@@ -15,12 +15,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.stacs.cs5031.p3.server.dto.RoomDto;
 import com.stacs.cs5031.p3.server.exception.RoomNotFoundException;
+import com.stacs.cs5031.p3.server.service.AttendeeService;
 import com.stacs.cs5031.p3.server.service.OrganiserService;
 import com.stacs.cs5031.p3.server.service.RoomService;
 
@@ -33,8 +32,8 @@ public class AdminTest {
     @Mock
     private OrganiserService organiserService;
 
-    // @MockitoBean
-    // private AttendeeService attendeeService;
+    @Mock
+    private AttendeeService attendeeService;
 
 
     @BeforeEach
@@ -43,8 +42,8 @@ public class AdminTest {
         MockitoAnnotations.openMocks(this);
 
         // pass mock objects into the Admin instance
-        admin = new Admin("Test Admin", "test.admin", "12345", roomService, organiserService);
-        // SImulate database persistence behaviour
+        admin = new Admin("Test Admin", "test.admin", "12345", roomService, organiserService, attendeeService);
+        // Simulate database persistence behaviour
         ReflectionTestUtils.setField(admin, "id", 1);
     }
 
@@ -79,11 +78,31 @@ public class AdminTest {
         verify(roomService, times(1)).findAllRooms();
     }
 
-    //TODO
-    // @Test
-    // void shouldGetAttendees() {
+    @Test
+    void shouldGetAttendees() {
+        ArrayList<Attendee> attendees = new ArrayList<>();
+        attendees.add(new Attendee("John Doe", "john.doe", "12345"));
+        attendees.add(new Attendee("G Yeung", "g.yeung", "12345"));
+        attendees.add(new Attendee("Toothless", "toothless", "12345"));
+        
+        when(attendeeService.getAllAttendees()).thenReturn(attendees);
+        ArrayList<Attendee> result = admin.getAttendees();
+        assertEquals(attendees.size(), result.size());
 
-    // }
+        // Verify the contents of the returned list
+        for (int i = 0; i < attendees.size(); i++) {
+            Attendee expected = attendees.get(i);
+            Attendee actual = result.get(i);
+
+            assertEquals(expected.getName(), actual.getName(), "Attendee name should match");
+            assertEquals(expected.getUsername(), actual.getUsername(), "Attendee username should match");
+            assertEquals(expected.getPassword(), actual.getPassword(), "Attendee password should match");
+        }
+
+        // Verify that roomService.findAllRooms() was called exactly once
+        verify(attendeeService, times(1)).getAllAttendees();
+    
+    }
     
     @Test
     void shouldGetOrganisers() {
