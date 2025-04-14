@@ -47,4 +47,21 @@ public class AttendeeController {
     }
 
 
+    /**
+     * Get an attendee by ID.
+     *
+     * @param id The attendee ID
+     * @return The attendee DTO
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<AttendeeDto> getAttendeeById(@PathVariable Integer id) {
+        try {
+            Attendee attendee = attendeeService.getAttendeeById(id);
+            return ResponseEntity.ok(AttendeeDtoMapper.mapToDto(attendee));
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+
 }

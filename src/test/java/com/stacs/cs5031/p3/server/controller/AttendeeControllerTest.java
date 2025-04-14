@@ -59,6 +59,20 @@ public class AttendeeControllerTest {
         assertEquals(1, response.getBody().size());
     }
 
+    @Test
+    void getAttendeeById_ShouldReturnAttendee_WhenExists() {
+        when(attendeeService.getAttendeeById(1)).thenReturn(attendee);
+        ResponseEntity<AttendeeDto> response = attendeeController.getAttendeeById(1);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+    }
+
+    @Test
+    void getAttendeeById_ShouldReturnNotFound_WhenNotExists() {
+        when(attendeeService.getAttendeeById(1)).thenThrow(new UserNotFoundException(1));
+        ResponseEntity<AttendeeDto> response = attendeeController.getAttendeeById(1);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
 
 
 
