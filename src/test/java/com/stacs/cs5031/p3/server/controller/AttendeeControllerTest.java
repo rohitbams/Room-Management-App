@@ -74,6 +74,13 @@ public class AttendeeControllerTest {
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
-
+    @Test
+    void getAvailableBookings_ShouldReturnBookings() {
+        List<Booking> bookings = Arrays.asList(booking);
+        when(attendeeService.getAvailableBookings(1)).thenReturn(bookings);
+        ResponseEntity<?> response = attendeeController.getAvailableBookings(1);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+    }
 
 }
