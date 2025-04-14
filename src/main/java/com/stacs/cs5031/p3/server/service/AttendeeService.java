@@ -2,10 +2,13 @@ package com.stacs.cs5031.p3.server.service;
 
 import com.stacs.cs5031.p3.server.exception.UserNotFoundException;
 import com.stacs.cs5031.p3.server.model.Attendee;
+import com.stacs.cs5031.p3.server.model.Booking;
 import com.stacs.cs5031.p3.server.repository.AttendeeRepository;
 import com.stacs.cs5031.p3.server.repository.BookingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class AttendeeService {
@@ -29,6 +32,17 @@ public class AttendeeService {
     public Attendee getAttendeeById(Integer id) {
         return attendeeRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
+    }
+
+    /**
+     * Get all available bookings for an attendee.
+     *
+     * @param attendeeId The attendee ID
+     * @return List of available bookings
+     */
+    public List<Booking> getAvailableBookings(Integer attendeeId) {
+        getAttendeeById(attendeeId);
+        return attendeeRepository.findAvailableBookings(attendeeId);
     }
 
 }

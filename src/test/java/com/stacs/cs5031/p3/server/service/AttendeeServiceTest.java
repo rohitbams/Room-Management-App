@@ -14,6 +14,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Arrays;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -59,6 +61,18 @@ public class AttendeeServiceTest {
         when(attendeeRepository.findById(10)).thenReturn(Optional.empty());
         assertThrows(UserNotFoundException.class, () -> attendeeService.getAttendeeById(10));
         verify(attendeeRepository).findById(10);
+    }
+
+    @Test
+    void getAvailableBookings_ShouldReturnBookings() {
+        when(attendeeRepository.findById(1)).thenReturn(Optional.of(attendee));
+        when(attendeeRepository.findAvailableBookings(1)).thenReturn(Arrays.asList(booking));
+        List<Booking> result = attendeeService.getAvailableBookings(1);
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(booking, result.get(0));
+        verify(attendeeRepository).findById(1);
+        verify(attendeeRepository).findAvailableBookings(1);
     }
 
 
