@@ -62,7 +62,7 @@ public class RoomServiceTest {
     @Test
     void shouldCreateRoom() {
         when(roomRepository.save(any(Room.class))).thenReturn(testRoom);
-        RoomDto result = roomService.createRoom(testRoom.getCapacity());
+        RoomDto result = roomService.createRoom(testRoom.getName(), testRoom.getCapacity());
 
         assertNotNull(result);
         assertEquals(testRoomDTO.getId(), result.getId());
@@ -76,14 +76,14 @@ public class RoomServiceTest {
     @Test
     void shouldThrowException_whenRoomCapacityIsZero() {
         assertThrows(IllegalArgumentException.class,
-                () -> roomService.createRoom(0),
+                () -> roomService.createRoom("Invalid Room", 0),
                 "Should throw exception for room with zero capacity");
     }
 
     @Test
     void shouldThrowException_whenRoomCapacityIsNegative() {
         assertThrows(IllegalArgumentException.class,
-                () -> roomService.createRoom(-1),
+                () -> roomService.createRoom("Invalid Room", -1),
                 "Should throw exception for room with negative capacity");
     }
 
