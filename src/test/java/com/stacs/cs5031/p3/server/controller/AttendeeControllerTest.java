@@ -92,4 +92,12 @@ public class AttendeeControllerTest {
         assertNotNull(response.getBody());
     }
 
+    @Test
+    void getRegisteredBookings_ShouldReturnBookings() {
+        List<Booking> bookings = Arrays.asList(booking);
+        when(attendeeService.getRegisteredBookings(1)).thenReturn(bookings);
+        ResponseEntity<?> response = attendeeController.getRegisteredBookings(1);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+    }
 }
