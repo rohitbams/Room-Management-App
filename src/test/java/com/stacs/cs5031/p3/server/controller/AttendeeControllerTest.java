@@ -100,4 +100,21 @@ public class AttendeeControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
     }
+
+    @Test
+    void registerForBooking_ShouldReturnBooking_WhenSuccess() {
+        when(attendeeService.registerForBooking(1, 1)).thenReturn(booking);
+        ResponseEntity<?> response = attendeeController.registerForBooking(1, 1);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+    }
+
+    @Test
+    void registerForBooking_ShouldReturnBadRequest_WhenBookingFull() {
+        when(attendeeService.registerForBooking(1, 1)).thenThrow(new BookingFullException(1));
+        ResponseEntity<?> response = attendeeController.registerForBooking(1, 1);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+
 }

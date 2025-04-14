@@ -111,5 +111,29 @@ public class AttendeeController {
         }
     }
 
+    /**
+     * Register an attendee for a booking.
+     *
+     * @param attendeeId The attendee ID
+     * @param bookingId The booking ID
+     * @return The updated booking DTO
+     */
+    @PostMapping("/{attendeeId}/register/{bookingId}")
+    public ResponseEntity<?> registerForBooking(
+            @PathVariable Integer attendeeId,
+            @PathVariable Integer bookingId) {
+
+        try {
+            Booking booking = attendeeService.registerForBooking(attendeeId, bookingId);
+            return ResponseEntity.ok(BookingDtoMapper.mapToDTO(booking));
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Attendee not found: " + e.getMessage());
+        } catch (BookingNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Booking not found: " + e.getMessage());
+        } catch (BookingFullException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
 
 }
