@@ -11,9 +11,9 @@
 //
 //import com.stacs.cs5031.p3.server.model.*;
 //import com.stacs.cs5031.p3.server.model.Booking;
-////import com.stacs.cs5031.p3.server.Organiser;
-////import com.stacs.cs5031.p3.server.Room;
-//import com.stacs.cs5031.p3.server.dto.BookingDTO;
+//import com.stacs.cs5031.p3.server.model.Organiser;
+//import com.stacs.cs5031.p3.server.model.Room;
+//import com.stacs.cs5031.p3.server.dto.BookingDto;
 //import com.stacs.cs5031.p3.server.exception.BookingConflictException;
 //import com.stacs.cs5031.p3.server.exception.EntityNotFoundException;
 //import com.stacs.cs5031.p3.server.exception.ResourceUnavailableException;
@@ -136,7 +136,7 @@
 //
 //    @Override
 //    @Transactional
-//    public Booking createBooking(BookingDTO bookingDTO, Long organiserId) {
+//    public Booking createBooking(BookingDto bookingDTO, Long organiserId) {
 //        // Get room
 //        Room room = roomService.getRoomById(bookingDTO.getRoomId())
 //                .orElseThrow(() -> new EntityNotFoundException("Room not found with ID: " + bookingDTO.getRoomId()));

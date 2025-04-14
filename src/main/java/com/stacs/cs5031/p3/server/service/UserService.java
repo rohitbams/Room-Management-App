@@ -36,27 +36,28 @@ public class UserService {
      * @return The saved user entity
      * @throws UserAlreadyExistsException If a user with the requested username already exists
      */
-//    public User registerUser(RegistrationRequest request) {
-//        if (isUsernameTaken(request.getUsername())) {
-//            throw new UserAlreadyExistsException(request.getUsername());
-//        }
-//
-//        User newUser;
-//        if (request.getRole().equals("ORGANISER")) {
-//            newUser = new Organiser(
-//                    request.getName(),
-//                    request.getUsername(),
-//                    request.getPassword()
-//            );
-//        } else {
-//            newUser = new Attendee(
-//                    request.getName(),
-//                    request.getUsername(),
-//                    request.getPassword()
-//            );
-//        }
-//        return userRepository.save(newUser);
-//    }
+    public User registerUser(RegistrationRequest request) {
+        if (isUsernameTaken(request.getUsername())) {
+            throw new UserAlreadyExistsException(request.getUsername());
+        }
+
+        // if role is 'ORGANISER'
+        User newUser;
+        if (request.getRole().equals("ORGANISER")) {
+            newUser = new Organiser(
+                    request.getName(),
+                    request.getUsername(),
+                    request.getPassword()
+            );
+        } else {
+            newUser = new Attendee(
+                    request.getName(),
+                    request.getUsername(),
+                    request.getPassword()
+            );
+        }
+        return userRepository.save(newUser);
+    }
 
     // check for pre-registered username
     public boolean isUsernameTaken(String username) {
