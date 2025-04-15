@@ -1,6 +1,7 @@
 package com.stacs.cs5031.p3.server.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.times;
 
 import java.util.ArrayList;
 import org.junit.jupiter.api.Assertions;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import com.stacs.cs5031.p3.server.dto.RoomDto;
+import com.stacs.cs5031.p3.server.model.Booking;
 import com.stacs.cs5031.p3.server.model.Organiser;
 import com.stacs.cs5031.p3.server.repository.OrganiserRepository;
 
@@ -19,6 +21,7 @@ public class OrganiserServiceTest {
 
     private Organiser organiser1, organiser2; // Organiser objects for testing
     private OrganiserService organiserService; //organiser service
+    private BookingService bookingService; //mocked booking service
     private RoomService roomService; //room service
 
     private OrganiserRepository organiserRepository; //mocked repository
@@ -27,7 +30,8 @@ public class OrganiserServiceTest {
     void setUp(){
         organiserRepository = Mockito.mock(OrganiserRepository.class);
         roomService =  Mockito.mock(RoomService.class);
-        organiserService = new OrganiserService(organiserRepository, roomService);
+        bookingService = Mockito.mock(BookingService.class);
+        organiserService = new OrganiserService(organiserRepository, roomService, bookingService);
         organiser1 = new Organiser( "James Dean", "james.dean", "password123"); 
         organiser2 = new Organiser( "Mary Dean", "mary.dean", "password123");
 
@@ -209,12 +213,21 @@ public class OrganiserServiceTest {
 
     @Test
     void shouldCreateBookingWithoutIssue(){
+        Booking booking = Mockito.mock(Booking.class);
+        Mockito.when(bookingService.saveBooking(booking)).thenReturn(booking);
+        Mockito.when(booking.getId()).thenReturn(1);
+        String  operationStatus = organiserService.createBooking(booking, 2);
+        Mockito.verify(bookingService, times(1)).saveBooking(booking);
+        assertEquals("Booking created", operationStatus);
 
     }
 
     @Test
     void shouldCancelBookingWithoutIssue(){
-
+        Long bookingId = 1L;
+        Mockito.doNothing().when(bookingService).deleteBooking(bookingId);
+        organiserService.cancelBooking(bookingId.intValue());
+        Mockito.verify(bookingService, times(1)).deleteBooking(bookingId);
     }
 
 }

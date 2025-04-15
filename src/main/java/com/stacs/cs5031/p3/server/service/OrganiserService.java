@@ -20,11 +20,12 @@ public class OrganiserService {
 
     private OrganiserRepository organiserRepository;
     private RoomService roomService;
-    // private final RoomService roomService;
+    private BookingService bookingService;
 
-    public OrganiserService(OrganiserRepository organiserRepository, RoomService roomService) {
+    public OrganiserService(OrganiserRepository organiserRepository, RoomService roomService, BookingService bookingService) {
         this.organiserRepository = organiserRepository;
         this.roomService = roomService;
+        this.bookingService = bookingService;
     }
 
     /**
