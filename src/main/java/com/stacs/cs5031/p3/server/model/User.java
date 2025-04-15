@@ -5,9 +5,12 @@ import jakarta.persistence.*;
 /**
  * The User class.
  * This class handles user creation and integration in the database.
+ * It is used to represent the user.
  */
 @Entity
+@Table(name = "app_user")
 @Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "user_type", discriminatorType = DiscriminatorType.STRING)
 public class User {
 
     @Id

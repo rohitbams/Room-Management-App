@@ -26,7 +26,7 @@ public class OrganiserController {
     @Autowired
     private RoomService roomService;
 
-    
+
     @PostMapping("/organiser/create-organiser")
     public ResponseEntity<String> createOrganiser(@RequestBody Organiser organiser) {
         try{

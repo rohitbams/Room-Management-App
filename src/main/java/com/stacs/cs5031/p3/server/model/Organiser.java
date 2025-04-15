@@ -1,12 +1,14 @@
 package com.stacs.cs5031.p3.server.model;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 /**
  * This class represents an Organiser in the system. It is a subclass of User.
  * @author 190031593
  */
 @Entity
+@Table(name = "organisers")
 public class Organiser extends User {
 
     /**

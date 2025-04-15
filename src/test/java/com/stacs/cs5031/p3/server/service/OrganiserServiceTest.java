@@ -3,7 +3,6 @@ package com.stacs.cs5031.p3.server.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -46,11 +45,11 @@ public class OrganiserServiceTest {
     /**
      * Tests that an exception is thrown when the organiser is null.
      */
-    @Test 
+    @Test
     void shouldThrowExceptionWhenOrganiserIsNull(){
         Mockito.when(organiserRepository.save(null)).thenThrow(new IllegalArgumentException("Organiser cannot be null"));
 
-        
+
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
 			organiserService.createOrganiser(null);
 		}, "Expected IllegalArgumentException to be thrown, but it was not.");
@@ -61,12 +60,12 @@ public class OrganiserServiceTest {
     /**
      * Tests that an exception is thrown when the organiser name is invalid.
      */
-    @Test 
+    @Test
     void shouldThrowExceptionWhenOrganiserNameIsInvalid(){
         organiser1.setName(null);
         Mockito.when(organiserRepository.save(organiser1)).thenThrow(new IllegalArgumentException("Organiser name is invalid"));
 
-        
+
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
 			organiserService.createOrganiser(organiser1);
 		}, "Expected IllegalArgumentException to be thrown, but it was not.");
@@ -75,7 +74,7 @@ public class OrganiserServiceTest {
 
         organiser1.setName("");
 
-         
+
 	    thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
 			organiserService.createOrganiser(organiser1);
 		}, "Expected IllegalArgumentException to be thrown, but it was not.");
@@ -86,12 +85,12 @@ public class OrganiserServiceTest {
     /**
      * Tests that an exception is thrown when the organiser username is invalid.
      */
-    @Test 
+    @Test
     void shouldThrowExceptionWhenOrganiserUserNameIsInvalid(){
         organiser1.setUsername(null);
         Mockito.when(organiserRepository.save(organiser1)).thenThrow(new IllegalArgumentException("Organiser username is invalid"));
 
-        
+
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
 			organiserService.createOrganiser(organiser1);
 		}, "Expected IllegalArgumentException to be thrown, but it was not.");
@@ -100,7 +99,7 @@ public class OrganiserServiceTest {
 
         organiser1.setUsername("");
 
-         
+
 	    thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
 			organiserService.createOrganiser(organiser1);
 		}, "Expected IllegalArgumentException to be thrown, but it was not.");
@@ -111,12 +110,12 @@ public class OrganiserServiceTest {
     /**
      * Tests that an exception is thrown when the organiser password is invalid.
      */
-    @Test 
+    @Test
     void shouldThrowExceptionWhenOrganiserPasswordIsInvalid(){
         organiser1.setPassword(null);
         Mockito.when(organiserRepository.save(organiser1)).thenThrow(new IllegalArgumentException("Organiser password is invalid"));
 
-        
+
 		IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
 			organiserService.createOrganiser(organiser1);
 		}, "Expected IllegalArgumentException to be thrown, but it was not.");
@@ -125,7 +124,7 @@ public class OrganiserServiceTest {
 
         organiser1.setPassword("");
 
-         
+
 	    thrown = Assertions.assertThrows(IllegalArgumentException.class, () -> {
 			organiserService.createOrganiser(organiser1);
 		}, "Expected IllegalArgumentException to be thrown, but it was not.");
@@ -141,7 +140,7 @@ public class OrganiserServiceTest {
         Organiser organiser3 = Mockito.mock(Organiser.class);
         Organiser organiser4 = Mockito.mock(Organiser.class);
         ArrayList<Organiser> organisers = new ArrayList<>();
-       
+
         Mockito.when(organiserRepository.findAll()).thenReturn(organisers);
 
         Mockito.when(organiser3.getName()).thenReturn("James Dean");
@@ -191,7 +190,7 @@ public class OrganiserServiceTest {
         assertEquals(0, organiserService.getAvailableRooms().size());
     }
 
-    @Test 
+    @Test
     void shouldGetAllBookingsWithoutIssue(){
 
 
@@ -200,22 +199,22 @@ public class OrganiserServiceTest {
 
     @Test
     void shouldGetBookingDetailsWithoutIssue(){
-        
+
     }
 
-    @Test 
+    @Test
     void shouldThrowExceptionWhenBookingDetailsAreInvalid(){
-        
+
     }
 
-    @Test 
+    @Test
     void shouldCreateBookingWithoutIssue(){
-        
+
     }
 
     @Test
     void shouldCancelBookingWithoutIssue(){
-        
+
     }
 
 }

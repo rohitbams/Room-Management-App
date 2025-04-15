@@ -33,7 +33,7 @@ public class RoomControllerTest {
 
     @Autowired
     private MockMvc mvc;
-    
+
     @MockitoBean
     private RoomService roomService;
 
@@ -59,7 +59,7 @@ public class RoomControllerTest {
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
-    
+
     @Test
     void shouldGetAllRooms_whenRoomsExist() throws Exception {
         List<RoomDto> expectedRooms = Arrays.asList(
@@ -80,7 +80,7 @@ public class RoomControllerTest {
                 .andExpect(jsonPath("$[1].id", is(2)))
                 .andExpect(jsonPath("$[2].id", is(3)));
     }
-    
+
     @Test
     void shouldReturnNoContent_whenNoRoomExists() throws Exception {
         when(roomService.findAllRooms()).thenReturn(List.of()); // return empty list
@@ -98,7 +98,7 @@ public class RoomControllerTest {
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
     }
-    
+
     @Test
     void shouldGetAvailableRooms_whenAvailableRoomsExist() throws Exception {
         List<RoomDto> expectedRooms = Arrays.asList(
@@ -107,7 +107,7 @@ public class RoomControllerTest {
             new RoomDto(3, "Room 3", 30, false)
         );
         when(roomService.findAvailableRooms()).thenReturn(expectedRooms);
-    
+
         mvc.perform(get("/rooms/available")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -120,7 +120,7 @@ public class RoomControllerTest {
                 .andExpect(jsonPath("$[2].id", is(3)))
                 .andExpect(jsonPath("$[2].available", is(false)));
     }
-    
+
     @Test
     void shouldBookRoomWithValidId() throws Exception {
         when(roomService.bookRoom(1)).thenReturn(new RoomDto(1, "Room 1", 10, true));
@@ -134,7 +134,7 @@ public class RoomControllerTest {
                 .andExpect(jsonPath("$.capacity", is(10)))
                 .andExpect(jsonPath("$.available", is(true)));
     }
-    
+
     @Test
     void shouldReturnBadRequest_whenBookingUnavailableRoom() throws Exception {
         when(roomService.bookRoom(2)).thenThrow(RoomNotAvailableException.class);

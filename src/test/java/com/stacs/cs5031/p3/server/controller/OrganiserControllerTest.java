@@ -130,7 +130,7 @@ public class OrganiserControllerTest {
     /**
      * This test is responsible for testing that all organisers can be retrieved from the
      * database without issue. In this case, there are no organisers in the database.
-     * 
+     *
      * @throws Exception
      */
     @Test

@@ -28,11 +28,11 @@ public class RoomController {
     @GetMapping("/all")
     public ResponseEntity<List<RoomDto>> getAllRooms() {
         List<RoomDto> rooms = roomService.findAllRooms();
-        
+
         if (rooms.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
-        
+
         return ResponseEntity.ok(rooms);
     }
 

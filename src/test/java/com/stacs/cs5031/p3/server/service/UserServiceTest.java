@@ -1,5 +1,10 @@
 package com.stacs.cs5031.p3.server.service;
 
+import com.stacs.cs5031.p3.server.dto.RegistrationRequest;
+import com.stacs.cs5031.p3.server.exception.UserAlreadyExistsException;
+import com.stacs.cs5031.p3.server.exception.UserNotFoundException;
+import com.stacs.cs5031.p3.server.model.Attendee;
+import com.stacs.cs5031.p3.server.model.Organiser;
 import com.stacs.cs5031.p3.server.model.User;
 import com.stacs.cs5031.p3.server.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,12 +15,9 @@ import org.mockito.MockitoAnnotations;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 public class UserServiceTest {
 
@@ -36,37 +38,66 @@ public class UserServiceTest {
     @Test
     void getUserById_ShouldReturnUser_WhenUserExists() {
         when(userRepository.findById(1)).thenReturn(Optional.of(testUser));
-        Optional<User> result = userService.getUserById(1);
-        assertTrue(result.isPresent());
-        assertEquals(testUser, result.get());
+        User result = userService.getUserById(1);
+        assertEquals(testUser, result);
         verify(userRepository).findById(1);
     }
 
     @Test
     void getUserById_ShouldReturnEmpty_WhenUserDoesNotExist() {
         when(userRepository.findById(1)).thenReturn(Optional.empty());
-        Optional<User> result = userService.getUserById(1);
-        assertFalse(result.isPresent());
+        assertThrows(UserNotFoundException.class, () -> userService.getUserById(1));
         verify(userRepository).findById(1);
     }
 
     @Test
     void getUserByUsername_ShouldReturnUser_WhenUserExists() {
         when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(testUser));
-        Optional<User> result = userService.getUserByUsername("testuser");
-        assertTrue(result.isPresent());
-        assertEquals(testUser, result.get());
+        User result = userService.getUserByUsername("testuser");
+        assertEquals(testUser, result);
         verify(userRepository).findByUsername("testuser");
     }
 
     @Test
-    void registerUser_ShouldSaveAndReturnUser() {
-        when(userRepository.save(testUser)).thenReturn(testUser);
-        User result = userService.registerUser(testUser);
-        assertEquals(testUser, result);
-        verify(userRepository).save(testUser);
+    void registerUser_ShouldCreateOrganiser_WhenRoleIsOrganiser() {
+        RegistrationRequest request = new RegistrationRequest(
+                "Test User", "testuser", "password", "ORGANISER");
+        Organiser organiser = new Organiser("Test User", "testuser", "password");
+        when(userRepository.findByUsername("testuser")).thenReturn(Optional.empty());
+        when(userRepository.save(any(Organiser.class))).thenReturn(organiser);
+        User result = userService.registerUser(request);
+        assertNotNull(result);
+        assertTrue(result instanceof Organiser);
+        assertEquals("testuser", result.getUsername());
+        verify(userRepository).findByUsername("testuser");
+        verify(userRepository).save(any(Organiser.class));
     }
 
+    @Test
+    void registerUser_ShouldCreateAttendee_WhenRoleIsAttendee() {
+        RegistrationRequest request = new RegistrationRequest(
+                "Test User", "testuser", "password", "ATTENDEE");
+        Attendee attendee = new Attendee("Test User", "testuser", "password");
+        when(userRepository.findByUsername("testuser")).thenReturn(Optional.empty());
+        when(userRepository.save(any(Attendee.class))).thenReturn(attendee);
+        User result = userService.registerUser(request);
+        assertNotNull(result);
+        assertTrue(result instanceof Attendee);
+        assertEquals("testuser", result.getUsername());
+        verify(userRepository).findByUsername("testuser");
+        verify(userRepository).save(any(Attendee.class));
+    }
+
+    @Test
+    void registerUser_ShouldThrowException_WhenUsernameAlreadyTaken() {
+        RegistrationRequest request = new RegistrationRequest(
+                "Test User", "testuser", "password", "ORGANISER");
+        User existingUser = new User("Existing User", "testuser", "password");
+        when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(existingUser));
+        assertThrows(UserAlreadyExistsException.class, () -> userService.registerUser(request));
+        verify(userRepository).findByUsername("testuser");
+        verify(userRepository, never()).save(any(User.class));
+    }
 
     @Test
     void isUsernameTaken_ShouldReturnTrue_WhenUsernameExists() {
