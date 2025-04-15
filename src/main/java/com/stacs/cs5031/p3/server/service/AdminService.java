@@ -10,7 +10,9 @@ import com.stacs.cs5031.p3.server.model.Attendee;
 import com.stacs.cs5031.p3.server.model.Organiser;
 import com.stacs.cs5031.p3.server.model.Room;
 import com.stacs.cs5031.p3.server.repository.AdminRepository;
+import org.springframework.stereotype.Service;
 
+@Service
 public class AdminService {
     private AdminRepository adminRepository;
     private final RoomService roomService;

@@ -21,7 +21,7 @@ public class Organiser extends User {
     public Organiser() {
     }
     public Organiser(String name, String username, String password) {
-        // super(name, username, password);
+        super(name, username, password);
         this.name = name;
         this.username = username;
         this.password = password;
