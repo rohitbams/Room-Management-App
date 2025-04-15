@@ -218,7 +218,7 @@ public class OrganiserServiceTest {
         Mockito.when(booking.getId()).thenReturn(1);
         String  operationStatus = organiserService.createBooking(booking, 2);
         Mockito.verify(bookingService, times(1)).saveBooking(booking);
-        assertEquals("Booking created", operationStatus);
+        assertEquals("SUCCESS!", operationStatus);
 
     }
 

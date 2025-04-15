@@ -6,13 +6,15 @@ import java.util.List;
 import com.stacs.cs5031.p3.server.model.Booking;
 import org.springframework.stereotype.Service;
 
+import com.stacs.cs5031.p3.server.dto.BookingDto;
 import com.stacs.cs5031.p3.server.dto.OrganiserDto;
 import com.stacs.cs5031.p3.server.dto.RoomDto;
+import com.stacs.cs5031.p3.server.model.Room;
 import com.stacs.cs5031.p3.server.model.Organiser;
 import com.stacs.cs5031.p3.server.repository.OrganiserRepository;
 
 /**
- * 
+ * This class is the service layer for the Organiser entity.
  * @author 190031593
  */
 @Service
@@ -22,6 +24,12 @@ public class OrganiserService {
     private RoomService roomService;
     private BookingService bookingService;
 
+    /**
+     * Constructor for the OrganiserService class.
+     * @param organiserRepository - organiser repository.
+     * @param roomService - room service.
+     * @param bookingService - booking service.
+     */
     public OrganiserService(OrganiserRepository organiserRepository, RoomService roomService, BookingService bookingService) {
         this.organiserRepository = organiserRepository;
         this.roomService = roomService;
@@ -32,6 +40,7 @@ public class OrganiserService {
      * This method is used to create an organiser and save it to the database.
      * @param organiser - The organiser to be created.
      * @return String - The status of the operation.
+     * @throws IllegalArgumentException - If the organiser credentials are invalid.
      */
     public String createOrganiser(Organiser organiser) {
         if (organiser == null) {
@@ -88,11 +97,40 @@ public class OrganiserService {
          return new ArrayList<Booking>();
      }
 
+     /**
+      * This method is used to cancel a booking.
+      * @param bookingId - The ID of the booking to be cancelled
+      * @return String - String stating whether or not the booking was cancelled successfully
+      */
      public String cancelBooking(int bookingId) {
-         return "Booking cancelled";
+        Long bookingIdAsLong = Long.valueOf(bookingId);
+        try{
+            bookingService.cancelBooking(bookingIdAsLong);
+        } catch (IllegalArgumentException e) {
+            return "FAILURE!";
+        }
+        return "SUCCESS!";
      }
 
-     public String createBooking(Booking booking, int organiserId) {
-         return "Booking created";
+     /***
+      * This method is used to create a booking for an event.
+      * @param booking - The booking to be created
+      * @param organiserId - The ID of the organiser
+      * @return String - String stating whether or not the booking was successful
+      */
+     public String createBooking(BookingDto booking, int organiserId) {
+
+        if(bookingService.hasConflict(booking.getRoomId(), booking.getStartTime(), booking.getDuration())){
+            return "BOOKING CONFLICT!";
+        }
+        // String eventName = booking.getEventName();
+        // RoomDto room = roomService.findRoomById(booking.getRoomId().intValue());
+
+
+        // Booking newBooking = new Booking(booking.getEventName(), roomService.findRoomById(booking.getRoomId().intValue()), booking.getStartTime(), booking.getDuration(), new Organiser(organiserId));
+
+
+
+         return "SUCCESS!";
      }
 }
