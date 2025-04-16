@@ -46,15 +46,15 @@ public class AdminController {
         return ResponseEntity.ok(organisers);
     }
 
-    @PostMapping("/rooms")
-    public ResponseEntity<String> addRoom(@RequestBody Room room) {
-        boolean success = adminService.addRoom(room);
-        if (success) {
-            return ResponseEntity.ok("Room added successfully");
-        } else {
-            return ResponseEntity.badRequest().body("Failed to add room");
-        }
-    }
+//    @PostMapping("/rooms")
+//    public ResponseEntity<String> addRoom(@RequestBody Room room) {
+//        boolean success = adminService.addRoom(room);
+//        if (success) {
+//            return ResponseEntity.ok("Room added successfully");
+//        } else {
+//            return ResponseEntity.badRequest().body("Failed to add room");
+//        }
+//    }
 
     @DeleteMapping("/rooms/{roomId}")
     public ResponseEntity<String> removeRoom(@PathVariable int roomId) {

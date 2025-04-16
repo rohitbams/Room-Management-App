@@ -10,11 +10,13 @@ public class UserDto {
     private final Integer id;
     private final String username;
     private final String name;
+    private final String role;
 
-    public UserDto(Integer id, String username, String name) {
+    public UserDto(Integer id, String username, String name, String role) {
         this.id = id;
         this.username = username;
         this.name = name;
+        this.role = role;
     }
 
     public Integer getId() {
@@ -27,5 +29,9 @@ public class UserDto {
 
     public String getName() {
         return name;
+    }
+
+    public String getRole() {
+        return role;
     }
 }

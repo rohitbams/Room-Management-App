@@ -34,7 +34,7 @@ import com.stacs.cs5031.p3.server.service.AdminService;
 @SpringBootTest
 @AutoConfigureMockMvc
 public class AdminControllerTest {
-    
+
     @Autowired
     private MockMvc mvc;
 
@@ -70,7 +70,7 @@ public class AdminControllerTest {
 
         verify(adminService, times(1)).getAllRooms();
     }
-    
+
     @Test
     void shouldGetAllAttendees() throws Exception {
         List<Attendee> attendees = List.of(
@@ -87,7 +87,7 @@ public class AdminControllerTest {
 
         verify(adminService, times(1)).getAttendees();
     }
-    
+
     @Test
     void shouldGetAllOrganisers() throws Exception {
         List<Organiser> organisers = List.of(
@@ -104,7 +104,7 @@ public class AdminControllerTest {
 
         verify(adminService, times(1)).getOrganisers();
     }
-    
+
     @Test
     void shouldAddRoom() throws Exception {
         Room room = new Room("Test Room", 15);
@@ -118,7 +118,7 @@ public class AdminControllerTest {
 
         verify(adminService, times(1)).addRoom(any(Room.class));
     }
-    
+
     @Test
     void shouldFailToAddRoom() throws Exception {
         Room room = new Room("Invalid Room", 0);
@@ -132,7 +132,7 @@ public class AdminControllerTest {
 
         verify(adminService, times(1)).addRoom(any(Room.class));
     }
-    
+
     @Test
     void shouldRemoveRoom() throws Exception {
         // Arrange

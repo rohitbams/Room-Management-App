@@ -10,6 +10,7 @@ import org.springframework.web.client.RestTemplate;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -102,6 +103,30 @@ public class TerminalClientTest {
 
         boolean result = TerminalClient.handleRegistration(name, username, password, role);
         assertTrue(result);
+    }
+
+    @Test
+    public void testGetAvailableRooms_Success() {
+        Map<String, Object>[] rooms = new HashMap[2];
+        rooms[0] = new HashMap<>();
+        rooms[0].put("id", 1);
+        rooms[0].put("name", "Room 101");
+        rooms[0].put("capacity", 20);
+
+        rooms[1] = new HashMap<>();
+        rooms[1].put("id", 2);
+        rooms[1].put("name", "Room 102");
+        rooms[1].put("capacity", 15);
+
+        when(mockRestTemplate.getForObject(
+                contains("/rooms/available"),
+                eq(Map[].class)))
+                .thenReturn(rooms);
+
+        List<Map<String, Object>> result = TerminalClient.getAvailableRooms();
+        assertEquals(2, result.size());
+        assertEquals("Room 101", result.get(0).get("name"));
+        assertEquals("Room 102", result.get(1).get("name"));
     }
 
 }
