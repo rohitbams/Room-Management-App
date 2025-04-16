@@ -95,6 +95,15 @@ public class TerminalClient {
     }
 
     /**
+     * This method implements user logout.
+     */
+    private static void logout() {
+        System.out.println("Logging out...");
+        currentUser = null;
+        System.out.println("Logged out successfully.");
+    }
+
+    /**
      * This method displays user registration menu.
      */
     private static void register() {
@@ -185,8 +194,209 @@ public class TerminalClient {
         }
     }
 
+    /**
+     * This method shows options for an organiser.
+     */
     private static void showOrganiserMenu() {
+        System.out.println("\n=== Organiser Menu ===");
+        System.out.println("1. Create Booking");
+        System.out.println("2. Cancel Booking");
+        System.out.println("3. View Available Rooms");
+        System.out.println("4. View My Bookings");
+        System.out.println("5. Logout");
+        System.out.print("Enter choice: ");
 
+        int choice = scanner.nextInt();
+        scanner.nextLine();
+
+        switch (choice) {
+            case 1:
+                createBooking();
+                break;            case 2:
+                cancelBooking();
+                break;            case 3:
+                viewAvailableRooms();
+                break;            case 4:
+                viewMyBookings();
+                break;            case 5:
+                logout();
+                break;            default:
+                System.out.println("Invalid choice. Please try again.");
+        }
+    }
+
+    /**
+     * This method gets all available rooms for an organiser to book.
+     * @return list of available bookings
+     */
+    static List<Map<String, Object>> getAvailableRooms() {
+        try {
+            Map[] rooms = restTemplate.getForObject(
+                    BASE_URL + "/rooms/available",
+                    Map[].class
+            );
+
+            if (rooms == null) {
+                return Collections.emptyList();
+            }
+
+            return Arrays.asList(rooms);
+        } catch (Exception e) {
+            return Collections.emptyList();
+        }
+    }
+
+    /**
+     * This method handles displays available rooms to an organiser to register for a booking.
+     */
+    private static void viewAvailableRooms() {
+        System.out.println("\n=== Available Rooms ===");
+        List<Map<String, Object>> rooms = getAvailableRooms();
+
+        if (rooms.isEmpty()) {
+            System.out.println("No available rooms found.");
+            return;        }
+
+        System.out.println("Available Rooms:");
+        for (Map<String, Object> room : rooms) {
+            System.out.println("ID: " + room.get("id") +
+                    ", Name: " + room.get("name") +
+                    ", Capacity: " + room.get("capacity"));
+        }
+    }
+
+    /**
+     * This method handles creating a booking for an organiser
+     */
+    private static void createBooking() {
+        System.out.println("\n=== Create Booking ===");
+
+        try {
+            Map[] rooms = restTemplate.getForObject(
+                    BASE_URL + "/rooms/available",
+                    Map[].class
+            );
+
+            if (rooms == null || rooms.length == 0) {
+                System.out.println("No available rooms found.");
+                return;            }
+
+            System.out.println("Available Rooms:");
+            for (int i = 0; i < rooms.length; i++) {
+                System.out.println((i+1) + ". " + rooms[i].get("name") + " (Capacity: " + rooms[i].get("capacity") + ")");
+            }
+
+            System.out.print("Select room number: ");
+            int roomIndex = scanner.nextInt();
+            scanner.nextLine();
+
+            if (roomIndex < 1 || roomIndex > rooms.length) {
+                System.out.println("Invalid room selection.");
+                return;            }
+
+            System.out.print("Enter event name: ");
+            String eventName = scanner.nextLine();
+
+            System.out.print("Enter start date and time (yyyy-MM-dd HH:mm): ");
+            String startTimeStr = scanner.nextLine();
+
+            System.out.print("Enter duration in minutes: ");
+            int duration = scanner.nextInt();
+            scanner.nextLine();
+
+            Map<String, Object> requestBody = new HashMap<>();
+            requestBody.put("eventName", eventName);
+            requestBody.put("roomId", rooms[roomIndex-1].get("id"));
+            requestBody.put("startTime", startTimeStr);
+            requestBody.put("duration", duration);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
+
+            Map<String, Object> response = restTemplate.postForObject(
+                    BASE_URL + "/bookings/create/" + currentUser.get("id"),
+                    request,
+                    Map.class
+            );
+
+            System.out.println("Booking created successfully!");
+
+        } catch (Exception e) {
+            System.out.println("Failed to create booking: " + e.getMessage());
+        }
+    }
+
+    /**
+     * This method cancels made booking for an organiser
+     */
+    private static void cancelBooking() {
+        System.out.println("\n=== Cancel Booking ===");
+
+        try {
+            Map[] bookings = restTemplate.getForObject(
+                    BASE_URL + "/organisers/" + currentUser.get("id") + "/bookings",
+                    Map[].class
+            );
+
+            if (bookings == null || bookings.length == 0) {
+                System.out.println("You have no bookings to cancel.");
+                return;            }
+
+            System.out.println("Your Bookings:");
+            for (int i = 0; i < bookings.length; i++) {
+                System.out.println((i+1) + ". " + bookings[i].get("eventName") + " - " + bookings[i].get("startTime"));
+            }
+
+            System.out.print("Select booking to cancel <number>: ");
+            int bookingIndex = scanner.nextInt();
+            scanner.nextLine();
+
+            if (bookingIndex < 1 || bookingIndex > bookings.length) {
+                System.out.println("Invalid booking selection.");
+                return;            }
+
+            int bookingId = ((Number) bookings[bookingIndex-1].get("id")).intValue();
+
+            restTemplate.delete(BASE_URL + "/organisers/" + currentUser.get("id") + "/bookings/" + bookingId);
+
+            System.out.println("Booking cancelled successfully.");
+
+        } catch (Exception e) {
+            System.out.println("Sorry, booking cancel request failed: " + e.getMessage());
+        }
+    }
+
+    /**
+     * This method shows registered bookings by an organiser.
+     */
+    private static void viewMyBookings() {
+        System.out.println("\n=== My Bookings ===");
+
+        try {
+            Map[] bookings = restTemplate.getForObject(
+                    BASE_URL + "/organisers/" + currentUser.get("id") + "/bookings",
+                    Map[].class
+            );
+
+            if (bookings == null || bookings.length == 0) {
+                System.out.println("You have no bookings.");
+                return;            }
+
+            System.out.println("Your Bookings:");
+            for (Map booking : bookings) {
+                System.out.println("ID: " + booking.get("id") +
+                        ", Event: " + booking.get("eventName") +
+                        ", Room: " + booking.get("roomName") +
+                        ", Time: " + booking.get("startTime") +
+                        ", Duration: " + booking.get("duration") + " minutes" +
+                        ", Attendees: " + booking.get("currentAttendees") + "/" + booking.get("maxCapacity"));
+            }
+
+        } catch (Exception e) {
+            System.out.println("Failed to retrieve your bookings: " + e.getMessage());
+        }
     }
 
     private static void showAttendeeMenu() {
