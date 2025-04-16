@@ -1,5 +1,7 @@
 package com.stacs.cs5031.p3.server.repository;
 
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -7,5 +9,5 @@ import com.stacs.cs5031.p3.server.model.Admin;
 
 @Repository
 public interface AdminRepository extends JpaRepository<Admin, Integer>{
-    Admin findByUsername(String username);
+    Optional<Admin> findByUsername(String username);
 }
