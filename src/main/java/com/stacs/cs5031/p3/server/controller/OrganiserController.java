@@ -6,11 +6,14 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.method.P;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.stacs.cs5031.p3.server.dto.BookingDto;
 import com.stacs.cs5031.p3.server.dto.OrganiserDto;
 import com.stacs.cs5031.p3.server.dto.RoomDto;
 import com.stacs.cs5031.p3.server.model.Organiser;
@@ -78,8 +81,30 @@ public class OrganiserController {
      * @return
      */
     public ResponseEntity<String> cancelBooking(int bookingId) {
-
-        return null;
+        try{
+            organiserService.createBooking(request, organiserId);
+            return ResponseEntity.status(HttpStatus.CREATED).body("SUCCESS!");
+        } catch (Exception e) { //if booking request is invalid
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
+
+    /**
+     * This creates a new book
+     * @param request
+     * @param organiserId
+     * @return
+     */
+    @PostMapping("/organiser/create-booking/{organiserId}")
+    public ResponseEntity<String> createBooking(@RequestBody BookingDto.BookingRequest request, @PathVariable int organiserId) {
+        try{
+            organiserService.createBooking(request, organiserId);
+            return ResponseEntity.status(HttpStatus.CREATED).body("SUCCESS!");
+        } catch (Exception e) { //if booking request is invalid
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+
 
 }

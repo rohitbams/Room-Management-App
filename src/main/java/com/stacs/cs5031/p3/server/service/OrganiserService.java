@@ -102,14 +102,28 @@ public class OrganiserService {
       * @param bookingId - The ID of the booking to be cancelled
       * @return String - String stating whether or not the booking was cancelled successfully
       */
-     public String cancelBooking(int bookingId) {
+     public String cancelBooking(int bookingId, int organiserId) {
         Long bookingIdAsLong = Long.valueOf(bookingId);
+        Long organiserIdAsLong = Long.valueOf(organiserId);
         try{
-            bookingService.cancelBooking(bookingIdAsLong);
+            ArrayList<Booking> organiserBookings = (ArrayList<Booking>) bookingService.getBookingsByOrganiser(organiserIdAsLong);
+            if (organiserBookings.isEmpty()) {
+                return "No bookings found for this organiser.";
+            }
+
+            boolean found = false;
+            for (Booking booking: organiserBookings){
+                if (booking.getId() == bookingIdAsLong) {
+                    bookingService.deleteBooking(bookingIdAsLong);
+                    found = true;
+                    return "SUCCESS!";
+                }
+            };
+            return !found ? "Booking not found for this organiser." : "FAILURE!";
+        
         } catch (IllegalArgumentException e) {
             return "FAILURE!";
         }
-        return "SUCCESS!";
      }
 
      /***
@@ -118,18 +132,13 @@ public class OrganiserService {
       * @param organiserId - The ID of the organiser
       * @return String - String stating whether or not the booking was successful
       */
-     public String createBooking(BookingDto booking, int organiserId) {
+     public String createBooking(BookingDto.BookingRequest booking, int organiserId) {
 
-        if(bookingService.hasConflict(booking.getRoomId(), booking.getStartTime(), booking.getDuration())){
-            return "BOOKING CONFLICT!";
+        try{
+            bookingService.createBooking(booking, Long.valueOf(organiserId));
+        }catch(Exception e){
+            return e.getMessage();
         }
-        // String eventName = booking.getEventName();
-        // RoomDto room = roomService.findRoomById(booking.getRoomId().intValue());
-
-
-        // Booking newBooking = new Booking(booking.getEventName(), roomService.findRoomById(booking.getRoomId().intValue()), booking.getStartTime(), booking.getDuration(), new Organiser(organiserId));
-
-
 
          return "SUCCESS!";
      }

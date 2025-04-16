@@ -106,5 +106,5 @@ public interface BookingService {
      * @throws com.stacs.cs5031.p3.server.exception.EntityNotFoundException if room or organiser not found
      * @throws com.stacs.cs5031.p3.server.exception.BookingConflictException if there's a booking conflict
      */
-    Booking createBooking(BookingDto bookingDTO, Long organiserId);
+    Booking createBooking(BookingDto.BookingRequest bookingDTO, Long organiserId);
 }

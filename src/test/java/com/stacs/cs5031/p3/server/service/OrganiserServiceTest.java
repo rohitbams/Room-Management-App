@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+
+import com.stacs.cs5031.p3.server.dto.BookingDto;
 import com.stacs.cs5031.p3.server.dto.RoomDto;
 import com.stacs.cs5031.p3.server.model.Booking;
 import com.stacs.cs5031.p3.server.model.Organiser;
@@ -213,13 +215,13 @@ public class OrganiserServiceTest {
 
     @Test
     void shouldCreateBookingWithoutIssue(){
+        BookingDto.BookingRequest bookingReq = Mockito.mock(BookingDto.BookingRequest.class);
         Booking booking = Mockito.mock(Booking.class);
-        Mockito.when(bookingService.saveBooking(booking)).thenReturn(booking);
+        Mockito.when(bookingService.createBooking(bookingReq, 1L)).thenReturn(booking);
         Mockito.when(booking.getId()).thenReturn(1);
-        String  operationStatus = organiserService.createBooking(booking, 2);
-        Mockito.verify(bookingService, times(1)).saveBooking(booking);
+        String  operationStatus = organiserService.createBooking(bookingReq, 1);
+        Mockito.verify(bookingService, times(1)).createBooking(bookingReq, 1L);
         assertEquals("SUCCESS!", operationStatus);
-
     }
 
     @Test
