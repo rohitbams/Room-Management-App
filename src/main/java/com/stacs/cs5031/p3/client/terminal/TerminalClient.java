@@ -1,5 +1,8 @@
 package com.stacs.cs5031.p3.client.terminal;
 
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
@@ -34,7 +37,66 @@ public class TerminalClient {
         scanner.close();
     }
 
+    /**
+     * This method display user login menu.
+     */
+    private static void login() {
+        System.out.println("\n=== Login ===");
+        System.out.print("Username: ");
+        String username = scanner.nextLine();
+
+        System.out.print("Password: ");
+        String password = scanner.nextLine();
+
+        boolean success = handleLogin(username, password);
+
+        if (success) {
+            System.out.println("Login successful. Welcome, " + currentUser.get("name") + "!");
+        } else {
+            System.out.println("Login failed. Please check your username and password.");
+        }
+    }
+
+    /**
+     * This method handles user login.
+     * @param username user's username
+     * @param password user's password
+     * @return true if login is successful and user data is received, false if login failed or an error occurred
+     */
+    static boolean handleLogin(String username, String password) {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            Map<String, String> requestBody = new HashMap<>();
+            requestBody.put("username", username);
+            requestBody.put("password", password);
+
+            HttpEntity<Map<String, String>> request = new HttpEntity<>(requestBody, headers);
+
+            Map<String, Object> response = restTemplate.postForObject(
+                    BASE_URL + "/users/login",
+                    request,
+                    Map.class
+            );
+
+            if (response != null) {
+                currentUser = new HashMap<>();
+                currentUser.put("id", String.valueOf(response.get("id")));
+                currentUser.put("username", (String) response.get("username"));
+                currentUser.put("name", (String) response.get("name"));
+                currentUser.put("role", (String) response.get("role"));
+
+                return true;            }
+            return false;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+
     private static void showAdminMenu() {
+
     }
 
     private static void showAttendeeMenu() {
