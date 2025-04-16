@@ -23,7 +23,7 @@ public class RoomService {
         this.roomRepository = roomRepository;
     }
     
-    public RoomDto createRoom(String name, int capacity) throws IllegalArgumentException {
+    public RoomDto createRoomDto(String name, int capacity) throws IllegalArgumentException {
         // validate user-provided data
         if (capacity <= 1) {
             throw new IllegalArgumentException("Room capacity must be at least 1");
@@ -32,7 +32,13 @@ public class RoomService {
         return RoomDtoMapper.mapToDTO(roomEntity);
     }
 
-    public RoomDto findRoomById(int id) throws RoomNotFoundException {
+
+    public Room findRoomById(int id) throws RoomNotFoundException {
+        return roomRepository.findById(id)
+                .orElseThrow(() -> new RoomNotFoundException("Room not found: " + id));
+    }
+
+    public RoomDto findRoomDtoById(int id) throws RoomNotFoundException {
         Room room = roomRepository.findById(id)
                 .orElseThrow(() -> new RoomNotFoundException("Room not found: " + id));
         return RoomDtoMapper.mapToDTO(room);

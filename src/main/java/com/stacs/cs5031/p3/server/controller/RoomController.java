@@ -39,7 +39,7 @@ public class RoomController {
     @GetMapping("/{id}")
     public ResponseEntity<RoomDto> getRoom(@PathVariable int id) {
         try {
-            RoomDto foundRoom = roomService.findRoomById(id);
+            RoomDto foundRoom = roomService.findRoomDtoById(id);
             return ResponseEntity.ok(foundRoom);
         } catch (RoomNotFoundException e) {
             return ResponseEntity.notFound().build();
