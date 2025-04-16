@@ -399,9 +399,218 @@ public class TerminalClient {
         }
     }
 
+    /**
+     * This method displays the menu of options for an Attendee.
+     */
     private static void showAttendeeMenu() {
+        System.out.println("\n=== Attendee Menu ===");
+        System.out.println("1. View Available Bookings");
+        System.out.println("2. View Unavailable Bookings");
+        System.out.println("3. Register for a Booking");
+        System.out.println("4. View My Registered Bookings");
+        System.out.println("5. Deregister from a Booking");
+        System.out.println("6. Logout");
+        System.out.print("Enter choice: ");
 
+        int choice = scanner.nextInt();
+        scanner.nextLine();
+
+        switch (choice) {
+            case 1:
+                viewAvailableBookings();
+                break;            case 2:
+                viewUnavailableBookings();
+                break;            case 3:
+                registerForBooking();
+                break;            case 4:
+                viewMyRegisteredBookings();
+                break;            case 5:
+                deregisterFromBooking();
+                break;            case 6:
+                logout();
+                break;            default:
+                System.out.println("Invalid choice. Please try again.");
+        }
     }
+
+    /**
+     * This method shows all the available bookings that an attendee can register.
+     */
+    private static void viewAvailableBookings() {
+        System.out.println("\n=== Available Bookings ===");
+
+        try {
+            Map[] bookings = restTemplate.getForObject(
+                    BASE_URL + "/api/attendees/" + currentUser.get("id") + "/available-bookings",
+                    Map[].class
+            );
+
+            if (bookings == null || bookings.length == 0) {
+                System.out.println("No available bookings found.");
+                return;            }
+
+            System.out.println("Available Bookings:");
+            for (Map booking : bookings) {
+                System.out.println("ID: " + booking.get("id") +
+                        ", Event: " + booking.get("eventName") +
+                        ", Room: " + booking.get("roomName") +
+                        ", Time: " + booking.get("startTime") +
+                        ", Duration: " + booking.get("duration") + " minutes" +
+                        ", Attendees: " + booking.get("currentAttendees") + "/" + booking.get("maxCapacity"));
+            }
+
+        } catch (Exception e) {
+            System.out.println("Failed to retrieve available bookings: " + e.getMessage());
+        }
+    }
+
+    /**
+     * This method shows the bookings that are currently unavailable for an attendee to register due to full capacity.
+     */
+    private static void viewUnavailableBookings() {
+        System.out.println("\n=== Unavailable Bookings ===");
+
+        try {
+            Map[] bookings = restTemplate.getForObject(
+                    BASE_URL + "/api/attendees/" + currentUser.get("id") + "/unavailable-bookings",
+                    Map[].class
+            );
+
+            if (bookings == null || bookings.length == 0) {
+                System.out.println("No unavailable bookings found.");
+                return;            }
+
+            System.out.println("Unavailable Bookings (Full Capacity):");
+            for (Map booking : bookings) {
+                System.out.println("ID: " + booking.get("id") +
+                        ", Event: " + booking.get("eventName") +
+                        ", Room: " + booking.get("roomName") +
+                        ", Time: " + booking.get("startTime") +
+                        ", Duration: " + booking.get("duration") + " minutes" +
+                        ", Attendees: " + booking.get("currentAttendees") + "/" + booking.get("maxCapacity"));
+            }
+
+        } catch (Exception e) {
+            System.out.println("Failed to retrieve unavailable bookings: " + e.getMessage());
+        }
+    }
+
+    /**
+     * This method implements registering for an event for an attendee.
+     */
+    private static void registerForBooking() {
+        System.out.println("\n=== Register for Booking ===");
+
+        try {
+            Map[] bookings = restTemplate.getForObject(
+                    BASE_URL + "/api/attendees/" + currentUser.get("id") + "/available-bookings",
+                    Map[].class
+            );
+
+            if (bookings == null || bookings.length == 0) {
+                System.out.println("No available bookings found.");
+                return;            }
+
+            System.out.println("Available Bookings:");
+            for (int i = 0; i < bookings.length; i++) {
+                System.out.println((i+1) + ". " + bookings[i].get("eventName") + " - " +
+                        bookings[i].get("startTime") + " - " +
+                        bookings[i].get("currentAttendees") + "/" + bookings[i].get("maxCapacity") + " attendees");
+            }
+
+            System.out.print("Select booking to register for (number): ");
+            int bookingIndex = scanner.nextInt();
+            scanner.nextLine();
+
+            if (bookingIndex < 1 || bookingIndex > bookings.length) {
+                System.out.println("Invalid booking selection.");
+                return;            }
+
+            int bookingId = ((Number) bookings[bookingIndex-1].get("id")).intValue();
+
+            Map<String, Object> response = restTemplate.postForObject(
+                    BASE_URL + "/api/attendees/" + currentUser.get("id") + "/register/" + bookingId,
+                    null,
+                    Map.class
+            );
+
+            System.out.println("Successfully registered for booking!");
+
+        } catch (Exception e) {
+            System.out.println("Failed to register for booking: " + e.getMessage());
+        }
+    }
+
+    /**
+     * This method shows registered bookings to an attendee.
+     */
+    private static void viewMyRegisteredBookings() {
+        System.out.println("\n=== My Registered Bookings ===");
+
+        try {
+            Map[] bookings = restTemplate.getForObject(
+                    BASE_URL + "/api/attendees/" + currentUser.get("id") + "/registered-bookings",
+                    Map[].class
+            );
+
+            if (bookings == null || bookings.length == 0) {
+                System.out.println("You are not registered for any bookings.");
+                return;            }
+
+            System.out.println("Your Registered Bookings:");
+            for (Map booking : bookings) {
+                System.out.println("ID: " + booking.get("id") +
+                        ", Event: " + booking.get("eventName") +
+                        ", Room: " + booking.get("roomName") +
+                        ", Time: " + booking.get("startTime") +
+                        ", Duration: " + booking.get("duration") + " minutes");
+            }
+
+        } catch (Exception e) {
+            System.out.println("Failed to retrieve your registered bookings: " + e.getMessage());
+        }
+    }
+
+    /**
+     * this method handles deregistering from a booking for an attendee.
+     */
+    private static void deregisterFromBooking() {
+        System.out.println("\n=== Deregister from Booking ===");
+
+        try {
+            Map[] bookings = restTemplate.getForObject(
+                    BASE_URL + "/api/attendees/" + currentUser.get("id") + "/registered-bookings",
+                    Map[].class
+            );
+
+            if (bookings == null || bookings.length == 0) {
+                System.out.println("You are not registered for any bookings.");
+                return;            }
+
+            System.out.println("Your Registered Bookings:");
+            for (int i = 0; i < bookings.length; i++) {
+                System.out.println((i+1) + ". " + bookings[i].get("eventName") + " - " + bookings[i].get("startTime"));
+            }
+
+            System.out.print("Select booking to deregister from (number): ");
+            int bookingIndex = scanner.nextInt();
+            scanner.nextLine();
+
+            if (bookingIndex < 1 || bookingIndex > bookings.length) {
+                System.out.println("Invalid booking selection.");
+                return;            }
+
+            int bookingId = ((Number) bookings[bookingIndex-1].get("id")).intValue();
+
+            restTemplate.delete(BASE_URL + "/api/attendees/" + currentUser.get("id") + "/cancel/" + bookingId);
+
+            System.out.println("Successfully deregistered from booking.");
+
+        } catch (Exception e) {
+            System.out.println("Failed to deregister from booking: " + e.getMessage());
+        }
+    }
+
 
     private static void showAdminMenu() {
 
