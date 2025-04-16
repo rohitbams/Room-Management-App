@@ -121,7 +121,7 @@ public class AdminServiceTest {
     @Test
     void shouldReturnTrue_whenAddRoomWithCapacityHigherThanZero() {
         Room testRoom = new Room("Test Room", 10);
-        when(roomService.createRoom(testRoom.getName(), testRoom.getCapacity())).thenReturn(new RoomDto(1, "Test Room", 10, true));
+        when(roomService.createRoomDto(testRoom.getName(), testRoom.getCapacity())).thenReturn(new RoomDto(1, "Test Room", 10, true));
         assertEquals(true, adminService.addRoom(testRoom));
     }
 
