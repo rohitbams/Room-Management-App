@@ -7,8 +7,11 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 
+/**
+ * TerminalClient class.
+ * This is a command-line interface for the Room Booking application.
+ */
 public class TerminalClient {
-
 
     private static final String BASE_URL = "http://localhost:8080/api";
     private static RestTemplate restTemplate = new RestTemplate();
@@ -831,9 +834,8 @@ public class TerminalClient {
     static void setRunning(boolean isRunning) {
         running = isRunning;
     }
-
-
 }
+
 
 //package com.stacs.cs5031.p3.client.terminal;
 //
