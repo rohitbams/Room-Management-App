@@ -36,15 +36,15 @@ public class RoomController {
         return ResponseEntity.ok(rooms);
     }
 
-//    @GetMapping("/{id}")
-//    public ResponseEntity<RoomDto> getRoom(@PathVariable int id) {
-//        try {
-//            RoomDto foundRoom = roomService.findRoomById(id);
-//            return ResponseEntity.ok(foundRoom);
-//        } catch (RoomNotFoundException e) {
-//            return ResponseEntity.notFound().build();
-//        }
-//    }
+    @GetMapping("/{id}")
+    public ResponseEntity<RoomDto> getRoom(@PathVariable int id) {
+        try {
+            RoomDto foundRoom = roomService.findRoomDtoById(id);
+            return ResponseEntity.ok(foundRoom);
+        } catch (RoomNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
     @GetMapping("/available")
     public ResponseEntity<List<RoomDto>> getAvailableRooms() {
