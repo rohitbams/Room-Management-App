@@ -1,9 +1,12 @@
 package com.stacs.cs5031.p3.server.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.Mockito.times;
 
 import java.util.ArrayList;
+import java.util.Optional;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +16,7 @@ import com.stacs.cs5031.p3.server.dto.BookingDto;
 import com.stacs.cs5031.p3.server.dto.RoomDto;
 import com.stacs.cs5031.p3.server.model.Booking;
 import com.stacs.cs5031.p3.server.model.Organiser;
+import com.stacs.cs5031.p3.server.model.Room;
 import com.stacs.cs5031.p3.server.repository.OrganiserRepository;
 
 /**
@@ -196,23 +200,58 @@ public class OrganiserServiceTest {
         assertEquals(0, organiserService.getAvailableRooms().size());
     }
 
+    /**
+     * Tests that an organiser can get all their bookings successfully.
+     */
     @Test
-    void shouldGetAllBookingsWithoutIssue(){
+    void shouldGetBookingsWithoutIssue(){
 
+        Booking booking1 = Mockito.mock(Booking.class);
+        Booking booking2 = Mockito.mock(Booking.class);
+        Room room = Mockito.mock(Room.class);
+        Organiser organiser = Mockito.mock(Organiser.class);
+        
+        Mockito.when(booking1.getRoom()).thenReturn(room);
+        Mockito.when(booking2.getRoom()).thenReturn(room);
 
+        Mockito.when(booking1.getOrganiser()).thenReturn(organiser);
+        Mockito.when(booking2.getOrganiser()).thenReturn(organiser);
+
+        Mockito.when(room.getID()).thenReturn(1);
+        Mockito.when(organiser.getId()).thenReturn(1);
+
+        ArrayList<Booking> bookings = new ArrayList<>();
+        bookings.add(booking1);
+        bookings.add(booking2);
+
+        Mockito.when(bookingService.getBookingsByOrganiser(1L)).thenReturn(bookings);
+        organiserService.getBookings(1);
+        Mockito.verify(bookingService, times(1)).getBookingsByOrganiser(1L);
         
     }
 
+    /**
+     * Tests that an organiser can get a booking by its ID successfully.
+     */
     @Test
     void shouldGetBookingDetailsWithoutIssue(){
+        Booking booking1 = Mockito.mock(Booking.class);
+        Organiser organiser = Mockito.mock(Organiser.class);
+        Room room = Mockito.mock(Room.class);
 
+        Mockito.when(booking1.getRoom()).thenReturn(room);
+        Mockito.when(room.getID()).thenReturn(1);
+        Mockito.when(room.getCapacity()).thenReturn(100);
+        Mockito.when(organiser.getId()).thenReturn(1);
+        Mockito.when(booking1.getOrganiser()).thenReturn(organiser);
+        Mockito.when(bookingService.getBookingById(1L)).thenReturn(Optional.of(booking1));
+
+        assertNotEquals(null,organiserService.getBooking(1, 1));
     }
 
-    @Test
-    void shouldThrowExceptionWhenBookingDetailsAreInvalid(){
-
-    }
-
+    /**
+     * Test that an organiser can create a booking successfully.
+     */
     @Test
     void shouldCreateBookingWithoutIssue(){
         BookingDto.BookingRequest bookingReq = Mockito.mock(BookingDto.BookingRequest.class);
@@ -224,12 +263,24 @@ public class OrganiserServiceTest {
         assertEquals("SUCCESS!", operationStatus);
     }
 
+    /**
+     * Test that an organiser can cancel a booking successfully.
+     */
     @Test
     void shouldCancelBookingWithoutIssue(){
         Long bookingId = 1L;
+        int organiserId = 1;
+        Booking booking = Mockito.mock(Booking.class);
+        Organiser organiser = Mockito.mock(Organiser.class);
+      
+        Mockito.when(bookingService.getBookingById(bookingId)).thenReturn(Optional.of(booking));
+        Mockito.when(booking.getOrganiser()).thenReturn(organiser);
+        Mockito.when(booking.getOrganiser().getId()).thenReturn(organiserId);
         Mockito.doNothing().when(bookingService).deleteBooking(bookingId);
-        organiserService.cancelBooking(bookingId.intValue());
+        String res= organiserService.cancelBooking(bookingId.intValue(), organiserId);
         Mockito.verify(bookingService, times(1)).deleteBooking(bookingId);
+        Mockito.verify(bookingService, times(1)).getBookingById(bookingId);
+        assertEquals(res,"SUCCESS!");
     }
 
 }
