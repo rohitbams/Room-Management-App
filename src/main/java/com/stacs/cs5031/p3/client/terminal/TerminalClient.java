@@ -612,9 +612,204 @@ public class TerminalClient {
     }
 
 
+    /**
+     * This method shows options available for an admin, like viewing all rooms, adding rooms,
+     * removing rooms, viewing all attendees, and viewing all organisers.
+     */
     private static void showAdminMenu() {
+        System.out.println("\n=== Admin Menu ===");
+        System.out.println("1. View All Rooms");
+        System.out.println("2. Add Room");
+        System.out.println("3. Remove Room");
+        System.out.println("4. View All Attendees");
+        System.out.println("5. View All Organisers");
+        System.out.println("6. Logout");
+        System.out.print("Enter choice: ");
 
+        int choice = scanner.nextInt();
+        scanner.nextLine();
+
+        switch (choice) {
+            case 1:
+                viewAllRooms();
+                break;            case 2:
+                addRoom();
+                break;            case 3:
+                removeRoom();
+                break;            case 4:
+                viewAllAttendees();
+                break;            case 5:
+                viewAllOrganisers();
+                break;            case 6:
+                logout();
+                break;            default:
+                System.out.println("Invalid choice. Please try again.");
+        }
     }
+
+    /**
+     * This method shows all rooms to an admin.
+     */
+    private static void viewAllRooms() {
+        System.out.println("\n=== All Rooms ===");
+
+        try {
+            Map[] rooms = restTemplate.getForObject(
+                    BASE_URL + "/admin/rooms",
+                    Map[].class
+            );
+
+            if (rooms == null || rooms.length == 0) {
+                System.out.println("No rooms found.");
+                return;            }
+
+            System.out.println("Rooms:");
+            for (Map room : rooms) {
+                System.out.println("ID: " + room.get("id") +
+                        ", Name: " + room.get("name") +
+                        ", Capacity: " + room.get("capacity") +
+                        ", Available: " + room.get("available"));
+            }
+
+        } catch (Exception e) {
+            System.out.println("Failed to retrieve rooms: " + e.getMessage());
+        }
+    }
+
+    /**
+     * This method allows an admin to add a room.
+     */
+    private static void addRoom() {
+        System.out.println("\n=== Add Room ===");
+
+        System.out.print("Enter room name: ");
+        String name = scanner.nextLine();
+
+        System.out.print("Enter room capacity: ");
+        int capacity = scanner.nextInt();
+        scanner.nextLine();
+
+        try {
+            Map<String, Object> requestBody = new HashMap<>();
+            requestBody.put("name", name);
+            requestBody.put("capacity", capacity);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
+
+            String response = restTemplate.postForObject(
+                    BASE_URL + "/admin/rooms",
+                    request,
+                    String.class
+            );
+
+            System.out.println("Room added successfully: " + response);
+
+        } catch (Exception e) {
+            System.out.println("Failed to add room: " + e.getMessage());
+        }
+    }
+
+    /**
+     * This method allows an admin to remove a room from the database.
+     */
+    private static void removeRoom() {
+        System.out.println("\n=== Remove Room ===");
+
+        try {
+            Map[] rooms = restTemplate.getForObject(
+                    BASE_URL + "/admin/rooms",
+                    Map[].class
+            );
+
+            if (rooms == null || rooms.length == 0) {
+                System.out.println("No rooms found to remove.");
+                return;            }
+
+            System.out.println("Rooms:");
+            for (int i = 0; i < rooms.length; i++) {
+                System.out.println((i+1) + ". " + rooms[i].get("name") +
+                        " (Capacity: " + rooms[i].get("capacity") +
+                        ", Available: " + rooms[i].get("available") + ")");
+            }
+
+            System.out.print("Select room to remove (number): ");
+            int roomIndex = scanner.nextInt();
+            scanner.nextLine();
+
+            if (roomIndex < 1 || roomIndex > rooms.length) {
+                System.out.println("Invalid room selection.");
+                return;            }
+
+            int roomId = ((Number) rooms[roomIndex-1].get("id")).intValue();
+
+            restTemplate.delete(BASE_URL + "/admin/rooms/" + roomId);
+
+            System.out.println("Room removed successfully.");
+
+        } catch (Exception e) {
+            System.out.println("Failed to remove room: " + e.getMessage());
+        }
+    }
+
+    /**
+     * This method shows all attendee users to an admin.
+     */
+    private static void viewAllAttendees() {
+        System.out.println("\n=== All Attendees ===");
+
+        try {
+            Map[] attendees = restTemplate.getForObject(
+                    BASE_URL + "/admin/attendees",
+                    Map[].class
+            );
+
+            if (attendees == null || attendees.length == 0) {
+                System.out.println("No attendees found.");
+                return;            }
+
+            System.out.println("Attendees:");
+            for (Map attendee : attendees) {
+                System.out.println("ID: " + attendee.get("id") +
+                        ", Name: " + attendee.get("name") +
+                        ", Username: " + attendee.get("username"));
+            }
+
+        } catch (Exception e) {
+            System.out.println("Failed to retrieve attendees: " + e.getMessage());
+        }
+    }
+
+    /**
+     * This method shows all organiser users to an admin.
+     */
+    private static void viewAllOrganisers() {
+        System.out.println("\n=== All Organisers ===");
+
+        try {
+            Map[] organisers = restTemplate.getForObject(
+                    BASE_URL + "/admin/organisers",
+                    Map[].class
+            );
+
+            if (organisers == null || organisers.length == 0) {
+                System.out.println("No organisers found.");
+                return;            }
+
+            System.out.println("Organisers:");
+            for (Map organiser : organisers) {
+                System.out.println("ID: " + organiser.get("id") +
+                        ", Name: " + organiser.get("name") +
+                        ", Username: " + organiser.get("username"));
+            }
+
+        } catch (Exception e) {
+            System.out.println("Failed to retrieve organisers: " + e.getMessage());
+        }
+    }
+
 
     // for testing purposes only
     static RestTemplate getRestTemplate() {
