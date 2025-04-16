@@ -16,6 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import com.stacs.cs5031.p3.server.dto.OrganiserDto;
 import com.stacs.cs5031.p3.server.dto.RoomDto;
 import com.stacs.cs5031.p3.server.exception.RoomNotFoundException;
 import com.stacs.cs5031.p3.server.model.Attendee;
@@ -94,23 +95,23 @@ public class AdminServiceTest {
     
     @Test
     void shouldGetOrganisers() {
-        ArrayList<Organiser> organisers = new ArrayList<>();
-        organisers.add(new Organiser("John Doe", "john.doe", "12345"));
-        organisers.add(new Organiser("Lily Wong", "lily.wong", "12345"));
-        organisers.add(new Organiser("Toothless", "toothless", "12345"));
+        ArrayList<OrganiserDto> organisers = new ArrayList<>();
+        organisers.add(new OrganiserDto(1, "john.doe", "12345"));
+        organisers.add(new OrganiserDto(2, "lily.wong", "12345"));
+        organisers.add(new OrganiserDto(3, "toothless", "12345"));
 
         when(organiserService.getAllOrganisers()).thenReturn(organisers);
-        ArrayList<Organiser> result = adminService.getOrganisers();
+        ArrayList<OrganiserDto> result = adminService.getOrganisers();
         assertEquals(organisers.size(), result.size());
 
         // Verify the contents of the returned list
         for (int i = 0; i < organisers.size(); i++) {
-            Organiser expected = organisers.get(i);
-            Organiser actual = result.get(i);
+            OrganiserDto expected = organisers.get(i);
+            OrganiserDto actual = result.get(i);
 
             assertEquals(expected.getName(), actual.getName(), "Organiser name should match");
             assertEquals(expected.getUsername(), actual.getUsername(), "Organiser username should match");
-            assertEquals(expected.getPassword(), actual.getPassword(), "Organiser password should match");
+            assertEquals(expected.getId(), actual.getId(), "Organiser id should match");
         }
 
         // Verify that roomService.findAllRooms() was called exactly once
