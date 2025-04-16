@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import com.stacs.cs5031.p3.server.dto.RoomDto;
 import com.stacs.cs5031.p3.server.exception.RoomNotAvailableException;
@@ -32,6 +31,14 @@ public class RoomService {
         return RoomDtoMapper.mapToDTO(roomEntity);
     }
 
+    public Room createRoom(String name, int capacity) throws IllegalArgumentException {
+        // validate user-provided data
+        if (capacity <= 1) {
+            throw new IllegalArgumentException("Room capacity must be at least 1");
+        }
+        return roomRepository.save(new Room(name, capacity));
+    }
+
 
     public Room findRoomById(int id) throws RoomNotFoundException {
         return roomRepository.findById(id)
@@ -44,9 +51,6 @@ public class RoomService {
         return RoomDtoMapper.mapToDTO(room);
     }
 
-    // FIXME fix authorisation
-    // Only admin can view all rooms
-    @PreAuthorize("hasRole('ADMIN')")
     public List<RoomDto> findAllRooms(){
         return StreamSupport.stream(roomRepository.findAll().spliterator(), false)
         .map(RoomDtoMapper::mapToDTO)
@@ -87,8 +91,6 @@ public class RoomService {
         return RoomDtoMapper.mapToDTO(roomEntity);
     }
 
-    // FIXME fix authorisation
-    @PreAuthorize("hasRole('ADMIN')")
     public void deleteRoomById(int id) throws RoomNotFoundException {
         Room roomEntity = roomRepository.findById(id)
                 .orElseThrow(() -> new RoomNotFoundException("Room not found: " + id));

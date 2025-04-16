@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  *  This class is responsible for testing the Organiser class.
+ * @author 190031593
  */
 public class OrganiserTest{
 
