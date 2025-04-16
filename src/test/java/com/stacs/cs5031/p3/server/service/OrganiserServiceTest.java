@@ -1,24 +1,29 @@
 package com.stacs.cs5031.p3.server.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.times;
 
 import java.util.ArrayList;
-
-import com.stacs.cs5031.p3.server.model.Room;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+
+import com.stacs.cs5031.p3.server.dto.BookingDto;
+import com.stacs.cs5031.p3.server.dto.RoomDto;
+import com.stacs.cs5031.p3.server.model.Booking;
 import com.stacs.cs5031.p3.server.model.Organiser;
 import com.stacs.cs5031.p3.server.repository.OrganiserRepository;
 
 /**
  * This class is responsible for testing the OrganiserService class.
+ * @author 190031593
  */
 public class OrganiserServiceTest {
 
     private Organiser organiser1, organiser2; // Organiser objects for testing
     private OrganiserService organiserService; //organiser service
+    private BookingService bookingService; //mocked booking service
     private RoomService roomService; //room service
 
     private OrganiserRepository organiserRepository; //mocked repository
@@ -27,11 +32,11 @@ public class OrganiserServiceTest {
     void setUp(){
         organiserRepository = Mockito.mock(OrganiserRepository.class);
         roomService =  Mockito.mock(RoomService.class);
-        organiserService = new OrganiserService(organiserRepository, roomService);
-        organiser1 = new Organiser( "James Dean", "james.dean", "password123");
-        organiser1.setId(1);
+        bookingService = Mockito.mock(BookingService.class);
+        organiserService = new OrganiserService(organiserRepository, roomService, bookingService);
+        organiser1 = new Organiser( "James Dean", "james.dean", "password123"); 
         organiser2 = new Organiser( "Mary Dean", "mary.dean", "password123");
-        organiser2.setId(2);
+
     }
 
     /**
@@ -138,51 +143,64 @@ public class OrganiserServiceTest {
      */
     @Test
     void shouldGetAllOrganisersWithoutIssue(){
+        Organiser organiser3 = Mockito.mock(Organiser.class);
+        Organiser organiser4 = Mockito.mock(Organiser.class);
         ArrayList<Organiser> organisers = new ArrayList<>();
 
         Mockito.when(organiserRepository.findAll()).thenReturn(organisers);
+
+        Mockito.when(organiser3.getName()).thenReturn("James Dean");
+        Mockito.when(organiser3.getUsername()).thenReturn("james.dean");
+        Mockito.when(organiser3.getId()).thenReturn(1);
+
+
+        Mockito.when(organiser4.getName()).thenReturn("Mary Dean");
+        Mockito.when(organiser4.getUsername()).thenReturn("mary.dean");
+        Mockito.when(organiser4.getId()).thenReturn(2);
+
         assertEquals(0, organiserService.getAllOrganisers().size());
 
-        organisers.add(organiser1);
-        organisers.add(organiser2);
+        organisers.add(organiser3);
+        organisers.add(organiser4);
 
         assertEquals(2, organiserService.getAllOrganisers().size());
-        assertEquals(organiser1, organiserService.getAllOrganisers().get(0));
-        assertEquals(organiser2, organiserService.getAllOrganisers().get(1));
+        assertEquals(organiser1.getUsername(), organiserService.getAllOrganisers().get(0).getUsername());
+        assertEquals(organiser2.getUsername(), organiserService.getAllOrganisers().get(1).getUsername());
     }
 
     /**
      * Tests that all available rooms can be retrieved successfully.
      */
-//    @Test
-//    void shouldGetAllAvailableRoomsWithoutIssue(){
-//        Room room1 = new Room(100);
-//        Room room2 = new Room(300);
-//
-//        ArrayList<Room> rooms = new ArrayList<>();
-//        rooms.add(room1);
-//        rooms.add(room2);
-//
-//        System.out.println("Rooms: " + room1.getID() + ", " + room2.getID());
-//        Mockito.when(roomService.findAvailableRooms()).thenReturn(rooms);
-//        assertEquals(2, organiserService.getAvailableRooms().size());
-//        assertEquals(room1, organiserService.getAvailableRooms().get(0));
-//        assertEquals(room2, organiserService.getAvailableRooms().get(1));
-//    }
+    @Test
+    void shouldGetAllAvailableRoomsWithoutIssue(){
+        RoomDto room1 = new RoomDto(1, "JCB 1.3", 100, true);
+        RoomDto room2 = new RoomDto(2, "JCB 2.2", 300, true);
+
+        ArrayList<RoomDto> rooms = new ArrayList<>();
+        rooms.add(room1);
+        rooms.add(room2);
+
+        Mockito.when(roomService.findAvailableRooms()).thenReturn(rooms);
+        assertEquals(2, organiserService.getAvailableRooms().size());
+        assertEquals(room1, organiserService.getAvailableRooms().get(0));
+        assertEquals(room2, organiserService.getAvailableRooms().get(1));
+    }
 
     /**
      * Tests that all available rooms can be retrieved successfully. In this case, no rooms are available.
      */
-//    @Test
-//    void shouldGetAllAvailableRoomsIfNoneExist(){
-//        ArrayList<Room> rooms = new ArrayList<>();
-//        Mockito.when(roomService.findAvailableRooms()).thenReturn(rooms);
-//        assertEquals(0, organiserService.getAvailableRooms().size());
-//    }
+    @Test
+    void shouldGetAllAvailableRoomsIfNoneExist(){
+        ArrayList<RoomDto> rooms = new ArrayList<>();
+        Mockito.when(roomService.findAvailableRooms()).thenReturn(rooms);
+        assertEquals(0, organiserService.getAvailableRooms().size());
+    }
 
     @Test
     void shouldGetAllBookingsWithoutIssue(){
 
+
+        
     }
 
     @Test
@@ -197,12 +215,21 @@ public class OrganiserServiceTest {
 
     @Test
     void shouldCreateBookingWithoutIssue(){
-
+        BookingDto.BookingRequest bookingReq = Mockito.mock(BookingDto.BookingRequest.class);
+        Booking booking = Mockito.mock(Booking.class);
+        Mockito.when(bookingService.createBooking(bookingReq, 1L)).thenReturn(booking);
+        Mockito.when(booking.getId()).thenReturn(1);
+        String  operationStatus = organiserService.createBooking(bookingReq, 1);
+        Mockito.verify(bookingService, times(1)).createBooking(bookingReq, 1L);
+        assertEquals("SUCCESS!", operationStatus);
     }
 
     @Test
     void shouldCancelBookingWithoutIssue(){
-
+        Long bookingId = 1L;
+        Mockito.doNothing().when(bookingService).deleteBooking(bookingId);
+        organiserService.cancelBooking(bookingId.intValue());
+        Mockito.verify(bookingService, times(1)).deleteBooking(bookingId);
     }
 
 }
