@@ -94,6 +94,70 @@ public class TerminalClient {
         }
     }
 
+    /**
+     * This method displays user registration menu.
+     */
+    private static void register() {
+        System.out.println("\n=== Registration ===");
+        System.out.print("Name: ");
+        String name = scanner.nextLine();
+
+        System.out.print("Username: ");
+        String username = scanner.nextLine();
+
+        System.out.print("Password: ");
+        String password = scanner.nextLine();
+
+        System.out.println("Select role:");
+        System.out.println("1. Organiser");
+        System.out.println("2. Attendee");
+        System.out.print("Enter choice (1 or 2): ");
+        int roleChoice = scanner.nextInt();
+        scanner.nextLine();
+
+        String role = roleChoice == 1 ? "ORGANISER" : "ATTENDEE";
+
+        boolean success = handleRegistration(name, username, password, role);
+
+        if (success) {
+            System.out.println("Registration successful! Please login.");
+        } else {
+            System.out.println("Registration failed. Please try again.");
+        }
+    }
+
+    /**
+     * This method handles user registration.
+     * @param name user's name
+     * @param username user's username
+     * @param password user's password
+     * @param role user's role (organiser or attendee)
+     * @return true if registration is successful, false if registration failed or an error occurred
+     */
+    static boolean handleRegistration(String name, String username, String password, String role) {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            Map<String, String> requestBody = new HashMap<>();
+            requestBody.put("name", name);
+            requestBody.put("username", username);
+            requestBody.put("password", password);
+            requestBody.put("role", role);
+
+            HttpEntity<Map<String, String>> request = new HttpEntity<>(requestBody, headers);
+
+            Map<String, Object> response = restTemplate.postForObject(
+                    BASE_URL + "/users/register",
+                    request,
+                    Map.class
+            );
+
+            return response != null;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 
     private static void showAdminMenu() {
 

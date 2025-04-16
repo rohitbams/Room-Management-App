@@ -86,5 +86,22 @@ public class TerminalClientTest {
         assertNull(TerminalClient.getCurrentUser());
     }
 
+    @Test
+    public void testHandleRegistration_Success() {
+        role = "ORGANISER";
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("id", 1);
+        responseMap.put("username", username);
+        responseMap.put("name", name);
+
+        when(mockRestTemplate.postForObject(
+                contains("/users/register"),
+                any(HttpEntity.class),
+                eq(Map.class)))
+                .thenReturn(responseMap);
+
+        boolean result = TerminalClient.handleRegistration(name, username, password, role);
+        assertTrue(result);
+    }
 
 }
