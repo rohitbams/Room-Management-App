@@ -159,7 +159,33 @@ public class TerminalClient {
         }
     }
 
-    private static void showAdminMenu() {
+    /**
+     * This method shows the welcome menu which is the first menu that is displayed
+     * when the terminal is started.
+     */
+    private static void showWelcomeMenu() {
+        System.out.println("=== Room Booking System ===");
+        System.out.println("1. Login");
+        System.out.println("2. Register");
+        System.out.println("3. Exit");
+        System.out.print("Enter the number next to your choice: ");
+
+        int choice = scanner.nextInt();
+        scanner.nextLine();
+
+        switch (choice) {
+            case 1:
+                login();
+                break;            case 2:
+                register();
+                break;            case 3:
+                System.exit(0);
+                break;            default:
+                System.out.println("Invalid choice. Please try again.");
+        }
+    }
+
+    private static void showOrganiserMenu() {
 
     }
 
@@ -167,11 +193,7 @@ public class TerminalClient {
 
     }
 
-    private static void showOrganiserMenu() {
-
-    }
-
-    private static void showWelcomeMenu() {
+    private static void showAdminMenu() {
 
     }
 
