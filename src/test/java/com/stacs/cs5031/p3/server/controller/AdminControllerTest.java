@@ -25,9 +25,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.stacs.cs5031.p3.server.dto.OrganiserDto;
 import com.stacs.cs5031.p3.server.dto.RoomDto;
 import com.stacs.cs5031.p3.server.model.Attendee;
-import com.stacs.cs5031.p3.server.model.Organiser;
 import com.stacs.cs5031.p3.server.model.Room;
 import com.stacs.cs5031.p3.server.service.AdminService;
 
@@ -90,9 +90,9 @@ public class AdminControllerTest {
 
     @Test
     void shouldGetAllOrganisers() throws Exception {
-        List<Organiser> organisers = List.of(
-                new Organiser("Alice", "alice.organiser", "password123"),
-                new Organiser("Bob", "bob.organiser", "password456"));
+        List<OrganiserDto> organisers = List.of(
+                new OrganiserDto(1, "alice.organiser", "password123"),
+                new OrganiserDto(2, "bob.organiser", "password456"));
         when(adminService.getOrganisers()).thenReturn(new ArrayList<>(organisers));
 
         this.mvc.perform(get("/admin/organisers"))

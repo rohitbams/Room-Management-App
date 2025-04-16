@@ -39,7 +39,7 @@ public class RoomControllerTest {
 
     @Test
     void shouldGetRoomWithValidId() throws Exception {
-        when(roomService.findRoomById(1)).thenReturn(new RoomDto(1, "Room 1", 10, true));
+        when(roomService.findRoomDtoById(1)).thenReturn(new RoomDto(1, "Room 1", 10, true));
 
         mvc.perform(MockMvcRequestBuilders.get("/rooms/1")
                 .accept(MediaType.APPLICATION_JSON))
