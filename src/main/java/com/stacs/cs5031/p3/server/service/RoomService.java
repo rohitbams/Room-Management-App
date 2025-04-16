@@ -32,6 +32,14 @@ public class RoomService {
         return RoomDtoMapper.mapToDTO(roomEntity);
     }
 
+    public Room createRoom(String name, int capacity) throws IllegalArgumentException {
+        // validate user-provided data
+        if (capacity <= 1) {
+            throw new IllegalArgumentException("Room capacity must be at least 1");
+        }
+        return roomRepository.save(new Room(name, capacity));
+    }
+
 
     public Room findRoomById(int id) throws RoomNotFoundException {
         return roomRepository.findById(id)
