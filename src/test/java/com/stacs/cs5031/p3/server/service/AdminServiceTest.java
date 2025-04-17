@@ -72,7 +72,7 @@ public class AdminServiceTest {
         attendees.add(new Attendee("Ada", "ada", "12345"));
         attendees.add(new Attendee("G Yeung", "g.yeung", "12345"));
         attendees.add(new Attendee("Toothless", "toothless", "12345"));
-        
+
         when(attendeeService.getAllAttendees()).thenReturn(attendees);
         ArrayList<Attendee> result = adminService.getAttendees();
         assertEquals(attendees.size(), result.size());
@@ -89,9 +89,9 @@ public class AdminServiceTest {
 
         // Verify that roomService.findAllRooms() was called exactly once
         verify(attendeeService, times(1)).getAllAttendees();
-    
+
     }
-    
+
     @Test
     void shouldGetOrganisers() {
         ArrayList<OrganiserDto> organisers = new ArrayList<>();
@@ -131,7 +131,7 @@ public class AdminServiceTest {
                 .thenThrow(IllegalArgumentException.class);
         assertEquals(false, adminService.addRoom(testRoom));
     }
-    
+
     @Test
     void shouldReturnFalse_whenAddRoomWithNegativeCapacity() {
         Room testRoom = new Room("Test Room", -1);
