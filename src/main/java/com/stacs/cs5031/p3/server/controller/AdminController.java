@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.stacs.cs5031.p3.server.dto.OrganiserDto;
 import com.stacs.cs5031.p3.server.dto.RoomDto;
 import com.stacs.cs5031.p3.server.model.Attendee;
 import com.stacs.cs5031.p3.server.model.Organiser;
@@ -41,20 +42,20 @@ public class AdminController {
     }
 
     @GetMapping("/organisers")
-    public ResponseEntity<ArrayList<Organiser>> getAllOrganisers() {
-        ArrayList<Organiser> organisers = adminService.getOrganisers();
+    public ResponseEntity<ArrayList<OrganiserDto>> getAllOrganisers() {
+        ArrayList<OrganiserDto> organisers = adminService.getOrganisers();
         return ResponseEntity.ok(organisers);
     }
 
-    @PostMapping("/rooms")
-    public ResponseEntity<String> addRoom(@RequestBody Room room) {
-        boolean success = adminService.addRoom(room);
-        if (success) {
-            return ResponseEntity.ok("Room added successfully");
-        } else {
-            return ResponseEntity.badRequest().body("Failed to add room");
-        }
-    }
+//    @PostMapping("/rooms")
+//    public ResponseEntity<String> addRoom(@RequestBody Room room) {
+//        boolean success = adminService.addRoom(room);
+//        if (success) {
+//            return ResponseEntity.ok("Room added successfully");
+//        } else {
+//            return ResponseEntity.badRequest().body("Failed to add room");
+//        }
+//    }
 
     @DeleteMapping("/rooms/{roomId}")
     public ResponseEntity<String> removeRoom(@PathVariable int roomId) {
