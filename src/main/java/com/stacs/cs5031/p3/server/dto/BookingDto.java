@@ -145,21 +145,28 @@ public class BookingDto {
         private Long roomId;
         private Date startTime;
         private int duration;
+        private String title;          // Add this
+        private String description;    // And this
         
         // Default constructor
         public BookingRequest() {
         }
         
         // Parameterized constructor
-        public BookingRequest(String eventName, Long roomId, Date startTime, int duration) {
+        public BookingRequest(String eventName, Long roomId, Date startTime, int duration, String title) {
             this.eventName = eventName;
             this.roomId = roomId;
             this.startTime = startTime;
             this.duration = duration;
+            this.title = title;
         }
 
         public String getEventName() {
             return eventName;
+        }
+
+        public String getTitle() {
+            return title;
         }
 
         public Long getRoomId() {
@@ -188,6 +195,10 @@ public class BookingDto {
 
         public void setDuration(int duration) {
             this.duration = duration;
+        }
+
+        public String getDescription() {
+            return description;
         }
     }
 }
