@@ -34,6 +34,7 @@ import com.stacs.cs5031.p3.client.gui.helper_classes.RoundedBorder;
  * @author 190031593
  */
 public class CreateBookingPage {
+
   /**
    * This is the constructor of the CreateBookingPage class.
    */
@@ -149,8 +150,8 @@ public class CreateBookingPage {
      * This method creates and adds the date label to the panel.
      */
     private void addDateLbl() {
-      JLabel dateLbl = new JLabel("Date");
-      dateLbl.setBounds(406, 324, 135, 54);
+      JLabel dateLbl = new JLabel("Date and Time");
+      dateLbl.setBounds(280, 324, 200, 54);
       dateLbl.setFont(CustomFontLoader.loadFont("./resources/fonts/Lexend.ttf", 25));
       dateLbl.setForeground(Color.decode("#000"));
       panel.add(dateLbl);
@@ -433,7 +434,7 @@ public class CreateBookingPage {
      */
     private JFormattedTextField addDatePicker() {
 
-      SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+      SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
       dateFormat.setLenient(false);
 
       DateFormatter dateFormatter = new DateFormatter(dateFormat);
