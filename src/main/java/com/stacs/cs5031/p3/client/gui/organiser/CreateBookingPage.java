@@ -1,4 +1,4 @@
-package com.stacs.cs5031.p3.client.gui;
+package com.stacs.cs5031.p3.client.gui.organiser;
 
 import javax.swing.*;
 import javax.swing.text.DateFormatter;
@@ -18,10 +18,10 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.stacs.cs5031.p3.server.dto.RoomDto;
 import com.stacs.cs5031.p3.server.dto.BookingDto;
-
 import com.stacs.cs5031.p3.client.gui.helper_classes.CustomFontLoader;
 import com.stacs.cs5031.p3.client.gui.helper_classes.OnFocusEventHelper;
 import com.stacs.cs5031.p3.client.gui.helper_classes.RoundedBorder;
@@ -37,20 +37,23 @@ public class CreateBookingPage {
   /**
    * This is the constructor of the CreateBookingPage class.
    */
-  public CreateBookingPage(int organiserId) {
+  public CreateBookingPage( Map<String, String> user) {
+    int organiserId = Integer.parseInt(user.get("id"));
     if (organiserId <=0) {
        System.out.println("Please provide a valid organiser id.");
      return;
     }
-    createPage(organiserId);
+    createPage(organiserId, user);
    
   }
 
   /**
    * This method is responsible for creating the create booking page.
+   * @param organiserId - the id of the organiser
+   * @param user - the user details
    * 
    */
-  public static void createPage(int organiserId) {
+  public static void createPage(int organiserId, Map<String, String> user) {
     JFrame frame = new JFrame("Create New Booking");
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     frame.setSize(1143, 617);
@@ -60,7 +63,7 @@ public class CreateBookingPage {
     panel.setLayout(null);
     panel.setBackground(Color.decode("#f4c064"));
 
-    PageElements pageElements = new PageElements(organiserId, panel,frame);
+    PageElements pageElements = new PageElements(organiserId,user, panel,frame);
     pageElements.addAllElements();
 
     frame.add(panel);
@@ -81,6 +84,7 @@ public class CreateBookingPage {
     private RestClient restClient = RestClient.create(); 
     private int organiserId; // id of the organiser
     private JFrame frame; // The frame to which the panel will be added
+    private Map<String, String> user; // The user details
 
     /**
      * This is the constructor of the PageElements class.
@@ -88,10 +92,11 @@ public class CreateBookingPage {
      * @param panel       - the panel to which the elements will be added
      * @param organiserId - the id of the organiser
      */
-    public PageElements(int organiserId, JPanel panel, JFrame frame) {
+    public PageElements(int organiserId,Map<String, String> user, JPanel panel, JFrame frame) {
       this.panel = panel;
       this.organiserId = organiserId;
       this.frame = frame;
+      this.user = user;
       //getRooms();
     }
 
@@ -239,7 +244,6 @@ public class CreateBookingPage {
     /**
      * This method creates and adds the back button to the panel and its onclick
      * behaviour.
-     * TODO: Implement the back button functionality.
      */
     private void addBackButton() {
       JButton backBtn = new JButton("<");
@@ -251,7 +255,7 @@ public class CreateBookingPage {
 
       backBtn.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-            new OrganiserHomePage(organiserId);
+            new OrganiserHomePage(user);
             frame.dispose();
         }
       });
@@ -422,6 +426,10 @@ public class CreateBookingPage {
       }
     }
 
+    /**
+     * This method creates and adds the date picker to the panel.
+     * @return - the date picker
+     */
     private JFormattedTextField addDatePicker() {
 
       SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");

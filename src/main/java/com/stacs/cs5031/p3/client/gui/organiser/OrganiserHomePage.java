@@ -1,8 +1,10 @@
 
-package com.stacs.cs5031.p3.client.gui;
+package com.stacs.cs5031.p3.client.gui.organiser;
 
 import javax.swing.*;
 import java.awt.Color;
+import java.util.Map;
+
 import com.stacs.cs5031.p3.client.gui.helper_classes.CustomFontLoader;
 import com.stacs.cs5031.p3.client.gui.helper_classes.OnClickEventHelper;
 import com.stacs.cs5031.p3.client.gui.helper_classes.RoundedBorder;
@@ -13,33 +15,22 @@ import com.stacs.cs5031.p3.client.gui.helper_classes.RoundedBorder;
  * JavaFx/Swing" extension in vscode.
  */
 public class OrganiserHomePage {
-  public static void main(String[] args) {
-
-    int organiserId = 1; // For testing purposes, you can hardcode the organiserId
-
-    createPage(organiserId);
-
-  }
-
 
   /**
    * This is the constructor of the OrganiserHomePage class.
-   * @param organiserId
+   * @param user - the user details
    */
-  public OrganiserHomePage(int organiserId) {
-    if (organiserId <=0) {
-       System.out.println("Please provide a valid organiser id.");
-     return;
-    }
-    createPage(organiserId);
+  public OrganiserHomePage(Map<String, String> user) {
+
+    createPage(user);
    
   }
 
   /**
    * This method is responsible  for creating the main page of the organiser.
-   * @param organiserId - the id of the organiser
+   * @param user - the user details
    */
-  public static void createPage(int organiserId) {
+  public static void createPage( Map<String, String> user) {
     JFrame frame = new JFrame("Organiser Home");
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     frame.setSize(896, 483);
@@ -49,7 +40,7 @@ public class OrganiserHomePage {
     JPanel panel = new JPanel();
     panel.setLayout(null);
     panel.setBackground(Color.decode("#f4c064"));
-    PageElements pageEl = new PageElements(organiserId, panel, frame);
+    PageElements pageEl = new PageElements( user, panel, frame);
     pageEl.addAllElements();
 
     frame.add(panel);
@@ -65,21 +56,21 @@ public class OrganiserHomePage {
    * It contains methods to create and add the elements to the panel.
    */
   public static class PageElements {
-    private int organiserId; //id of the organiser
     private JPanel panel; // The panel to which the elements will be added
     private JFrame frame; // The frame to which the panel will be added
+    private Map<String, String> user; // The user details
 
     /**
      * This is the constructor of the PageElements class.
      * 
      * @param panel       - the panel to which the elements will be added
-     * @param organiserId - the id of the organiser
      * @param frame       - the frame to which the panel will be added
+     * @param user       - the user details
      */
-    public PageElements(int organiserId, JPanel panel, JFrame frame) {
+    public PageElements(Map<String, String> user, JPanel panel, JFrame frame) {
       this.panel = panel;
-      this.organiserId = organiserId;
       this.frame = frame;
+      this.user = user;
       // getRooms();
     }
 
@@ -125,7 +116,7 @@ public class OrganiserHomePage {
       OnClickEventHelper.setOnClickColor(createBookingBtn, Color.decode("#7c6f97"), Color.decode("#bca8e4"));
 
       createBookingBtn.addActionListener(e -> {
-        new CreateBookingPage(organiserId);
+        new CreateBookingPage(user);
         frame.dispose();
       });
       panel.add(createBookingBtn);
