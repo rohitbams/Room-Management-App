@@ -54,6 +54,7 @@ public class CreateBookingPage {
     JFrame frame = new JFrame("Create Booking Page");
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     frame.setSize(1143, 617);
+    frame.setLocationRelativeTo(null);
 
     JPanel panel = new JPanel();
     panel.setLayout(null);
