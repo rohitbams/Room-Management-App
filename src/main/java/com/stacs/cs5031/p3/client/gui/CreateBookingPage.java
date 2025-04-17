@@ -41,11 +41,12 @@ public class CreateBookingPage {
    * @param args
    */
   public static void main(String[] args) {
-    if (args.length != 1) {
-      System.out.println("Please provide the organiser id as an argument.");
-      return;
-    }
-    createPage(Integer.parseInt(args[0]));
+    // if (args.length != 1) {
+    //   System.out.println("Please provide the organiser id as an argument.");
+    //   return;
+    // }
+    //createPage(Integer.parseInt(args[0]));
+    createPage(1);
 
   }
 
@@ -88,7 +89,7 @@ public class CreateBookingPage {
     public PageElements(int organiserId, JPanel panel) {
       this.panel = panel;
       this.organiserId = organiserId;
-      getRooms();
+      //getRooms();
     }
 
     /**
@@ -131,7 +132,7 @@ public class CreateBookingPage {
     private void addDurationLbl() {
       JLabel durationLbl = new JLabel("Duration (hrs)");
       durationLbl.setBounds(280, 394, 216, 43);
-      durationLbl.setFont(CustomFontLoader.loadFont("./resources/fonts/Lexend.ttf", 30));
+      durationLbl.setFont(CustomFontLoader.loadFont("./resources/fonts/Lexend.ttf", 25));
       durationLbl.setForeground(Color.decode("#000"));
       panel.add(durationLbl);
     }
@@ -142,7 +143,7 @@ public class CreateBookingPage {
     private void addDateLbl() {
       JLabel dateLbl = new JLabel("Date");
       dateLbl.setBounds(406, 324, 135, 54);
-      dateLbl.setFont(CustomFontLoader.loadFont("./resources/fonts/Lexend.ttf", 30));
+      dateLbl.setFont(CustomFontLoader.loadFont("./resources/fonts/Lexend.ttf", 25));
       dateLbl.setForeground(Color.decode("#000"));
       panel.add(dateLbl);
 
@@ -155,7 +156,7 @@ public class CreateBookingPage {
 
       JLabel roomLbl = new JLabel("Room");
       roomLbl.setBounds(391, 261, 115, 35);
-      roomLbl.setFont(CustomFontLoader.loadFont("./resources/fonts/Lexend.ttf", 30));
+      roomLbl.setFont(CustomFontLoader.loadFont("./resources/fonts/Lexend.ttf", 25));
       roomLbl.setForeground(Color.decode("#000"));
       panel.add(roomLbl);
 
@@ -167,7 +168,7 @@ public class CreateBookingPage {
     private void addEventNameLbl() {
       JLabel eventNameLbl = new JLabel("Event Name");
       eventNameLbl.setBounds(307, 187, 238, 35);
-      eventNameLbl.setFont(CustomFontLoader.loadFont("./resources/fonts/Lexend.ttf", 30));
+      eventNameLbl.setFont(CustomFontLoader.loadFont("./resources/fonts/Lexend.ttf", 25));
       eventNameLbl.setForeground(Color.decode("#000"));
       panel.add(eventNameLbl);
 
@@ -180,7 +181,7 @@ public class CreateBookingPage {
 
       JLabel createBookingLbl = new JLabel("Create New Booking");
       createBookingLbl.setBounds(337, 58, 558, 68);
-      createBookingLbl.setFont(CustomFontLoader.loadFont("./resources/fonts/Lexend.ttf", 50));
+      createBookingLbl.setFont(CustomFontLoader.loadFont("./resources/fonts/Lexend.ttf", 40));
       createBookingLbl.setForeground(Color.decode("#000"));
       panel.add(createBookingLbl);
 
@@ -212,8 +213,8 @@ public class CreateBookingPage {
     private void addSubmitButton(JTextField eventNameInput, JComboBox<String> roomInput, JTextField durationInput,
         JFormattedTextField dateInput) {
       JButton submitBtn = new JButton("Submit");
-      submitBtn.setBounds(537, 470, 150, 50);
-      submitBtn.setFont(CustomFontLoader.loadFont("./resources/fonts/Lexend.ttf", 20));
+      submitBtn.setBounds(490, 470, 150, 50);
+      submitBtn.setFont(CustomFontLoader.loadFont("./resources/fonts/Lexend.ttf", 15));
       submitBtn.setBackground(Color.decode("#ffe7bf"));
       submitBtn.setForeground(Color.decode("#000"));
       submitBtn.setBorder(new RoundedBorder(2, Color.decode("#000"), 1));
