@@ -59,7 +59,7 @@ public class MyBookingsPage extends JFrame {
         bookings = fetchBookings(organiserId);
         
         // Create the table panel
-        JPanel tablePanel = createTablePanel();
+        JPanel tablePanel = addTablePanel();
         tablePanel.setBounds(50, 100, 1030, 400);
         mainPanel.add(tablePanel);
 
@@ -67,10 +67,12 @@ public class MyBookingsPage extends JFrame {
         add(mainPanel);
     }
 
-    private JPanel createTablePanel() {
+    private JPanel addTablePanel() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(Color.decode("#c2c5aa")); // Set background color for the panel
-
+        panel.setOpaque(false);
+        panel.setBorder(new RoundedBorder(20, Color.decode("#414833"), 3));
+        
         // Initialise table model
         tableModel = new DefaultTableModel() {
             @Override
@@ -176,42 +178,48 @@ public class MyBookingsPage extends JFrame {
     private void showBookingDetailsDialog(BookingDto booking) {
         JDialog dialog = new JDialog(this);
         dialog.setTitle("Booking Details");
-        dialog.setSize(450, 550);
+        dialog.setSize(500, 600);
         dialog.setLocationRelativeTo(this);
         dialog.setModal(true);
 
-        JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
-
+        JPanel contentPanel = new JPanel(new BorderLayout(15, 15));
+        contentPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        contentPanel.setBackground(Color.decode("#d4d3b3"));
+    
         // Add event name as title
-        JLabel titleLabel = new JLabel(booking.getEventName(), JLabel.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        mainPanel.add(titleLabel, BorderLayout.NORTH);
+        JLabel titleLabel = new JLabel(booking.getEventName() + " <" + String.valueOf(booking.getId()) + ">",
+                JLabel.CENTER);
+        titleLabel.setFont(CustomFontLoader.loadFont("./resources/fonts/Lexend.ttf", 22));
+        titleLabel.setForeground(Color.decode("#414833"));
+        titleLabel.setBackground(Color.decode("#d4d3b3"));
+        titleLabel.setOpaque(true);
+        contentPanel.add(titleLabel, BorderLayout.NORTH);
 
         // Details panel with grid layout
-        JPanel detailsPanel = new JPanel(new GridLayout(0, 2, 10, 8));
+        JPanel detailsPanel = new JPanel(new GridLayout(0, 2, 15, 12));
+        detailsPanel.setBackground(Color.decode("#d4d3b3"));
         detailsPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createEmptyBorder(10, 0, 10, 0),
+                BorderFactory.createEmptyBorder(15, 5, 15, 5),
                 BorderFactory.createCompoundBorder(
-                        BorderFactory.createLineBorder(Color.LIGHT_GRAY),
-                        BorderFactory.createEmptyBorder(10, 10, 10, 10))));
+                        BorderFactory.createLineBorder(Color.decode("#414833"), 3),
+                        BorderFactory.createEmptyBorder(15, 15, 15, 15))));
 
+        // Add all booking details with larger fonts
+        Font detailFont = CustomFontLoader.loadFont("./resources/fonts/Lexend.ttf", 16);
+        
         // Add all booking details
-        addDetailRow(detailsPanel, "ID:", String.valueOf(booking.getId()));
-        addDetailRow(detailsPanel, "Room ID:", String.valueOf(booking.getRoomId()));
-        addDetailRow(detailsPanel, "Room Name:", booking.getRoomName());
+        addDetailRow(detailsPanel, "Room:", booking.getRoomName() + " <" + booking.getRoomId() + ">", detailFont);
 
         SimpleDateFormat fullDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String startTimeStr = booking.getStartTime() != null ? fullDateFormat.format(booking.getStartTime()) : "N/A";
-        addDetailRow(detailsPanel, "Start Time:", startTimeStr);
+        addDetailRow(detailsPanel, "Start Time:", startTimeStr, detailFont);
 
-        addDetailRow(detailsPanel, "Duration:", booking.getDuration() + " minutes");
-        addDetailRow(detailsPanel, "Organiser ID:", String.valueOf(booking.getOrganiserId()));
-        addDetailRow(detailsPanel, "Organiser Name:", booking.getOrganiserName());
-        addDetailRow(detailsPanel, "Current Attendees:", String.valueOf(booking.getCurrentAttendees()));
-        addDetailRow(detailsPanel, "Maximum Capacity:", String.valueOf(booking.getMaxCapacity()));
+        addDetailRow(detailsPanel, "Duration:", booking.getDuration() + " minutes", detailFont);
+        addDetailRow(detailsPanel, "Organiser:", booking.getOrganiserName() + " <" + booking.getOrganiserId() + ">", detailFont);
+        addDetailRow(detailsPanel, "Attendees:", String.valueOf(booking.getCurrentAttendees()), detailFont);
+        addDetailRow(detailsPanel, "Maximum Capacity:", String.valueOf(booking.getMaxCapacity()), detailFont);
 
-        mainPanel.add(detailsPanel, BorderLayout.CENTER);
+        contentPanel.add(detailsPanel, BorderLayout.CENTER);
 
         // Attendees section if available
         if (booking.getAttendees() != null && !booking.getAttendees().isEmpty()) {
@@ -228,11 +236,12 @@ public class MyBookingsPage extends JFrame {
             attendeeScroll.setPreferredSize(new Dimension(400, 150));
             attendeesPanel.add(attendeeScroll, BorderLayout.CENTER);
 
-            mainPanel.add(attendeesPanel, BorderLayout.SOUTH);
+            contentPanel.add(attendeesPanel, BorderLayout.SOUTH);
         }
 
         // Button panel
         JPanel buttonPanel = new JPanel();
+        buttonPanel.setBackground(Color.decode("#d4d3b3"));
         JButton closeButton = new JButton("Close");
 
         // Use your OnClickEventHelper for the close button
@@ -243,22 +252,35 @@ public class MyBookingsPage extends JFrame {
         buttonPanel.add(closeButton);
 
         // Add button panel to dialog
-        if (mainPanel.getComponentCount() > 2) {
+        if (contentPanel.getComponentCount() > 2) {
             // If we have attendees, add at the very bottom
             JPanel southPanel = new JPanel(new BorderLayout());
-            southPanel.add((Component) mainPanel.getComponent(2), BorderLayout.CENTER);
+            southPanel.add((Component) contentPanel.getComponent(2), BorderLayout.CENTER);
             southPanel.add(buttonPanel, BorderLayout.SOUTH);
-            mainPanel.remove(2);
-            mainPanel.add(southPanel, BorderLayout.SOUTH);
+            contentPanel.remove(2);
+            contentPanel.add(southPanel, BorderLayout.SOUTH);
         } else {
             // Otherwise add directly to main panel
-            mainPanel.add(buttonPanel, BorderLayout.SOUTH);
+            contentPanel.add(buttonPanel, BorderLayout.SOUTH);
         }
 
-        dialog.add(mainPanel);
+        dialog.add(contentPanel);
         dialog.setVisible(true);
     }
 
+    private void addDetailRow(JPanel panel, String label, String value, Font font) {
+        JLabel labelComponent = new JLabel(label, JLabel.RIGHT);
+        labelComponent.setFont(font);
+        labelComponent.setForeground(Color.decode("#414833"));
+
+        JLabel valueComponent = new JLabel(value, JLabel.LEFT);
+        valueComponent.setFont(font);
+        valueComponent.setForeground(Color.decode("#414833"));
+
+        panel.add(labelComponent);
+        panel.add(valueComponent);
+    }
+    
     // Helper method to add a row of details
     private void addDetailRow(JPanel panel, String label, String value) {
         panel.add(new JLabel(label, JLabel.RIGHT));

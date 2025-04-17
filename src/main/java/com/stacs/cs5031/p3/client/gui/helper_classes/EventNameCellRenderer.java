@@ -26,9 +26,6 @@ public class EventNameCellRenderer extends DefaultTableCellRenderer {
         if (row == hoveredRow) {
             label.setBackground(Color.decode("#606c38")); // Change font color when hovered
             label.setForeground(Color.WHITE);  // Change background color when hovered
-        } else if (isSelected) {
-            label.setForeground(table.getSelectionForeground());
-            label.setBackground(table.getSelectionBackground());
         } else {
             label.setBackground(Color.decode("#c2c5aa"));
             label.setForeground(Color.decode("#414833"));
