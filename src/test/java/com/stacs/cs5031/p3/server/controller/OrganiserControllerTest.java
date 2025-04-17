@@ -14,6 +14,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.Date;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stacs.cs5031.p3.server.dto.BookingDto;
 import com.stacs.cs5031.p3.server.model.Organiser;
@@ -24,6 +26,7 @@ import com.stacs.cs5031.p3.server.service.RoomService;
 /**
  * This class is responsible for testing the Organiser Controller - integration
  * tests.
+ * @author 190031593
  */
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -168,9 +171,28 @@ public class OrganiserControllerTest {
     @Test
     void shouldGetAllBookingsWithoutIssue() throws Exception {
 
+        // this.mockMvc.perform(
+        //         post("/organiser/create-organiser")
+        //                 .content(new ObjectMapper().writeValueAsString(organiser1))
+        //                 .contentType(MediaType.APPLICATION_JSON)
+        //                 .accept(MediaType.APPLICATION_JSON))
+        //         .andExpect(status().isCreated())
+        //         .andExpect(content().string("SUCCESS!"));
 
         
-        
+        // BookingDto.BookingRequest bookingRequest = new BookingDto.BookingRequest("Event 1", 1L, new Date(), 2);
+        // BookingDto.BookingRequest bookingRequest2 = new BookingDto.BookingRequest("Event 2", 2L, new Date(), 2);
+        // roomService.createRoom("R1", 100);
+        // roomService.createRoom("R2", 200);
+        // bookingService.createBooking(bookingRequest, 1L);
+        // bookingService.createBooking(bookingRequest2, 1L);
+
+        // this.mockMvc.perform(
+        //         get("/organiser/my-bookings/"+1))
+        //         .andExpect(status().isOk())
+        //         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        //         .andExpect(jsonPath("$.[0].eventName").value("Event 1"))
+        //         .andExpect(jsonPath("$.[1].eventName").value("Event 2"));
 
     }
 
