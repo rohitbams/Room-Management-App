@@ -1,18 +1,22 @@
 package com.stacs.cs5031.p3.server.service;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.stacs.cs5031.p3.server.exception.BookingFullException;
 import com.stacs.cs5031.p3.server.exception.BookingNotFoundException;
 import com.stacs.cs5031.p3.server.exception.ResourceUnavailableException;
 import com.stacs.cs5031.p3.server.exception.UserNotFoundException;
 import com.stacs.cs5031.p3.server.model.Attendee;
 import com.stacs.cs5031.p3.server.model.Booking;
+import com.stacs.cs5031.p3.server.model.User;
 import com.stacs.cs5031.p3.server.repository.AttendeeRepository;
 import com.stacs.cs5031.p3.server.repository.BookingRepository;
-import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import com.stacs.cs5031.p3.server.repository.UserRepository;
 
-import java.util.List;
+import jakarta.transaction.Transactional;
 
 /**
  * The AttendeeService class.
@@ -26,22 +30,25 @@ public class AttendeeService {
     private final BookingRepository bookingRepository;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     public AttendeeService(AttendeeRepository attendeeRepository, BookingRepository bookingRepository) {
         this.attendeeRepository = attendeeRepository;
         this.bookingRepository = bookingRepository;
     }
 
-    /**
-     * Gets an attendee by ID.
-     *
-     * @param id The attendee ID
-     * @return The attendee
-     * @throws UserNotFoundException if attendee is not found
-     */
-    public Attendee getAttendeeById(Integer id) {
-        return attendeeRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(id));
-    }
+    // /**
+    //  * Gets an attendee by ID.
+    //  *
+    //  * @param id The attendee ID
+    //  * @return The attendee
+    //  * @throws UserNotFoundException if attendee is not found
+    //  */
+    // public Attendee getAttendeeById(Integer id) {
+    //     return attendeeRepository.findById(id)
+    //             .orElseThrow(() -> new UserNotFoundException(id));
+    // }
 
     /**
      * Gets an attendee by username.
@@ -157,6 +164,14 @@ public class AttendeeService {
     }
 
 
+    public Attendee getAttendeeById(Integer id) {
+        User user = userRepository.findById(id)
+            .orElseThrow(() -> new UserNotFoundException(id));
+        if (!(user instanceof Attendee)) {
+            throw new IllegalArgumentException("User with ID " + id + " is not an Attendee.");
+        }
+        return (Attendee) user;
+    }
 
 
 
