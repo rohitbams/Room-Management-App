@@ -1,8 +1,21 @@
 package com.stacs.cs5031.p3.server.model;
 
-import java.util.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 /**
  * Entity representing a booking in the system.
@@ -32,10 +45,15 @@ public class Booking {
     @ManyToMany
     private List<Attendee> attendees = new ArrayList<>();
 
+    @ManyToOne
+    private Attendee attendee;
+    private LocalDateTime bookingTime;
+
+
     /**
      * Default constructor required by JPA.
      */
-    protected Booking() {
+    public Booking() {
         // Required by JPA
     }
 
@@ -279,5 +297,14 @@ public class Booking {
     // creates a new ArrayList from the attendees Set
     public void setAttendees(Set<Attendee> attendees) {
         this.attendees = new ArrayList<>(attendees);
+    }
+
+    public void setAttendee(Attendee attendee) {
+        this.attendee = attendee;
+    }
+
+
+    public void setBookingTime(LocalDateTime bookingTime) {
+        this.bookingTime = bookingTime;
     }
 }
