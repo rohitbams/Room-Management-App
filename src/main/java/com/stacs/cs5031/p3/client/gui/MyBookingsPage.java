@@ -1,4 +1,4 @@
-package com.stacs.cs5031.p3.client.gui.organiser_view;
+package com.stacs.cs5031.p3.client.gui;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -27,12 +27,13 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.Point;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MyBookingsPage extends JFrame {
-	private ArrayList<BookingDto> bookings;
+    private ArrayList<BookingDto> bookings;
     private JTable bookingTable;
     private DefaultTableModel tableModel;
 
@@ -43,56 +44,86 @@ public class MyBookingsPage extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        // JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
         JPanel mainPanel = new JPanel();
-        // mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        mainPanel.setBackground(Color.decode("#f4c064"));
+        mainPanel.setBackground(Color.decode("#b2c590"));
         mainPanel.setLayout(null);
-
+        
+        // Add title label
         JLabel titleLabel = new JLabel("My Bookings", JLabel.CENTER);
-        titleLabel.setBounds(196, 219, 106, 17);
-        titleLabel.setFont(CustomFontLoader.loadFont("./resources/fonts/Lexend.ttf", 14));
+        titleLabel.setFont(CustomFontLoader.loadFont("./resources/fonts/Lexend.ttf", 30));
         titleLabel.setForeground(Color.decode("#000"));
-        mainPanel.add(titleLabel, BorderLayout.NORTH);
-
+        titleLabel.setBounds(50, 20, 1000, 50);
+        mainPanel.add(titleLabel);
+        
         // Fetch bookings
         bookings = fetchBookings(organiserId);
-
+        
         // Create the table panel
         JPanel tablePanel = createTablePanel();
-        tablePanel.setBounds(50, 250, 1000, 300);
+        tablePanel.setBounds(50, 100, 1030, 400);
         mainPanel.add(tablePanel);
 
         // Add to frame
         add(mainPanel);
     }
-    
 
     private JPanel createTablePanel() {
         JPanel panel = new JPanel(new BorderLayout());
-        
-        // Initialize table model
+        panel.setBackground(Color.decode("#c2c5aa")); // Set background color for the panel
+
+        // Initialise table model
         tableModel = new DefaultTableModel() {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false; // Make all cells non-editable
             }
         };
-        
+
         // Add columns
         tableModel.addColumn("Event Name");
         tableModel.addColumn("Date & Time");
         tableModel.addColumn("Organiser Name");
-        
+
         // Create and configure table
         bookingTable = new JTable(tableModel);
         bookingTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         bookingTable.getTableHeader().setReorderingAllowed(false);
         bookingTable.setAutoCreateRowSorter(true);
-        
+
+        // Set custom font for table header
+        Font headerFont = CustomFontLoader.loadFont("./resources/fonts/Lato.ttf", 20);
+        bookingTable.getTableHeader().setFont(headerFont);
+
+        // Set custom font for table cells
+        Font cellFont = CustomFontLoader.loadFont("./resources/fonts/Lexend.ttf", 14);
+        bookingTable.setFont(cellFont);
+        bookingTable.setRowHeight(25); // Adjust row height for better readability
+
+        // Set table background and font colours
+        bookingTable.setBackground(Color.decode("#c2c5aa")); // Background color
+        bookingTable.setForeground(Color.decode("#414833")); // Font color
+
+        // Disable grid lines
+        bookingTable.setShowGrid(false);
+        // Set custom renderer for the first column (Event Name)
+        //TODO hover not working
+        EventNameCellRenderer renderer = new EventNameCellRenderer();
+        bookingTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
+
+        // Add mouse listener to reset hover on exit
+        bookingTable.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                Point hoverPoint = e.getPoint();
+                int row = bookingTable.rowAtPoint(hoverPoint);
+                renderer.setHoveredRow(row); // Reset the hovered row
+                bookingTable.repaint(); // Repaint the table to remove the hover effect
+            }
+        });
+
         // Populate table with data
         populateTable();
-        
+
         // Add click handling for the table rows
         bookingTable.addMouseListener(new MouseAdapter() {
             @Override
@@ -103,7 +134,7 @@ public class MyBookingsPage extends JFrame {
                     if (bookingTable.getRowSorter() != null) {
                         row = bookingTable.getRowSorter().convertRowIndexToModel(row);
                     }
-                    
+
                     if (row < bookings.size()) {
                         BookingDto selectedBooking = bookings.get(row);
                         showBookingDetailsDialog(selectedBooking);
@@ -111,35 +142,37 @@ public class MyBookingsPage extends JFrame {
                 }
             }
         });
-        
+
         // Add table to scroll pane
         JScrollPane scrollPane = new JScrollPane(bookingTable);
+        scrollPane.getViewport().setBackground(Color.decode("#c2c5aa"));
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
         panel.add(scrollPane, BorderLayout.CENTER);
-        
+
         return panel;
     }
 
-	private void populateTable() {
-		// Clear existing data
-		while (tableModel.getRowCount() > 0) {
-			tableModel.removeRow(0);
-		}
+    private void populateTable() {
+        // Clear existing data
+        while (tableModel.getRowCount() > 0) {
+            tableModel.removeRow(0);
+        }
 
-		// Format for displaying the date/time
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        // Format for displaying the date/time
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
-		// Add rows to the table model from the BookingDto objects
-		for (BookingDto booking : bookings) {
-			String formattedDate = booking.getStartTime() != null ? dateFormat.format(booking.getStartTime()) : "N/A";
+        // Add rows to the table model from the BookingDto objects
+        for (BookingDto booking : bookings) {
+            String formattedDate = booking.getStartTime() != null ? dateFormat.format(booking.getStartTime()) : "N/A";
 
-			tableModel.addRow(new Object[] {
-					booking.getEventName(),
-					formattedDate,
-					booking.getOrganiserName()
-			});
-		}
-	}
-	
+            tableModel.addRow(new Object[] {
+                    booking.getEventName(),
+                    formattedDate,
+                    booking.getOrganiserName()
+            });
+        }
+    }
+
     private void showBookingDetailsDialog(BookingDto booking) {
         JDialog dialog = new JDialog(this);
         dialog.setTitle("Booking Details");
@@ -225,14 +258,14 @@ public class MyBookingsPage extends JFrame {
         dialog.add(mainPanel);
         dialog.setVisible(true);
     }
-    
-	// Helper method to add a row of details
-	private void addDetailRow(JPanel panel, String label, String value) {
-		panel.add(new JLabel(label, JLabel.RIGHT));
-		panel.add(new JLabel(value, JLabel.LEFT));
-	}
 
-	// // Method to fetch bookings from the backend
+    // Helper method to add a row of details
+    private void addDetailRow(JPanel panel, String label, String value) {
+        panel.add(new JLabel(label, JLabel.RIGHT));
+        panel.add(new JLabel(value, JLabel.LEFT));
+    }
+
+    // // Method to fetch bookings from the backend
     // private ArrayList<BookingDto> fetchBookings(int organiserId) {
     //     // Define the backend API URL
     //     String url = "http://localhost:8080/organiser/my-bookings/" + organiserId;
@@ -254,17 +287,20 @@ public class MyBookingsPage extends JFrame {
     //         return new ArrayList<>();
     //     }
     // }
-    
+    //TODO use the fetchBookings above instead
     private ArrayList<BookingDto> fetchBookings(int organiserId) {
         // Mock data for testing
         ArrayList<BookingDto> mockBookings = new ArrayList<>();
-        mockBookings.add(new BookingDto(1L, "Event A", 101L, "Room 1", new java.util.Date(), 60, 201L, "John Doe", null, 10, 50));
-        mockBookings.add(new BookingDto(2L, "Event B", 102L, "Room 2", new java.util.Date(), 120, 202L, "Jane Smith", null, 20, 100));
-        mockBookings.add(new BookingDto(3L, "Event C", 103L, "Room 3", new java.util.Date(), 90, 203L, "Alice Johnson", null, 15, 75));
+        mockBookings.add(new BookingDto(1L, "Event A", 101L, "Room 1", new java.util.Date(), 60, 201L, "John Doe", null,
+                10, 50));
+        mockBookings.add(new BookingDto(2L, "Event B", 102L, "Room 2", new java.util.Date(), 120, 202L, "Jane Smith",
+                null, 20, 100));
+        mockBookings.add(new BookingDto(3L, "Event C", 103L, "Room 3", new java.util.Date(), 90, 203L, "Alice Johnson",
+                null, 15, 75));
         return mockBookings;
     }
-	
-	// For testing or standalone usage
+
+    // For testing or standalone usage
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             MyBookingsPage page = new MyBookingsPage(123);
