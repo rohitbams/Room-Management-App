@@ -8,40 +8,42 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import java.util.Arrays;
 import java.util.List;
-
-import javax.print.attribute.standard.Media;
-
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import com.stacs.cs5031.p3.server.dto.RoomDto;
 import com.stacs.cs5031.p3.server.exception.RoomNotAvailableException;
 import com.stacs.cs5031.p3.server.exception.RoomNotFoundException;
 import com.stacs.cs5031.p3.server.service.RoomService;
 
-@SpringBootTest
-@AutoConfigureMockMvc
 public class RoomControllerTest {
 
-    @Autowired
     private MockMvc mvc;
 
-    @MockitoBean
+    @Mock
     private RoomService roomService;
+
+    @InjectMocks
+    private RoomController roomController;
+
+    @BeforeEach
+    void setup() {
+        MockitoAnnotations.openMocks(this);
+        mvc = MockMvcBuilders.standaloneSetup(roomController).build();
+    }
 
     @Test
     void shouldGetRoomWithValidId() throws Exception {
         when(roomService.findRoomDtoById(1)).thenReturn(new RoomDto(1, "Room 1", 10, true));
 
-        mvc.perform(MockMvcRequestBuilders.get("/rooms/1")
+        mvc.perform(get("/rooms/1")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -53,9 +55,9 @@ public class RoomControllerTest {
 
     @Test
     void shouldReturnNotFoundWithInvalidRoomId() throws Exception {
-        when(roomService.findRoomById(999)).thenThrow(RoomNotFoundException.class);
+        when(roomService.findRoomDtoById(999)).thenThrow(RoomNotFoundException.class);
 
-        mvc.perform(MockMvcRequestBuilders.get("/rooms/999")
+        mvc.perform(get("/rooms/999")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
