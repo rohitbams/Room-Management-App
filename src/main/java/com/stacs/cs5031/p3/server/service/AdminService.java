@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.stacs.cs5031.p3.server.dto.OrganiserDto;
 import com.stacs.cs5031.p3.server.dto.RoomDto;
 import com.stacs.cs5031.p3.server.exception.RoomNotFoundException;
 import com.stacs.cs5031.p3.server.model.Attendee;
@@ -35,7 +36,7 @@ public class AdminService {
         return new ArrayList<>(attendeeService.getAllAttendees());
     }
 
-    public ArrayList<Organiser> getOrganisers() {
+    public ArrayList<OrganiserDto> getOrganisers() {
         return organiserService.getAllOrganisers();
     }
 
