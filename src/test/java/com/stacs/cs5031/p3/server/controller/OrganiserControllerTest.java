@@ -158,7 +158,7 @@ public class OrganiserControllerTest {
         roomService.createRoom("R2", 200);
 
         this.mockMvc.perform(
-        get("/organisers/available-rooms"))
+        get("/organiser/available-rooms"))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.[0].name").value("R1"))
@@ -168,15 +168,14 @@ public class OrganiserControllerTest {
     @Test
     void shouldGetAllBookingsWithoutIssue() throws Exception {
 
+
+        
+        
+
     }
 
     @Test
     void shouldGetBookingDetailsWithoutIssue() {
-
-    }
-
-    @Test
-    void shouldThrowExceptionWhenBookingDetailsAreInvalid() {
 
     }
 
