@@ -36,35 +36,37 @@ public class MyBookingsPage extends JFrame {
     private JTable bookingTable;
     private DefaultTableModel tableModel;
 
-	public MyBookingsPage(int organiserId) {
+    public MyBookingsPage(int organiserId) {
         // Set up the frame
-        setTitle("My Bookings");
+        setTitle("My Bookings Page");
         setSize(1143, 617);
-        setLocationRelativeTo(null); // Center on screen
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
-        // Main panel with BorderLayout
-        JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        setLocationRelativeTo(null);
+
+        // JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
+        JPanel mainPanel = new JPanel();
+        // mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         mainPanel.setBackground(Color.decode("#f4c064"));
-        
-        // Add a header/title
+        mainPanel.setLayout(null);
+
         JLabel titleLabel = new JLabel("My Bookings", JLabel.CENTER);
         titleLabel.setBounds(196, 219, 106, 17);
         titleLabel.setFont(CustomFontLoader.loadFont("./resources/fonts/Lexend.ttf", 14));
         titleLabel.setForeground(Color.decode("#000"));
         mainPanel.add(titleLabel, BorderLayout.NORTH);
-        
+
         // Fetch bookings
         bookings = fetchBookings(organiserId);
-        
+
         // Create the table panel
         JPanel tablePanel = createTablePanel();
-        mainPanel.add(tablePanel, BorderLayout.CENTER);
-        
+        tablePanel.setBounds(50, 250, 1000, 300);
+        mainPanel.add(tablePanel);
+
         // Add to frame
         add(mainPanel);
     }
+    
 
     private JPanel createTablePanel() {
         JPanel panel = new JPanel(new BorderLayout());
@@ -79,7 +81,7 @@ public class MyBookingsPage extends JFrame {
         
         // Add columns
         tableModel.addColumn("Event Name");
-        tableModel.addColumn("Start Time");
+        tableModel.addColumn("Date & Time");
         tableModel.addColumn("Organiser Name");
         
         // Create and configure table
@@ -230,28 +232,37 @@ public class MyBookingsPage extends JFrame {
 		panel.add(new JLabel(value, JLabel.LEFT));
 	}
 
-	// Method to fetch bookings from the backend
-	private ArrayList<BookingDto> fetchBookings(int organiserId) {
-		// Define the backend API URL
-		String url = "/organiser/my-bookings/" + organiserId;
-		RestTemplate restTemplate = new RestTemplate();
-		try {
-			ResponseEntity<BookingDto[]> response = restTemplate.getForEntity(url, BookingDto[].class);
-			if (response.getStatusCode() == HttpStatus.OK) {
-				// Convert the array to an ArrayList and return it
-				BookingDto[] bookingsArray = response.getBody();
-				return new ArrayList<>(List.of(bookingsArray));
-			} else {
-				// Handle non-OK responses
-				System.err.println("Failed to fetch bookings. HTTP Status: " + response.getStatusCode());
-				return new ArrayList<>();
-			}
-		} catch (Exception e) {
-			// Handle exceptions (e.g., connection errors)
-			System.err.println("Error fetching bookings: " + e.getMessage());
-			return new ArrayList<>();
-		}
-	}
+	// // Method to fetch bookings from the backend
+    // private ArrayList<BookingDto> fetchBookings(int organiserId) {
+    //     // Define the backend API URL
+    //     String url = "http://localhost:8080/organiser/my-bookings/" + organiserId;
+    //     RestTemplate restTemplate = new RestTemplate();
+    //     try {
+    //         ResponseEntity<BookingDto[]> response = restTemplate.getForEntity(url, BookingDto[].class);
+    //         if (response.getStatusCode() == HttpStatus.OK) {
+    //             // Convert the array to an ArrayList and return it
+    //             BookingDto[] bookingsArray = response.getBody();
+    //             return new ArrayList<>(List.of(bookingsArray));
+    //         } else {
+    //             // Handle non-OK responses
+    //             System.err.println("Failed to fetch bookings. HTTP Status: " + response.getStatusCode());
+    //             return new ArrayList<>();
+    //         }
+    //     } catch (Exception e) {
+    //         // Handle exceptions (e.g., connection errors)
+    //         System.err.println("Error fetching bookings: " + e.getMessage());
+    //         return new ArrayList<>();
+    //     }
+    // }
+    
+    private ArrayList<BookingDto> fetchBookings(int organiserId) {
+        // Mock data for testing
+        ArrayList<BookingDto> mockBookings = new ArrayList<>();
+        mockBookings.add(new BookingDto(1L, "Event A", 101L, "Room 1", new java.util.Date(), 60, 201L, "John Doe", null, 10, 50));
+        mockBookings.add(new BookingDto(2L, "Event B", 102L, "Room 2", new java.util.Date(), 120, 202L, "Jane Smith", null, 20, 100));
+        mockBookings.add(new BookingDto(3L, "Event C", 103L, "Room 3", new java.util.Date(), 90, 203L, "Alice Johnson", null, 15, 75));
+        return mockBookings;
+    }
 	
 	// For testing or standalone usage
     public static void main(String[] args) {
