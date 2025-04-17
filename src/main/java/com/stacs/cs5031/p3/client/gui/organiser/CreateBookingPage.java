@@ -355,11 +355,12 @@ public class CreateBookingPage {
      * @return - the parsed Date object or null if parsing fails
      */
     private Date parseDate(String dateString) {
-      SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+      SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+      
       try {
         return dateFormat.parse(dateString);
       } catch (Exception e) {
-        JOptionPane.showMessageDialog(null, "Date is invalid! Please enter a valid date in dd/MM/yyyy format.", "Error",
+        JOptionPane.showMessageDialog(null, "Date is invalid! Please enter a valid date in dd/MM/yyyy HH:mm format.", "Error",
             JOptionPane.ERROR_MESSAGE);
         return null;
       }
