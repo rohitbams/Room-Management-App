@@ -19,7 +19,7 @@ import com.stacs.cs5031.p3.server.service.RoomService;
 // maps req (JSON body) to DTO objects
 // sends DTO objects to service layer
 @RestController
-@RequestMapping("/rooms/")
+@RequestMapping("/api/rooms")
 public class RoomController {
 
     @Autowired

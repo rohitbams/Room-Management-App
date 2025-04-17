@@ -45,6 +45,7 @@ public class Booking {
     @ManyToMany
     private List<Attendee> attendees = new ArrayList<>();
 
+    @ManyToOne
     private Attendee attendee;
     private LocalDateTime bookingTime;
 
