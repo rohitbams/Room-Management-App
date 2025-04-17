@@ -37,6 +37,7 @@ public class CreateBookingPage {
 
   /**
    * This method is the main method that creates the create booking page.
+   * @author 190031593
    * 
    * @param args
    */
