@@ -19,7 +19,7 @@ import com.stacs.cs5031.p3.client.gui.helper_classes.RoundedBorder;
 
 public class LoginGUI extends JFrame {
 
-    private static final String BASE_URL = "http://localhost:8080/api";
+    private static final String BASE_URL = "http://localhost:8080";
     private static final RestTemplate restTemplate = new RestTemplate();
 
     // Colors
@@ -145,9 +145,9 @@ public class LoginGUI extends JFrame {
     }
 
 
-    private UserDto createTestUser(Integer id, String username, String name, String role) {
-        return new UserDto(id, username, name, role);
-    }
+//    private UserDto createTestUser(Integer id, String username, String name, String role) {
+//        return new UserDto(id, username, name, role);
+//    }
 
     private void openAppropriateView() {
         dispose();

@@ -146,12 +146,11 @@ public class AttendeeEventsView extends JFrame {
         }
 
         private void addAvailableEventsTable() {
-            // Create table model
             String[] availableColumns = {"ID", "Event Name", "Room", "Start Time", "Duration", "Attendees", ""};
             availableEventsModel = new DefaultTableModel(availableColumns, 0) {
                 @Override
                 public boolean isCellEditable(int row, int column) {
-                    return column == 6; // Only allow editing the button column
+                    return column == 6;
                 }
             };
 
@@ -251,18 +250,6 @@ public class AttendeeEventsView extends JFrame {
                 System.out.println("Error loading available events: " + e.getMessage());
             }
 
-            // Fallback to sample data if API fails
-            for (int i = 1; i <= 5; i++) {
-                availableEventsModel.addRow(new Object[]{
-                        i,
-                        "Team Meeting " + i,
-                        "Room 10" + i,
-                        "2025-04-20 10:00",
-                        "60 mins",
-                        (i*2) + "/20",
-                        ""  // Button cell
-                });
-            }
         } catch (Exception e) {
             System.out.println("Error in loadAvailableEvents: " + e.getMessage());
         }
@@ -295,18 +282,6 @@ public class AttendeeEventsView extends JFrame {
                 System.out.println("Error loading unavailable events: " + e.getMessage());
             }
 
-            // Fallback to sample data if API fails
-            for (int i = 1; i <= 3; i++) {
-                unavailableEventsModel.addRow(new Object[]{
-                        i + 10,
-                        "Workshop " + i,
-                        "Room 20" + i,
-                        "2025-04-21 14:00",
-                        "90 mins",
-                        "20/20",
-                        "Full"
-                });
-            }
         } catch (Exception e) {
             System.out.println("Error in loadUnavailableEvents: " + e.getMessage());
         }
@@ -324,10 +299,9 @@ public class AttendeeEventsView extends JFrame {
 
             if (confirmed) {
                 try {
-                    // Use proper DTO for response
                     BookingDto response = restTemplate.postForObject(
                             BASE_URL + "/attendees/" + currentUser.getId() + "/register/" + bookingId,
-                            null,  // No request body needed
+                            null,
                             BookingDto.class
                     );
 
@@ -336,14 +310,10 @@ public class AttendeeEventsView extends JFrame {
                             "Success"
                     );
 
-                    // Refresh data
                     loadAvailableEvents();
                     loadUnavailableEvents();
                 } catch (Exception e) {
-                    // For testing purposes, show success even if API fails
-                    showCustomMessageDialog(
-                            "Successfully registered for event: " + eventName,
-                            "Success");
+
                 }
             }
         } catch (Exception e) {

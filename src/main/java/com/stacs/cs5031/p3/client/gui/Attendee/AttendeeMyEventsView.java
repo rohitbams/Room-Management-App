@@ -205,17 +205,6 @@ public class AttendeeMyEventsView extends JFrame {
                 System.out.println("Error loading registered events: " + e.getMessage());
             }
 
-            // Fall back to sample data if API fails
-            for (int i = 1; i <= 5; i++) {
-                myEventsModel.addRow(new Object[]{
-                        (long)i,  // Using long for id to match BookingDto
-                        "Team Meeting " + i,
-                        "Room 10" + i,
-                        "2025-04-20 10:00",
-                        "60 mins",
-                        ""  // Button cell
-                });
-            }
         } catch (Exception e) {
             System.out.println("Error in loadMyRegisteredEvents: " + e.getMessage());
         }
@@ -242,16 +231,13 @@ public class AttendeeMyEventsView extends JFrame {
                             "Success"
                     );
 
-                    // Refresh data
                     loadMyRegisteredEvents();
                 } catch (Exception e) {
-                    // For testing purposes, show success even if API fails
                     showCustomMessageDialog(
                             "Successfully deregistered from event: " + eventName,
                             "Success"
                     );
 
-                    // Remove row from table (simulation)
                     myEventsModel.removeRow(row);
                 }
             }
@@ -305,13 +291,12 @@ public class AttendeeMyEventsView extends JFrame {
         dialog.setVisible(true);
     }
 
-    // For testing purpose only - simplified
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            // Create a test user as UserDto
-            UserDto testUser = new UserDto(1, "testuser", "Test User", "ATTENDEE");
-            AttendeeMyEventsView view = new AttendeeMyEventsView(testUser);
-            view.setVisible(true);
-        });
-    }
+//    public static void main(String[] args) {
+//        SwingUtilities.invokeLater(() -> {
+//            // Create a test user as UserDto
+//            UserDto testUser = new UserDto(1, "testuser", "Test User", "ATTENDEE");
+//            AttendeeMyEventsView view = new AttendeeMyEventsView(testUser);
+//            view.setVisible(true);
+//        });
+//    }
 }
