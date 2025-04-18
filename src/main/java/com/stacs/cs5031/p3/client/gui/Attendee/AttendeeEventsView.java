@@ -17,7 +17,7 @@ import com.stacs.cs5031.p3.server.dto.UserDto;
 
 public class AttendeeEventsView extends JFrame {
 
-    private static final String BASE_URL = "http://localhost:8080/api";
+    private static final String BASE_URL = "http://localhost:8080";
     private static final RestTemplate restTemplate = new RestTemplate();
 
     private UserDto currentUser;

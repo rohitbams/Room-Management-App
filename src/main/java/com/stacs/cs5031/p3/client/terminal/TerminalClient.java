@@ -1,13 +1,12 @@
 package com.stacs.cs5031.p3.client.terminal;
 
-import com.stacs.cs5031.p3.server.dto.BookingDto;
-import com.stacs.cs5031.p3.server.dto.RoomDto;
-import com.stacs.cs5031.p3.server.dto.UserDto;
+import com.stacs.cs5031.p3.server.dto.*;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
 
+import javax.swing.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -327,7 +326,7 @@ public class TerminalClient {
             do {
                 System.out.print("Enter duration in hours (1-8): ");
                 durationHours = scanner.nextInt();
-                scanner.nextLine(); // consume newline
+                scanner.nextLine();
 
                 if (durationHours < 1 || durationHours > 8) {
                     System.out.println("Duration must be between 1 and 8 hours.");
@@ -343,10 +342,15 @@ public class TerminalClient {
             try {
                 Date parsedDate = DATE_FORMAT.parse(startTimeStr);
                 bookingRequest.setStartTime(parsedDate);
+                if (parsedDate.before(new Date())) {
+                    System.out.println("Date cannot be in the past!");
+                    return;
+                }
             } catch (ParseException e) {
                 System.out.println("Invalid date format. Please use DD-MM-YYYY HH:MM");
                 return;
             }
+
 
             // Convert hours to minutes for duration
             int durationMinutes = durationHours * 60;
@@ -363,10 +367,12 @@ public class TerminalClient {
                     String.class
             );
 
+
             System.out.println("Booking created successfully!");
 
+
         } catch (Exception e) {
-            System.out.println("Failed to create booking: " + e.getMessage());
+            System.out.println("Failed to create booking, please try again." + e.getMessage());
         }
     }
 
@@ -799,9 +805,9 @@ public class TerminalClient {
         System.out.println("\n=== All Attendees ===");
 
         try {
-            UserDto[] attendees = restTemplate.getForObject(
+            AttendeeDto[] attendees = restTemplate.getForObject(
                     BASE_URL + "/admin/attendees",
-                    UserDto[].class
+                    AttendeeDto[].class
             );
 
             if (attendees == null || attendees.length == 0) {
@@ -810,7 +816,7 @@ public class TerminalClient {
             }
 
             System.out.println("Attendees:");
-            for (UserDto attendee : attendees) {
+            for (AttendeeDto attendee : attendees) {
                 System.out.println("ID: " + attendee.getId() +
                         ", Name: " + attendee.getName() +
                         ", Username: " + attendee.getUsername());
@@ -828,9 +834,9 @@ public class TerminalClient {
         System.out.println("\n=== All Organisers ===");
 
         try {
-            UserDto[] organisers = restTemplate.getForObject(
+            OrganiserDto[] organisers = restTemplate.getForObject(
                     BASE_URL + "/admin/organisers",
-                    UserDto[].class
+                    OrganiserDto[].class
             );
 
             if (organisers == null || organisers.length == 0) {
@@ -839,7 +845,7 @@ public class TerminalClient {
             }
 
             System.out.println("Organisers:");
-            for (UserDto organiser : organisers) {
+            for (OrganiserDto organiser : organisers) {
                 System.out.println("ID: " + organiser.getId() +
                         ", Name: " + organiser.getName() +
                         ", Username: " + organiser.getUsername());
