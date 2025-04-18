@@ -142,10 +142,17 @@ public class CreateBookingPage {
      * This method creates and adds the duration label to the panel.
      */
     private void addDurationLbl() {
-      JLabel durationLbl = new JLabel("Duration (hrs)");
-      durationLbl.setBounds(280, 394, 216, 43);
+      JLabel durationLbl = new JLabel("Duration");
+      durationLbl.setBounds(345, 394, 216, 43);
       durationLbl.setFont(CustomFontLoader.loadFont("./resources/fonts/Lexend.ttf", 25));
       durationLbl.setForeground(Color.decode("#000"));
+
+
+      JLabel hrsLbl = new JLabel("(hrs)");
+      hrsLbl.setBounds(420, 410, 200, 54);
+      hrsLbl.setFont(CustomFontLoader.loadFont("./resources/fonts/Lexend.ttf", 15));
+      hrsLbl.setForeground(Color.decode("#808080"));
+      panel.add(hrsLbl);
       panel.add(durationLbl);
     }
 
@@ -157,7 +164,14 @@ public class CreateBookingPage {
       dateLbl.setBounds(280, 324, 200, 54);
       dateLbl.setFont(CustomFontLoader.loadFont("./resources/fonts/Lexend.ttf", 25));
       dateLbl.setForeground(Color.decode("#000"));
+
+      JLabel dateformatLbl = new JLabel("(dd/MM/yyyy HH:mm)");
+      dateformatLbl.setBounds(310, 345, 200, 54);
+      dateformatLbl.setFont(CustomFontLoader.loadFont("./resources/fonts/Lexend.ttf", 15));
+      dateformatLbl.setForeground(Color.decode("#808080"));
+
       panel.add(dateLbl);
+      panel.add(dateformatLbl);
 
     }
 
@@ -323,7 +337,7 @@ public class CreateBookingPage {
       }
 
       int duration = convertDuration(durationAsString);
-      if (duration <= 1 || duration > MAX_DURATION) {
+      if (duration < 1 || duration > MAX_DURATION) {
         JOptionPane.showMessageDialog(null,
             "Duration is invalid! A booking can be between 1 to " + MAX_DURATION + " hours.", "Error",
             JOptionPane.ERROR_MESSAGE);

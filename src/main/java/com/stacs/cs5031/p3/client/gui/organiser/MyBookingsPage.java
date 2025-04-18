@@ -20,15 +20,17 @@ import com.stacs.cs5031.p3.client.gui.helper_classes.*;
 import com.stacs.cs5031.p3.server.dto.AttendeeDto;
 import com.stacs.cs5031.p3.server.dto.BookingDto;
 import com.stacs.cs5031.p3.server.dto.UserDto;
-
+import javafx.event.ActionEvent;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.Point;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -66,6 +68,7 @@ public class MyBookingsPage extends JFrame {
         JPanel tablePanel = addTablePanel();
         tablePanel.setBounds(50, 100, 1030, 400);
         mainPanel.add(tablePanel);
+        addBackButton(user, mainPanel);
 
         // Add to frame
         add(mainPanel);
@@ -112,12 +115,11 @@ public class MyBookingsPage extends JFrame {
         // Disable grid lines
         bookingTable.setShowGrid(false);
         // Set custom renderer for the first column (Event Name)
-        //TODO hover not working
         EventNameCellRenderer renderer = new EventNameCellRenderer();
         bookingTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
 
         // Add mouse listener to reset hover on exit
-        bookingTable.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+        bookingTable.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
                 Point hoverPoint = e.getPoint();
@@ -286,12 +288,6 @@ public class MyBookingsPage extends JFrame {
         panel.add(valueComponent);
     }
     
-    // Helper method to add a row of details
-    private void addDetailRow(JPanel panel, String label, String value) {
-        panel.add(new JLabel(label, JLabel.RIGHT));
-        panel.add(new JLabel(value, JLabel.LEFT));
-    }
-
     // Method to fetch bookings from the backend
     private ArrayList<BookingDto> fetchBookings(int organiserId) {
         // Define the backend API URL
@@ -313,6 +309,25 @@ public class MyBookingsPage extends JFrame {
             System.err.println("Error fetching bookings: " + e.getMessage());
             return new ArrayList<>();
         }
+    }
+
+    private void addBackButton(UserDto user, JPanel mainPanel) {
+        JButton backButton = new JButton("<");
+        backButton.setBounds(25, 20, 50, 25);
+        backButton.setFont(CustomFontLoader.loadFont("./resources/fonts/Lexend.ttf", 20));
+        backButton.setBackground(Color.decode("#b2c590"));
+        backButton.setForeground(Color.decode("#73664e"));
+        backButton.setBorder(new RoundedBorder(2, Color.decode("#000"), 1));
+        
+        // Add hover effect
+        OnClickEventHelper.setOnClickColor(backButton, Color.decode("#9db580"), Color.decode("#b2c590"));
+    
+        backButton.addActionListener(e -> {
+                new OrganiserHomePage(user);
+                dispose(); // Use dispose directly since this class extends JFrame
+        });
+        
+        mainPanel.add(backButton);
     }
 
     private ArrayList<AttendeeDto> fetchAttendees(Long bookingId, Long organiserId){
@@ -362,7 +377,7 @@ public class MyBookingsPage extends JFrame {
 
         DefaultListModel<String> listModel = new DefaultListModel<>();
         for (AttendeeDto attendee : attendees) {
-            listModel.addElement(attendee.getName() );
+            listModel.addElement(attendee.getName());
         }
 
         JList<String> attendeeList = new JList<>(listModel);
@@ -370,7 +385,8 @@ public class MyBookingsPage extends JFrame {
         dialog.add(scrollPane);
         dialog.setVisible(true);
     }
-    // //TODO use the fetchBookings above instead
+    
+    // // For testing purpose only
     // private ArrayList<BookingDto> fetchBookings(int organiserId) {
     //     // Mock data for testing
     //     ArrayList<BookingDto> mockBookings = new ArrayList<>();
@@ -383,7 +399,7 @@ public class MyBookingsPage extends JFrame {
     //     return mockBookings;
     // }
 
-    // For testing or standalone usage
+    // // For testing or standalone usage
     // public static void main(String[] args) {
     //     SwingUtilities.invokeLater(() -> {
     //         MyBookingsPage page = new MyBookingsPage(123);
