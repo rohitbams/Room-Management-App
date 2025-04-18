@@ -1,5 +1,6 @@
 package com.stacs.cs5031.p3.client.terminal;
 
+import com.stacs.cs5031.p3.server.dto.RoomDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -107,26 +108,19 @@ public class TerminalClientTest {
 
     @Test
     public void testGetAvailableRooms_Success() {
-        Map<String, Object>[] rooms = new HashMap[2];
-        rooms[0] = new HashMap<>();
-        rooms[0].put("id", 1);
-        rooms[0].put("name", "Room 101");
-        rooms[0].put("capacity", 20);
-
-        rooms[1] = new HashMap<>();
-        rooms[1].put("id", 2);
-        rooms[1].put("name", "Room 102");
-        rooms[1].put("capacity", 15);
+        RoomDto[] rooms = new RoomDto[2];
+        rooms[0] = new RoomDto(1, "Room 101", 20, true);
+        rooms[1] = new RoomDto(2, "Room 102", 15, true);
 
         when(mockRestTemplate.getForObject(
                 contains("/rooms/available"),
-                eq(Map[].class)))
+                eq(RoomDto[].class)))
                 .thenReturn(rooms);
 
-        List<Map<String, Object>> result = TerminalClient.getAvailableRooms();
+        List<RoomDto> result = TerminalClient.getAvailableRooms();
         assertEquals(2, result.size());
-        assertEquals("Room 101", result.get(0).get("name"));
-        assertEquals("Room 102", result.get(1).get("name"));
+        assertEquals("Room 101", result.get(0).getName());
+        assertEquals("Room 102", result.get(1).getName());
     }
 
 }

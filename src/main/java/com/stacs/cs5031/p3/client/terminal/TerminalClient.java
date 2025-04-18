@@ -236,11 +236,11 @@ public class TerminalClient {
      * This method gets all available rooms for an organiser to book.
      * @return list of available bookings
      */
-    static List<Map<String, Object>> getAvailableRooms() {
+    static List<RoomDto> getAvailableRooms() {
         try {
-            Map[] rooms = restTemplate.getForObject(
+            RoomDto[] rooms = restTemplate.getForObject(
                     BASE_URL + "/rooms/available",
-                    Map[].class
+                    RoomDto[].class
             );
 
             if (rooms == null) {
@@ -249,6 +249,7 @@ public class TerminalClient {
 
             return Arrays.asList(rooms);
         } catch (Exception e) {
+            System.out.println("Error retrieving rooms: " + e.getMessage());
             return Collections.emptyList();
         }
     }
@@ -258,17 +259,18 @@ public class TerminalClient {
      */
     private static void viewAvailableRooms() {
         System.out.println("\n=== Available Rooms ===");
-        List<Map<String, Object>> rooms = getAvailableRooms();
+        List<RoomDto> rooms = getAvailableRooms();
 
         if (rooms.isEmpty()) {
             System.out.println("No available rooms found.");
-            return;        }
+            return;
+        }
 
         System.out.println("Available Rooms:");
-        for (Map<String, Object> room : rooms) {
-            System.out.println("ID: " + room.get("id") +
-                    ", Name: " + room.get("name") +
-                    ", Capacity: " + room.get("capacity"));
+        for (RoomDto room : rooms) {
+            System.out.println("ID: " + room.getId() +
+                    ", Name: " + room.getName() +
+                    ", Capacity: " + room.getCapacity());
         }
     }
 
