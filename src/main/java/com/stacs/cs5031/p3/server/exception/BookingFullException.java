@@ -13,4 +13,3 @@ public class BookingFullException extends RuntimeException{
         super("Booking with id: " + id + " is already at full capacity");
     }
 }
-
