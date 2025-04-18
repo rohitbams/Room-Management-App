@@ -75,7 +75,7 @@ public class UserControllerTest {
         Organiser organiser = new Organiser("New User", "newuser", "password");
         when(userService.registerUser(any(RegistrationRequest.class)))
                 .thenReturn(organiser);
-        mockMvc.perform(post("/api/users/register")
+        mockMvc.perform(post("/users/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated());
@@ -96,7 +96,7 @@ public class UserControllerTest {
                 "New User", "newuser", "password", "ATTENDEE");
         Attendee attendee = new Attendee("New User", "newuser", "password");
         when(userService.registerUser(any(RegistrationRequest.class))).thenReturn(attendee);
-        mockMvc.perform(post("/api/users/register")
+        mockMvc.perform(post("/users/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated());
@@ -115,7 +115,7 @@ public class UserControllerTest {
     void shouldReturnAllUsers() throws Exception {
         User user2 = new User("Jane Doe", "janedoe", "password456");
         when(userService.getAllUsers()).thenReturn(Arrays.asList(testUser, user2));
-        mockMvc.perform(get("/api/users"))
+        mockMvc.perform(get("/users"))
                 .andExpect(status().isOk());
         verify(userService).getAllUsers();
     }
@@ -131,7 +131,7 @@ public class UserControllerTest {
     @Test
     void shouldReturnUserById_whenUserExists() throws Exception {
         when(userService.getUserById(1)).thenReturn(testUser);
-        mockMvc.perform(get("/api/users/1"))
+        mockMvc.perform(get("/users/1"))
                 .andExpect(status().isOk());
         verify(userService).getUserById(1);
     }
@@ -147,7 +147,7 @@ public class UserControllerTest {
     @Test
     void shouldReturnNotFound_whenUserIdDoesNotExist() throws Exception {
         when(userService.getUserById(1000)).thenThrow(new UserNotFoundException(1000));
-        mockMvc.perform(get("/api/users/1000"))
+        mockMvc.perform(get("/users/1000"))
                 .andExpect(status().isNotFound());
         verify(userService).getUserById(1000);
     }
@@ -163,7 +163,7 @@ public class UserControllerTest {
     @Test
     void shouldReturnUserByUsername_whenUserExists() throws Exception {
         when(userService.getUserByUsername("johndoe")).thenReturn(testUser);
-        mockMvc.perform(get("/api/users/by-username/johndoe"))
+        mockMvc.perform(get("/users/by-username/johndoe"))
                 .andExpect(status().isOk());
         verify(userService).getUserByUsername("johndoe");
     }
@@ -179,7 +179,7 @@ public class UserControllerTest {
     @Test
     void shouldReturnNotFound_whenUsernameDoesNotExist() throws Exception {
         when(userService.getUserByUsername("unknown")).thenThrow(new UserNotFoundException("unknown"));
-        mockMvc.perform(get("/api/users/by-username/unknown"))
+        mockMvc.perform(get("/users/by-username/unknown"))
                 .andExpect(status().isNotFound());
         verify(userService).getUserByUsername("unknown");
     }
@@ -197,7 +197,7 @@ public class UserControllerTest {
     void shouldDeleteUser_whenUserExists() throws Exception {
         when(userService.getUserById(1)).thenReturn(testUser);
         doNothing().when(userService).deleteUser(1);
-        mockMvc.perform(delete("/api/users/1"))
+        mockMvc.perform(delete("/users/1"))
                 .andExpect(status().isNoContent());
         verify(userService).getUserById(1);
         verify(userService).deleteUser(1);
@@ -215,7 +215,7 @@ public class UserControllerTest {
     @Test
     void shouldReturnNotFound_whenDeletingNonExistentUser() throws Exception {
         when(userService.getUserById(1000)).thenThrow(new UserNotFoundException(1000));
-        mockMvc.perform(delete("/api/users/1000"))
+        mockMvc.perform(delete("/users/1000"))
                 .andExpect(status().isNotFound());
         verify(userService).getUserById(1000);
         verify(userService, never()).deleteUser(1000);
@@ -235,7 +235,7 @@ public class UserControllerTest {
                 "John Doe", "johndoe", "password", "ORGANISER");
         when(userService.registerUser(any(RegistrationRequest.class)))
                 .thenThrow(new UserAlreadyExistsException("johndoe"));
-        mockMvc.perform(post("/api/users/register")
+        mockMvc.perform(post("/users/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isConflict());
@@ -256,7 +256,7 @@ public class UserControllerTest {
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setUsername("johndoe");
         loginRequest.setPassword("password123");
-        mockMvc.perform(post("/api/users/login")
+        mockMvc.perform(post("/users/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isOk());
@@ -278,7 +278,7 @@ public class UserControllerTest {
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setUsername("johndoe");
         loginRequest.setPassword("wrongpassword");
-        mockMvc.perform(post("/api/users/login")
+        mockMvc.perform(post("/users/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isUnauthorized());
@@ -300,7 +300,7 @@ public class UserControllerTest {
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setUsername("unknown");
         loginRequest.setPassword("anypassword");
-        mockMvc.perform(post("/api/users/login")
+        mockMvc.perform(post("/users/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isUnauthorized());
@@ -317,7 +317,7 @@ public class UserControllerTest {
      */
     @Test
     void shouldLogoutSuccessfully() throws Exception {
-        mockMvc.perform(post("/api/users/logout")
+        mockMvc.perform(post("/users/logout")
                         .header("Authorization", "some-token-value"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Logged out successfully"));
