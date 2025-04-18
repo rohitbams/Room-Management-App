@@ -1,6 +1,15 @@
 package com.stacs.cs5031.p3.server.service;
 
-import com.stacs.cs5031.p3.server.exception.BookingConflictException;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.stacs.cs5031.p3.server.dto.BookingDto;
 import com.stacs.cs5031.p3.server.exception.EntityNotFoundException;
 import com.stacs.cs5031.p3.server.exception.ResourceUnavailableException;
 import com.stacs.cs5031.p3.server.model.Attendee;
@@ -8,19 +17,8 @@ import com.stacs.cs5031.p3.server.model.Booking;
 import com.stacs.cs5031.p3.server.model.Organiser;
 import com.stacs.cs5031.p3.server.model.Room;
 import com.stacs.cs5031.p3.server.repository.BookingRepository;
-import com.stacs.cs5031.p3.server.repository.RoomRepository;
 import com.stacs.cs5031.p3.server.repository.OrganiserRepository;
-import com.stacs.cs5031.p3.server.service.AttendeeService;
-import com.stacs.cs5031.p3.server.dto.BookingDto;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-//import javax.persistence.EntityNotFoundException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import com.stacs.cs5031.p3.server.repository.RoomRepository;
 
 @Service
 public class BookingServiceImpl implements BookingService {
@@ -72,6 +70,7 @@ public class BookingServiceImpl implements BookingService {
         if (attendee == null) {
             throw new EntityNotFoundException("Attendee not found with ID: " + attendeeId);
         }
+    
 
         if (booking.getAttendees().size() >= booking.getRoom().getCapacity()) {
             throw new ResourceUnavailableException("Room is at full capacity");
@@ -89,10 +88,10 @@ public class BookingServiceImpl implements BookingService {
 
         // Convert Long attendeeId to Integer
         Attendee attendee = attendeeService.getAttendeeById(attendeeId.intValue());
-        if (attendee == null) {
-            throw new EntityNotFoundException("Attendee not found with ID: " + attendeeId);
-        }
-
+       if (attendee == null) {
+           throw new EntityNotFoundException("Attendee not found with ID: " + attendeeId);
+       }
+   
 
         booking.getAttendees().remove(attendee);
         return bookingRepository.save(booking);
@@ -110,9 +109,9 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<Booking> getBookingsByAttendee(Long attendeeId) {
-        return bookingRepository.findByAttendeeId(attendeeId.intValue());
+        return bookingRepository.findByAttendeesId(attendeeId);
     }
-
+    
 
     @Override
     public boolean hasConflict(Long roomId, Date startTime, long duration) {
@@ -140,20 +139,20 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional
     public Booking createBooking(BookingDto.BookingRequest bookingDTO, Long organiserId) {
-        // get room
+        // 1. Get room
         Room room = roomRepository.findById(bookingDTO.getRoomId().intValue())
                 .orElseThrow(() -> new EntityNotFoundException("Room not found with ID: " + bookingDTO.getRoomId()));
 
-        // get organiser
+        // 2. Get organiser
         Organiser organiser = organiserRepository.findById(organiserId.intValue())
                 .orElseThrow(() -> new EntityNotFoundException("Organiser not found with ID: " + organiserId));
 
-        // check if room is available
+        // 3. Check if room is available
         if (!room.isAvailable()) {
             throw new ResourceUnavailableException("Room is not available");
         }
 
-        // create booking object
+        // 4. Create booking object
         Booking booking = new Booking(
                 bookingDTO.getEventName(),
                 room,
@@ -162,33 +161,36 @@ public class BookingServiceImpl implements BookingService {
                 organiser
         );
 
-        // save and return booking
+        // 5. Save and return booking
         return bookingRepository.save(booking);
     }
 
-//    @Transactional
-//public Booking createBooking(BookingDto.BookingRequest bookingDTO, Long organiserId) {
-//    Room room = roomRepository.findById(bookingDTO.getRoomId().intValue()) // convert Long to Integer
-//        .orElseThrow(() -> new EntityNotFoundException("Room not found"));
-//
-//    Organiser organiser = organiserRepository.findById(organiserId.intValue()) // convert Long to Integer
-//        .orElseThrow(() -> new EntityNotFoundException("Organiser not found"));
-//
-//    if (hasConflict(room.getID(), bookingDTO.getStartTime(), bookingDTO.getDuration())) {
-//        throw new BookingConflictException("Room already booked for the specified time");
-//    }
-//
-//    Booking booking = new Booking();
-//    booking.setRoom(room);
-//    booking.setOrganiser(organiser);
-//    booking.setStartTime(bookingDTO.getStartTime());
-//    booking.setDuration(bookingDTO.getDuration());
-//    //booking.setTitle(bookingDTO.getTitle());
-//
-//    //if (bookingDTO.getDescription() != null) {
-//     //   booking.setDescription(bookingDTO.getDescription());
-//    //}
-//
-//    return bookingRepository.save(booking);
-//}
+//     @Transactional
+// public Booking createBooking(BookingDto.BookingRequest bookingDTO, Long organiserId) {
+//     Room room = roomRepository.findById(bookingDTO.getRoomId().intValue()) // convert Long to Integer
+//         .orElseThrow(() -> new EntityNotFoundException("Room not found"));
+
+//     Organiser organiser = organiserRepository.findById(organiserId.intValue()) // convert Long to Integer
+//         .orElseThrow(() -> new EntityNotFoundException("Organiser not found"));
+
+//      if (hasConflict(Long.valueOf(room.getID()), bookingDTO.getStartTime(), bookingDTO.getDuration())) {
+//         {
+//         throw new BookingConflictException("Room already booked for the specified time");
+//     }
+
+//     Booking booking = new Booking();
+//     booking.setRoom(room);
+//     booking.setOrganiser(organiser);
+//     booking.setStartTime(bookingDTO.getStartTime());
+//     booking.setDuration(bookingDTO.getDuration());
+//     booking.setTitle(bookingDTO.getTitle());
+
+//     //if (bookingDTO.getDescription() != null) {
+//        booking.setDescription(bookingDTO.getDescription());
+//     //}
+
+//     return bookingRepository.save(booking);
+// }
+// }
 }
+
