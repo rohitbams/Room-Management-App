@@ -21,7 +21,7 @@ import java.util.List;
  * This class is a REST API controller for Attendee operations.
  */
 @RestController
-@RequestMapping("/api/attendees")
+@RequestMapping("/attendees")
 public class AttendeeController {
 
     private final AttendeeService attendeeService;

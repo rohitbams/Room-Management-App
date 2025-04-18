@@ -2,6 +2,7 @@ package com.stacs.cs5031.p3.client.terminal;
 
 import com.stacs.cs5031.p3.server.dto.BookingDto;
 import com.stacs.cs5031.p3.server.dto.RoomDto;
+import com.stacs.cs5031.p3.server.dto.UserDto;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -17,20 +18,19 @@ import java.util.*;
  */
 public class TerminalClient {
 
-    private static final String BASE_URL = "http://localhost:8080/api";
+    private static final String BASE_URL = "http://localhost:8080";
     private static RestTemplate restTemplate = new RestTemplate();
     private static final Scanner scanner = new Scanner(System.in);
-    private static Map<String, String> currentUser = null;
+    private static UserDto currentUser = null;
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy HH:mm");
     private static boolean running = true;
 
     public static void main(String[] args) {
-        boolean running = true;
-
         while (running) {
             if (currentUser == null) {
                 showWelcomeMenu();
             } else {
-                String role = currentUser.get("role");
+                String role = currentUser.getRole();
                 if ("ORGANISER".equals(role)) {
                     showOrganiserMenu();
                 } else if ("ATTENDEE".equals(role)) {
@@ -58,7 +58,7 @@ public class TerminalClient {
         boolean success = handleLogin(username, password);
 
         if (success) {
-            System.out.println("Login successful. Welcome, " + currentUser.get("name") + "!");
+            System.out.println("Login successful. Welcome, " + currentUser.getName() + "!");
         } else {
             System.out.println("Login failed. Please check your username and password.");
         }
@@ -81,22 +81,19 @@ public class TerminalClient {
 
             HttpEntity<Map<String, String>> request = new HttpEntity<>(requestBody, headers);
 
-            Map<String, Object> response = restTemplate.postForObject(
+            UserDto response = restTemplate.postForObject(
                     BASE_URL + "/users/login",
                     request,
-                    Map.class
+                    UserDto.class
             );
 
             if (response != null) {
-                currentUser = new HashMap<>();
-                currentUser.put("id", String.valueOf(response.get("id")));
-                currentUser.put("username", (String) response.get("username"));
-                currentUser.put("name", (String) response.get("name"));
-                currentUser.put("role", (String) response.get("role"));
-
-                return true;            }
+                currentUser = response;
+                return true;
+            }
             return false;
         } catch (Exception e) {
+            System.out.println("Error during login: " + e.getMessage());
             return false;
         }
     }
@@ -163,14 +160,15 @@ public class TerminalClient {
 
             HttpEntity<Map<String, String>> request = new HttpEntity<>(requestBody, headers);
 
-            Map<String, Object> response = restTemplate.postForObject(
+            UserDto response = restTemplate.postForObject(
                     BASE_URL + "/users/register",
                     request,
-                    Map.class
+                    UserDto.class
             );
 
             return response != null;
         } catch (Exception e) {
+            System.out.println("Error during registration: " + e.getMessage());
             return false;
         }
     }
@@ -192,11 +190,14 @@ public class TerminalClient {
         switch (choice) {
             case 1:
                 login();
-                break;            case 2:
+                break;
+            case 2:
                 register();
-                break;            case 3:
+                break;
+            case 3:
                 System.exit(0);
-                break;            default:
+                break;
+            default:
                 System.out.println("Invalid choice. Please try again.");
         }
     }
@@ -219,15 +220,20 @@ public class TerminalClient {
         switch (choice) {
             case 1:
                 createBooking();
-                break;            case 2:
+                break;
+            case 2:
                 cancelBooking();
-                break;            case 3:
+                break;
+            case 3:
                 viewAvailableRooms();
-                break;            case 4:
+                break;
+            case 4:
                 viewMyBookings();
-                break;            case 5:
+                break;
+            case 5:
                 logout();
-                break;            default:
+                break;
+            default:
                 System.out.println("Invalid choice. Please try again.");
         }
     }
@@ -286,16 +292,19 @@ public class TerminalClient {
                     RoomDto[].class
             );
 
+            // Check if there are rooms
             if (rooms == null || rooms.length == 0) {
                 System.out.println("No available rooms found.");
                 return;
             }
 
+            // Show available rooms
             System.out.println("Available Rooms:");
             for (int i = 0; i < rooms.length; i++) {
                 System.out.println((i+1) + ". " + rooms[i].getName() + " (Capacity: " + rooms[i].getCapacity() + ")");
             }
 
+            // Room selection input
             System.out.print("Select room number: ");
             int roomIndex = scanner.nextInt();
             scanner.nextLine();
@@ -305,47 +314,52 @@ public class TerminalClient {
                 return;
             }
 
+            // Event name input
             System.out.print("Enter event name: ");
             String eventName = scanner.nextLine();
 
+            // Date input
             System.out.print("Enter start date and time (DD-MM-YYYY HH:MM): ");
             String startTimeStr = scanner.nextLine();
 
+            // Duration input with validation
             int durationHours;
             do {
-                System.out.print("Enter duration in hours (maximum 8): ");
+                System.out.print("Enter duration in hours (1-8): ");
                 durationHours = scanner.nextInt();
-                scanner.nextLine();
+                scanner.nextLine(); // consume newline
 
-                if (durationHours > 8) {
-                    System.out.println("Sorry, bookings cannot exceed 8 hours. Please enter a shorter duration.");
-                } else if (durationHours <= 0) {
-                    System.out.println("Duration must be positive. Please enter a valid duration.");
+                if (durationHours < 1 || durationHours > 8) {
+                    System.out.println("Duration must be between 1 and 8 hours.");
                 }
-            } while (durationHours <= 0 || durationHours > 8);
+            } while (durationHours < 1 || durationHours > 8);
 
-            // create a BookingDto.BookingRequest object
+            // Create a BookingDto object
             BookingDto.BookingRequest bookingRequest = new BookingDto.BookingRequest();
             bookingRequest.setEventName(eventName);
-            bookingRequest.setRoomId(Long.valueOf(rooms[roomIndex-1].getId())); // converting Long due to conflicting datatypes
+            bookingRequest.setRoomId(Long.valueOf(rooms[roomIndex-1].getId())); // Convert to Long
 
-            // parse date from string to Date object
-            SimpleDateFormat inputFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+            // Parse date from string to Date object
             try {
-                Date parsedDate = inputFormat.parse(startTimeStr);
+                Date parsedDate = DATE_FORMAT.parse(startTimeStr);
                 bookingRequest.setStartTime(parsedDate);
             } catch (ParseException e) {
                 System.out.println("Invalid date format. Please use DD-MM-YYYY HH:MM");
                 return;
             }
 
-            // convert hours to minutes for duration
+            // Convert hours to minutes for duration
             int durationMinutes = durationHours * 60;
             bookingRequest.setDuration(durationMinutes);
 
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            HttpEntity<BookingDto.BookingRequest> request = new HttpEntity<>(bookingRequest, headers);
+
             String response = restTemplate.postForObject(
-                    BASE_URL + "/organisers/create-booking/" + currentUser.get("id"),
-                    bookingRequest,
+                    BASE_URL + "/organiser/create-booking/" + currentUser.getId(),
+                    request,
                     String.class
             );
 
@@ -355,6 +369,7 @@ public class TerminalClient {
             System.out.println("Failed to create booking: " + e.getMessage());
         }
     }
+
     /**
      * This method cancels made booking for an organiser
      */
@@ -362,29 +377,19 @@ public class TerminalClient {
         System.out.println("\n=== Cancel Booking ===");
         try {
             BookingDto[] bookings = restTemplate.getForObject(
-                    BASE_URL + "/organisers/" + currentUser.get("id") + "/bookings",
+                    BASE_URL + "/organiser/my-bookings/" + currentUser.getId(),
                     BookingDto[].class
             );
 
-            // null check
+            // Check if user has bookings
             if (bookings == null || bookings.length == 0) {
                 System.out.println("You have no bookings to cancel.");
                 return;
             }
 
-            System.out.println("Your Bookings:");
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm");
-            for (int i = 0; i < bookings.length; i++) {
-                // convert minutes to hours for display
-                float durationHours = bookings[i].getDuration() / 60.0f; // make the number pretty
-                String formattedDuration = durationHours == (int)durationHours ?
-                        String.valueOf((int)durationHours) : String.valueOf(durationHours);
+            displayBookings(bookings, "Your Bookings:");
 
-                System.out.println((i+1) + ". " + bookings[i].getEventName() +
-                        " - " + dateFormat.format(bookings[i].getStartTime()) +
-                        " (" + formattedDuration + " hours)");
-            }
-
+            // Get user selection
             System.out.print("Select booking to cancel (number): ");
             int bookingIndex = scanner.nextInt();
             scanner.nextLine();
@@ -396,7 +401,8 @@ public class TerminalClient {
 
             Long bookingId = bookings[bookingIndex-1].getId();
 
-            restTemplate.delete(BASE_URL + "/organisers/" + currentUser.get("id") + "/bookings/" + bookingId);
+            // Send delete request
+            restTemplate.delete(BASE_URL + "/organiser/cancel-booking/" + bookingId + "/" + currentUser.getId());
 
             System.out.println("Booking cancelled successfully.");
 
@@ -412,7 +418,7 @@ public class TerminalClient {
         System.out.println("\n=== My Bookings ===");
         try {
             BookingDto[] bookings = restTemplate.getForObject(
-                    BASE_URL + "/organisers/" + currentUser.get("id") + "/bookings",
+                    BASE_URL + "/organiser/my-bookings/" + currentUser.getId(),
                     BookingDto[].class
             );
 
@@ -421,25 +427,13 @@ public class TerminalClient {
                 return;
             }
 
-            System.out.println("Your Bookings:");
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm");
-            for (BookingDto booking : bookings) {
-                float durationHours = booking.getDuration() / 60.0f;
-                String formattedDuration = durationHours == (int)durationHours ?
-                        String.valueOf((int)durationHours) : String.valueOf(durationHours);
-
-                System.out.println("ID: " + booking.getId() +
-                        ", Event: " + booking.getEventName() +
-                        ", Room: " + booking.getRoomName() +
-                        ", Time: " + dateFormat.format(booking.getStartTime()) +
-                        ", Duration: " + formattedDuration + " hours" +
-                        ", Attendees: " + booking.getCurrentAttendees() + "/" + booking.getMaxCapacity());
-            }
+            displayBookings(bookings, "Your Bookings:");
 
         } catch (Exception e) {
             System.out.println("Failed to retrieve your bookings: " + e.getMessage());
         }
     }
+
     /**
      * This method displays the menu of options for an Attendee.
      */
@@ -459,17 +453,23 @@ public class TerminalClient {
         switch (choice) {
             case 1:
                 viewAvailableBookings();
-                break;            case 2:
+                break;
+            case 2:
                 viewUnavailableBookings();
-                break;            case 3:
+                break;
+            case 3:
                 registerForBooking();
-                break;            case 4:
+                break;
+            case 4:
                 viewMyRegisteredBookings();
-                break;            case 5:
+                break;
+            case 5:
                 deregisterFromBooking();
-                break;            case 6:
+                break;
+            case 6:
                 logout();
-                break;            default:
+                break;
+            default:
                 System.out.println("Invalid choice. Please try again.");
         }
     }
@@ -481,24 +481,17 @@ public class TerminalClient {
         System.out.println("\n=== Available Bookings ===");
 
         try {
-            Map[] bookings = restTemplate.getForObject(
-                    BASE_URL + "/api/attendees/" + currentUser.get("id") + "/available-bookings",
-                    Map[].class
+            BookingDto[] bookings = restTemplate.getForObject(
+                    BASE_URL + "/attendees/" + currentUser.getId() + "/available-bookings",
+                    BookingDto[].class
             );
 
             if (bookings == null || bookings.length == 0) {
                 System.out.println("No available bookings found.");
-                return;            }
-
-            System.out.println("Available Bookings:");
-            for (Map booking : bookings) {
-                System.out.println("ID: " + booking.get("id") +
-                        ", Event: " + booking.get("eventName") +
-                        ", Room: " + booking.get("roomName") +
-                        ", Time: " + booking.get("startTime") +
-                        ", Duration: " + booking.get("duration") + " minutes" +
-                        ", Attendees: " + booking.get("currentAttendees") + "/" + booking.get("maxCapacity"));
+                return;
             }
+
+            displayBookings(bookings, "Available Bookings:");
 
         } catch (Exception e) {
             System.out.println("Failed to retrieve available bookings: " + e.getMessage());
@@ -512,24 +505,17 @@ public class TerminalClient {
         System.out.println("\n=== Unavailable Bookings ===");
 
         try {
-            Map[] bookings = restTemplate.getForObject(
-                    BASE_URL + "/api/attendees/" + currentUser.get("id") + "/unavailable-bookings",
-                    Map[].class
+            BookingDto[] bookings = restTemplate.getForObject(
+                    BASE_URL + "/attendees/" + currentUser.getId() + "/unavailable-bookings",
+                    BookingDto[].class
             );
 
             if (bookings == null || bookings.length == 0) {
                 System.out.println("No unavailable bookings found.");
-                return;            }
-
-            System.out.println("Unavailable Bookings (Full Capacity):");
-            for (Map booking : bookings) {
-                System.out.println("ID: " + booking.get("id") +
-                        ", Event: " + booking.get("eventName") +
-                        ", Room: " + booking.get("roomName") +
-                        ", Time: " + booking.get("startTime") +
-                        ", Duration: " + booking.get("duration") + " minutes" +
-                        ", Attendees: " + booking.get("currentAttendees") + "/" + booking.get("maxCapacity"));
+                return;
             }
+
+            displayBookings(bookings, "Unavailable Bookings (Full Capacity):");
 
         } catch (Exception e) {
             System.out.println("Failed to retrieve unavailable bookings: " + e.getMessage());
@@ -543,20 +529,23 @@ public class TerminalClient {
         System.out.println("\n=== Register for Booking ===");
 
         try {
-            Map[] bookings = restTemplate.getForObject(
-                    BASE_URL + "/api/attendees/" + currentUser.get("id") + "/available-bookings",
-                    Map[].class
+            BookingDto[] bookings = restTemplate.getForObject(
+                    BASE_URL + "/attendees/" + currentUser.getId() + "/available-bookings",
+                    BookingDto[].class
             );
 
             if (bookings == null || bookings.length == 0) {
                 System.out.println("No available bookings found.");
-                return;            }
+                return;
+            }
 
             System.out.println("Available Bookings:");
             for (int i = 0; i < bookings.length; i++) {
-                System.out.println((i+1) + ". " + bookings[i].get("eventName") + " - " +
-                        bookings[i].get("startTime") + " - " +
-                        bookings[i].get("currentAttendees") + "/" + bookings[i].get("maxCapacity") + " attendees");
+                int durationHours = bookings[i].getDuration() / 60;
+                System.out.println((i+1) + ". " + bookings[i].getEventName() +
+                        " - " + DATE_FORMAT.format(bookings[i].getStartTime()) +
+                        " - " + durationHours + " hours - " +
+                        bookings[i].getCurrentAttendees() + "/" + bookings[i].getMaxCapacity() + " attendees");
             }
 
             System.out.print("Select booking to register for (number): ");
@@ -565,14 +554,15 @@ public class TerminalClient {
 
             if (bookingIndex < 1 || bookingIndex > bookings.length) {
                 System.out.println("Invalid booking selection.");
-                return;            }
+                return;
+            }
 
-            int bookingId = ((Number) bookings[bookingIndex-1].get("id")).intValue();
+            Long bookingId = bookings[bookingIndex-1].getId();
 
-            Map<String, Object> response = restTemplate.postForObject(
-                    BASE_URL + "/api/attendees/" + currentUser.get("id") + "/register/" + bookingId,
+            BookingDto response = restTemplate.postForObject(
+                    BASE_URL + "/attendees/" + currentUser.getId() + "/register/" + bookingId,
                     null,
-                    Map.class
+                    BookingDto.class
             );
 
             System.out.println("Successfully registered for booking!");
@@ -589,23 +579,17 @@ public class TerminalClient {
         System.out.println("\n=== My Registered Bookings ===");
 
         try {
-            Map[] bookings = restTemplate.getForObject(
-                    BASE_URL + "/api/attendees/" + currentUser.get("id") + "/registered-bookings",
-                    Map[].class
+            BookingDto[] bookings = restTemplate.getForObject(
+                    BASE_URL + "/attendees/" + currentUser.getId() + "/registered-bookings",
+                    BookingDto[].class
             );
 
             if (bookings == null || bookings.length == 0) {
                 System.out.println("You are not registered for any bookings.");
-                return;            }
-
-            System.out.println("Your Registered Bookings:");
-            for (Map booking : bookings) {
-                System.out.println("ID: " + booking.get("id") +
-                        ", Event: " + booking.get("eventName") +
-                        ", Room: " + booking.get("roomName") +
-                        ", Time: " + booking.get("startTime") +
-                        ", Duration: " + booking.get("duration") + " minutes");
+                return;
             }
+
+            displayBookings(bookings, "Your Registered Bookings:");
 
         } catch (Exception e) {
             System.out.println("Failed to retrieve your registered bookings: " + e.getMessage());
@@ -619,18 +603,22 @@ public class TerminalClient {
         System.out.println("\n=== Deregister from Booking ===");
 
         try {
-            Map[] bookings = restTemplate.getForObject(
-                    BASE_URL + "/api/attendees/" + currentUser.get("id") + "/registered-bookings",
-                    Map[].class
+            BookingDto[] bookings = restTemplate.getForObject(
+                    BASE_URL + "/attendees/" + currentUser.getId() + "/registered-bookings",
+                    BookingDto[].class
             );
 
             if (bookings == null || bookings.length == 0) {
                 System.out.println("You are not registered for any bookings.");
-                return;            }
+                return;
+            }
 
             System.out.println("Your Registered Bookings:");
             for (int i = 0; i < bookings.length; i++) {
-                System.out.println((i+1) + ". " + bookings[i].get("eventName") + " - " + bookings[i].get("startTime"));
+                int durationHours = bookings[i].getDuration() / 60;
+                System.out.println((i+1) + ". " + bookings[i].getEventName() +
+                        " - " + DATE_FORMAT.format(bookings[i].getStartTime()) +
+                        " - " + durationHours + " hours");
             }
 
             System.out.print("Select booking to deregister from (number): ");
@@ -639,11 +627,12 @@ public class TerminalClient {
 
             if (bookingIndex < 1 || bookingIndex > bookings.length) {
                 System.out.println("Invalid booking selection.");
-                return;            }
+                return;
+            }
 
-            int bookingId = ((Number) bookings[bookingIndex-1].get("id")).intValue();
+            Long bookingId = bookings[bookingIndex-1].getId();
 
-            restTemplate.delete(BASE_URL + "/api/attendees/" + currentUser.get("id") + "/cancel/" + bookingId);
+            restTemplate.delete(BASE_URL + "/attendees/" + currentUser.getId() + "/cancel/" + bookingId);
 
             System.out.println("Successfully deregistered from booking.");
 
@@ -651,7 +640,6 @@ public class TerminalClient {
             System.out.println("Failed to deregister from booking: " + e.getMessage());
         }
     }
-
 
     /**
      * This method shows options available for an admin, like viewing all rooms, adding rooms,
@@ -673,17 +661,23 @@ public class TerminalClient {
         switch (choice) {
             case 1:
                 viewAllRooms();
-                break;            case 2:
+                break;
+            case 2:
                 addRoom();
-                break;            case 3:
+                break;
+            case 3:
                 removeRoom();
-                break;            case 4:
+                break;
+            case 4:
                 viewAllAttendees();
-                break;            case 5:
+                break;
+            case 5:
                 viewAllOrganisers();
-                break;            case 6:
+                break;
+            case 6:
                 logout();
-                break;            default:
+                break;
+            default:
                 System.out.println("Invalid choice. Please try again.");
         }
     }
@@ -695,21 +689,22 @@ public class TerminalClient {
         System.out.println("\n=== All Rooms ===");
 
         try {
-            Map[] rooms = restTemplate.getForObject(
+            RoomDto[] rooms = restTemplate.getForObject(
                     BASE_URL + "/admin/rooms",
-                    Map[].class
+                    RoomDto[].class
             );
 
             if (rooms == null || rooms.length == 0) {
                 System.out.println("No rooms found.");
-                return;            }
+                return;
+            }
 
             System.out.println("Rooms:");
-            for (Map room : rooms) {
-                System.out.println("ID: " + room.get("id") +
-                        ", Name: " + room.get("name") +
-                        ", Capacity: " + room.get("capacity") +
-                        ", Available: " + room.get("available"));
+            for (RoomDto room : rooms) {
+                System.out.println("ID: " + room.getId() +
+                        ", Name: " + room.getName() +
+                        ", Capacity: " + room.getCapacity() +
+                        ", Available: " + room.isAvailable());
             }
 
         } catch (Exception e) {
@@ -760,20 +755,21 @@ public class TerminalClient {
         System.out.println("\n=== Remove Room ===");
 
         try {
-            Map[] rooms = restTemplate.getForObject(
+            RoomDto[] rooms = restTemplate.getForObject(
                     BASE_URL + "/admin/rooms",
-                    Map[].class
+                    RoomDto[].class
             );
 
             if (rooms == null || rooms.length == 0) {
                 System.out.println("No rooms found to remove.");
-                return;            }
+                return;
+            }
 
             System.out.println("Rooms:");
             for (int i = 0; i < rooms.length; i++) {
-                System.out.println((i+1) + ". " + rooms[i].get("name") +
-                        " (Capacity: " + rooms[i].get("capacity") +
-                        ", Available: " + rooms[i].get("available") + ")");
+                System.out.println((i+1) + ". " + rooms[i].getName() +
+                        " (Capacity: " + rooms[i].getCapacity() +
+                        ", Available: " + rooms[i].isAvailable() + ")");
             }
 
             System.out.print("Select room to remove (number): ");
@@ -782,9 +778,10 @@ public class TerminalClient {
 
             if (roomIndex < 1 || roomIndex > rooms.length) {
                 System.out.println("Invalid room selection.");
-                return;            }
+                return;
+            }
 
-            int roomId = ((Number) rooms[roomIndex-1].get("id")).intValue();
+            int roomId = rooms[roomIndex-1].getId();
 
             restTemplate.delete(BASE_URL + "/admin/rooms/" + roomId);
 
@@ -802,20 +799,21 @@ public class TerminalClient {
         System.out.println("\n=== All Attendees ===");
 
         try {
-            Map[] attendees = restTemplate.getForObject(
+            UserDto[] attendees = restTemplate.getForObject(
                     BASE_URL + "/admin/attendees",
-                    Map[].class
+                    UserDto[].class
             );
 
             if (attendees == null || attendees.length == 0) {
                 System.out.println("No attendees found.");
-                return;            }
+                return;
+            }
 
             System.out.println("Attendees:");
-            for (Map attendee : attendees) {
-                System.out.println("ID: " + attendee.get("id") +
-                        ", Name: " + attendee.get("name") +
-                        ", Username: " + attendee.get("username"));
+            for (UserDto attendee : attendees) {
+                System.out.println("ID: " + attendee.getId() +
+                        ", Name: " + attendee.getName() +
+                        ", Username: " + attendee.getUsername());
             }
 
         } catch (Exception e) {
@@ -830,20 +828,21 @@ public class TerminalClient {
         System.out.println("\n=== All Organisers ===");
 
         try {
-            Map[] organisers = restTemplate.getForObject(
+            UserDto[] organisers = restTemplate.getForObject(
                     BASE_URL + "/admin/organisers",
-                    Map[].class
+                    UserDto[].class
             );
 
             if (organisers == null || organisers.length == 0) {
                 System.out.println("No organisers found.");
-                return;            }
+                return;
+            }
 
             System.out.println("Organisers:");
-            for (Map organiser : organisers) {
-                System.out.println("ID: " + organiser.get("id") +
-                        ", Name: " + organiser.get("name") +
-                        ", Username: " + organiser.get("username"));
+            for (UserDto organiser : organisers) {
+                System.out.println("ID: " + organiser.getId() +
+                        ", Name: " + organiser.getName() +
+                        ", Username: " + organiser.getUsername());
             }
 
         } catch (Exception e) {
@@ -851,17 +850,34 @@ public class TerminalClient {
         }
     }
 
+    /**
+     * Helper method to display bookings
+     * @param bookings bookings to display
+     * @param title display text before the bookings list
+     */
+    private static void displayBookings(BookingDto[] bookings, String title) {
+        System.out.println(title);
+        for (BookingDto booking : bookings) {
+            int durationHours = booking.getDuration() / 60;
+            System.out.println("ID: " + booking.getId() +
+                    ", Event: " + booking.getEventName() +
+                    ", Room: " + booking.getRoomName() +
+                    ", Time: " + DATE_FORMAT.format(booking.getStartTime()) +
+                    ", Duration: " + durationHours + " hours" +
+                    ", Attendees: " + booking.getCurrentAttendees() + "/" + booking.getMaxCapacity());
+        }
+    }
 
-    // for testing purposes only
+    // Testing utility methods
     static RestTemplate getRestTemplate() {
         return restTemplate;
     }
 
-    static Map<String, String> getCurrentUser() {
+    static UserDto getCurrentUser() {
         return currentUser;
     }
 
-    static void setCurrentUser(Map<String, String> user) {
+    static void setCurrentUser(UserDto user) {
         currentUser = user;
     }
 
