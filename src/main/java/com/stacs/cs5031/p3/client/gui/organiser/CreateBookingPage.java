@@ -35,6 +35,14 @@ import com.stacs.cs5031.p3.client.gui.helper_classes.RoundedBorder;
  */
 public class CreateBookingPage {
 
+  public static void main(String[] args) {
+    // Sample user data
+    Map<String, String> user = new HashMap<>();
+    user.put("id", "1");
+    user.put("name", "John Doe");
+    new CreateBookingPage(user);
+  }
+
   /**
    * This is the constructor of the CreateBookingPage class.
    */
@@ -98,7 +106,7 @@ public class CreateBookingPage {
       this.organiserId = organiserId;
       this.frame = frame;
       this.user = user;
-      //getRooms();
+      getRooms();
     }
 
     /**
@@ -217,7 +225,7 @@ public class CreateBookingPage {
     /**
      * This method creates and adds the submit button to the panel and its onclick
      * behaviour.
-     * TODO: Implement the create booking functionality.
+     * 
      */
     private void addSubmitButton(JTextField eventNameInput, JComboBox<String> roomInput, JTextField durationInput,
         JFormattedTextField dateInput) {
@@ -376,14 +384,10 @@ public class CreateBookingPage {
      * @param duration  - duration of the booking in hours
      */
     private void createBooking(String eventName, int roomId, Date date, int duration) {
-      BookingDto.BookingRequest bookingDto = new BookingDto.BookingRequest();
-      bookingDto.setEventName(eventName);
-      bookingDto.setRoomId((long) roomId);
-      bookingDto.setStartTime(date);
-      bookingDto.setDuration(duration);
+      BookingDto.BookingRequest bookingDto = new BookingDto.BookingRequest(eventName, (long) roomId, date, duration, "");
 
       ResponseEntity<String> res = restClient.post()
-          .uri(BASE_URL + "organiser/create-booking"+ "/" + organiserId)
+          .uri(BASE_URL + "organiser/create-booking/" + organiserId)
           .contentType(MediaType.APPLICATION_JSON)
           .body(bookingDto)
           .retrieve()
@@ -403,7 +407,7 @@ public class CreateBookingPage {
      */
     private void getRooms() {
       ResponseEntity<ArrayList<RoomDto>> res = restClient.get()
-          .uri(BASE_URL + "getRooms")
+          .uri(BASE_URL + "organiser/available-rooms")
           .retrieve()
           .toEntity(new ParameterizedTypeReference<>() {
           });
