@@ -18,15 +18,6 @@ import com.stacs.cs5031.p3.server.dto.UserDto;
  */
 public class OrganiserHomePage {
 
-    public static void main(String[] args) {
-    // Sample user data
-   UserDto user = 
-   new UserDto(3, "John Doe", "johndoe", "ORGANISER");
-
-
-    new OrganiserHomePage(user);
-  }
-
 
   /**
    * This is the constructor of the OrganiserHomePage class.
