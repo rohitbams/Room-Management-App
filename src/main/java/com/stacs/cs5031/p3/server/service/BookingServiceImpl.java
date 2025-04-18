@@ -68,8 +68,10 @@ public class BookingServiceImpl implements BookingService {
             .orElseThrow(() -> new EntityNotFoundException("Booking not found"));
 
         // Convert Long attendeeId to Integer
-        Attendee attendee = attendeeService.getAttendeeById(attendeeId.intValue())
-            .orElseThrow(() -> new EntityNotFoundException("Attendee not found"));
+        Attendee attendee = attendeeService.getAttendeeById(attendeeId.intValue());
+        if (attendee == null) {
+            throw new EntityNotFoundException("Attendee not found with ID: " + attendeeId);
+        }
 
         if (booking.getAttendees().size() >= booking.getRoom().getCapacity()) {
             throw new ResourceUnavailableException("Room is at full capacity");
@@ -86,8 +88,11 @@ public class BookingServiceImpl implements BookingService {
             .orElseThrow(() -> new EntityNotFoundException("Booking not found"));
 
         // Convert Long attendeeId to Integer
-        Attendee attendee = attendeeService.getAttendeeById(attendeeId.intValue())
-            .orElseThrow(() -> new EntityNotFoundException("Attendee not found"));
+        Attendee attendee = attendeeService.getAttendeeById(attendeeId.intValue());
+        if (attendee == null) {
+            throw new EntityNotFoundException("Attendee not found with ID: " + attendeeId);
+        }
+
 
         booking.getAttendees().remove(attendee);
         return bookingRepository.save(booking);
@@ -105,9 +110,9 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<Booking> getBookingsByAttendee(Long attendeeId) {
-        return bookingRepository.findByAttendeesId(attendeeId);
+        return bookingRepository.findByAttendeeId(attendeeId.intValue());
     }
-    
+
 
     @Override
     public boolean hasConflict(Long roomId, Date startTime, long duration) {
@@ -132,29 +137,58 @@ public class BookingServiceImpl implements BookingService {
         return false;
     }
 
+    @Override
     @Transactional
-public Booking createBooking(BookingDto.BookingRequest bookingDTO, Long organiserId) {
-    Room room = roomRepository.findById(bookingDTO.getRoomId().intValue()) // convert Long to Integer
-        .orElseThrow(() -> new EntityNotFoundException("Room not found"));
+    public Booking createBooking(BookingDto.BookingRequest bookingDTO, Long organiserId) {
+        // get room
+        Room room = roomRepository.findById(bookingDTO.getRoomId().intValue())
+                .orElseThrow(() -> new EntityNotFoundException("Room not found with ID: " + bookingDTO.getRoomId()));
 
-    Organiser organiser = organiserRepository.findById(organiserId.intValue()) // convert Long to Integer
-        .orElseThrow(() -> new EntityNotFoundException("Organiser not found"));
+        // get organiser
+        Organiser organiser = organiserRepository.findById(organiserId.intValue())
+                .orElseThrow(() -> new EntityNotFoundException("Organiser not found with ID: " + organiserId));
 
-    if (hasConflict(room.getID(), bookingDTO.getStartTime(), bookingDTO.getDuration())) {
-        throw new BookingConflictException("Room already booked for the specified time");
+        // check if room is available
+        if (!room.isAvailable()) {
+            throw new ResourceUnavailableException("Room is not available");
+        }
+
+        // create booking object
+        Booking booking = new Booking(
+                bookingDTO.getEventName(),
+                room,
+                bookingDTO.getStartTime(),
+                bookingDTO.getDuration(),
+                organiser
+        );
+
+        // save and return booking
+        return bookingRepository.save(booking);
     }
 
-    Booking booking = new Booking();
-    booking.setRoom(room);
-    booking.setOrganiser(organiser);
-    booking.setStartTime(bookingDTO.getStartTime());
-    booking.setDuration(bookingDTO.getDuration());
-    //booking.setTitle(bookingDTO.getTitle());
-
-    //if (bookingDTO.getDescription() != null) {
-     //   booking.setDescription(bookingDTO.getDescription());
-    //}
-
-    return bookingRepository.save(booking);
-}
+//    @Transactional
+//public Booking createBooking(BookingDto.BookingRequest bookingDTO, Long organiserId) {
+//    Room room = roomRepository.findById(bookingDTO.getRoomId().intValue()) // convert Long to Integer
+//        .orElseThrow(() -> new EntityNotFoundException("Room not found"));
+//
+//    Organiser organiser = organiserRepository.findById(organiserId.intValue()) // convert Long to Integer
+//        .orElseThrow(() -> new EntityNotFoundException("Organiser not found"));
+//
+//    if (hasConflict(room.getID(), bookingDTO.getStartTime(), bookingDTO.getDuration())) {
+//        throw new BookingConflictException("Room already booked for the specified time");
+//    }
+//
+//    Booking booking = new Booking();
+//    booking.setRoom(room);
+//    booking.setOrganiser(organiser);
+//    booking.setStartTime(bookingDTO.getStartTime());
+//    booking.setDuration(bookingDTO.getDuration());
+//    //booking.setTitle(bookingDTO.getTitle());
+//
+//    //if (bookingDTO.getDescription() != null) {
+//     //   booking.setDescription(bookingDTO.getDescription());
+//    //}
+//
+//    return bookingRepository.save(booking);
+//}
 }
