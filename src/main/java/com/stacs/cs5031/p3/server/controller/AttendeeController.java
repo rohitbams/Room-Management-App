@@ -121,7 +121,7 @@ public class AttendeeController {
     @PostMapping("/{attendeeId}/register/{bookingId}")
     public ResponseEntity<?> registerForBooking(
             @PathVariable Integer attendeeId,
-            @PathVariable Integer bookingId) {
+            @PathVariable long bookingId) {
 
         try {
             Booking booking = attendeeService.registerForBooking(attendeeId, bookingId);
@@ -145,7 +145,7 @@ public class AttendeeController {
     @DeleteMapping("/{attendeeId}/cancel/{bookingId}")
     public ResponseEntity<?> deregisterFromBooking(
             @PathVariable Integer attendeeId,
-            @PathVariable Integer bookingId) {
+            @PathVariable long bookingId) {
 
         try {
             Booking booking = attendeeService.deregisterFromBooking(attendeeId, bookingId);

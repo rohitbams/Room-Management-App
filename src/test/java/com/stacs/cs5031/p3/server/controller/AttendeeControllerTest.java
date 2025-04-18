@@ -19,6 +19,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -46,7 +47,9 @@ public class AttendeeControllerTest {
         attendee = new Attendee("Ringo Star", "drummerboy", "peaceandlove");
         Room room = new Room("Cavern Club", 200);
         Organiser organiser = new Organiser("Brian Epstein", "manager", "lennonsucks");
+        setId(organiser, 1);
         booking = new Booking("Beatles concert", room, new Date(), 60, organiser);
+        setId(booking, 1);
     }
 
     @Test
@@ -119,7 +122,7 @@ public class AttendeeControllerTest {
     @Test
     void deregisterFromBooking_ShouldReturnBooking_WhenSuccess() {
         when(attendeeService.deregisterFromBooking(1, 1)).thenReturn(booking);
-        ResponseEntity<?> response = attendeeController.deregisterFromBooking(1, 1);
+        ResponseEntity<?> response = attendeeController.deregisterFromBooking(1, 1L);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
     }
@@ -127,8 +130,17 @@ public class AttendeeControllerTest {
     @Test
     void cancelRegistration_ShouldReturnNotFound_WhenBookingNotFound() {
         when(attendeeService.deregisterFromBooking(1, 1)).thenThrow(new BookingNotFoundException(1));
-        ResponseEntity<?> response = attendeeController.deregisterFromBooking(1, 1);
+        ResponseEntity<?> response = attendeeController.deregisterFromBooking(1, 1L);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    private void setId(Object object, int id) {
+        try {
+            Field field = object.getClass().getSuperclass().getDeclaredField("id");
+            field.setAccessible(true);
+            field.set(object, id);
+        } catch (Exception e) {
+        }
     }
 
 }
