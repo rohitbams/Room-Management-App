@@ -1,6 +1,7 @@
 package com.stacs.cs5031.p3.client.terminal;
 
 import com.stacs.cs5031.p3.server.dto.BookingDto;
+import com.stacs.cs5031.p3.server.dto.RoomDto;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -278,9 +279,9 @@ public class TerminalClient {
         System.out.println("\n=== Create Booking ===");
 
         try {
-            Map[] rooms = restTemplate.getForObject(
+            RoomDto[] rooms = restTemplate.getForObject(
                     BASE_URL + "/rooms/available",
-                    Map[].class
+                    RoomDto[].class
             );
 
             if (rooms == null || rooms.length == 0) {
@@ -290,7 +291,7 @@ public class TerminalClient {
 
             System.out.println("Available Rooms:");
             for (int i = 0; i < rooms.length; i++) {
-                System.out.println((i+1) + ". " + rooms[i].get("name") + " (Capacity: " + rooms[i].get("capacity") + ")");
+                System.out.println((i+1) + ". " + rooms[i].getName() + " (Capacity: " + rooms[i].getCapacity() + ")");
             }
 
             System.out.print("Select room number: ");
@@ -312,19 +313,19 @@ public class TerminalClient {
             do {
                 System.out.print("Enter duration in hours (maximum 8): ");
                 durationHours = scanner.nextInt();
-                scanner.nextLine(); // consume newline
+                scanner.nextLine();
 
                 if (durationHours > 8) {
-                    System.out.println("Sorry, bookings cannot exceed 8 hours. Please enter a smaller duration.");
+                    System.out.println("Sorry, bookings cannot exceed 8 hours. Please enter a shorter duration.");
                 } else if (durationHours <= 0) {
                     System.out.println("Duration must be positive. Please enter a valid duration.");
                 }
             } while (durationHours <= 0 || durationHours > 8);
 
-            // create a booking dto object
+            // create a BookingDto.BookingRequest object
             BookingDto.BookingRequest bookingRequest = new BookingDto.BookingRequest();
             bookingRequest.setEventName(eventName);
-            bookingRequest.setRoomId(Long.valueOf(rooms[roomIndex-1].get("id").toString()));
+            bookingRequest.setRoomId(Long.valueOf(rooms[roomIndex-1].getId())); // converting Long due to conflicting datatypes
 
             // parse date from string to Date object
             SimpleDateFormat inputFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm");
@@ -352,37 +353,44 @@ public class TerminalClient {
             System.out.println("Failed to create booking: " + e.getMessage());
         }
     }
-
     /**
      * This method cancels made booking for an organiser
      */
     private static void cancelBooking() {
         System.out.println("\n=== Cancel Booking ===");
-
         try {
-            Map[] bookings = restTemplate.getForObject(
+            BookingDto[] bookings = restTemplate.getForObject(
                     BASE_URL + "/organisers/" + currentUser.get("id") + "/bookings",
-                    Map[].class
+                    BookingDto[].class
             );
 
             if (bookings == null || bookings.length == 0) {
                 System.out.println("You have no bookings to cancel.");
-                return;            }
-
-            System.out.println("Your Bookings:");
-            for (int i = 0; i < bookings.length; i++) {
-                System.out.println((i+1) + ". " + bookings[i].get("eventName") + " - " + bookings[i].get("startTime"));
+                return;
             }
 
-            System.out.print("Select booking to cancel <number>: ");
+            System.out.println("Your Bookings:");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+            for (int i = 0; i < bookings.length; i++) {
+                float durationHours = bookings[i].getDuration() / 60.0f;
+                String formattedDuration = durationHours == (int)durationHours ?
+                        String.valueOf((int)durationHours) : String.valueOf(durationHours);
+
+                System.out.println((i+1) + ". " + bookings[i].getEventName() +
+                        " - " + dateFormat.format(bookings[i].getStartTime()) +
+                        " (" + formattedDuration + " hours)");
+            }
+
+            System.out.print("Select booking to cancel (number): ");
             int bookingIndex = scanner.nextInt();
             scanner.nextLine();
 
             if (bookingIndex < 1 || bookingIndex > bookings.length) {
                 System.out.println("Invalid booking selection.");
-                return;            }
+                return;
+            }
 
-            int bookingId = ((Number) bookings[bookingIndex-1].get("id")).intValue();
+            Long bookingId = bookings[bookingIndex-1].getId();
 
             restTemplate.delete(BASE_URL + "/organisers/" + currentUser.get("id") + "/bookings/" + bookingId);
 
