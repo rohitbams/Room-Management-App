@@ -26,17 +26,36 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
+/**
+ * Unit tests for the {@link AttendeeController} class.
+ * Tests the REST endpoints of the AttendeeController using mocked dependencies.
+ * Verifies that the controller correctly interacts with the AttendeeService and returns
+ * appropriate HTTP status codes and responses.
+ */
 public class AttendeeControllerTest {
 
+    /** Mock of the AttendeeService to simulate service operations */
     @Mock
     private AttendeeService attendeeService;
 
+    /** The AttendeeController instance being tested, with mocked dependencies injected */
     @InjectMocks
     private AttendeeController attendeeController;
 
+    /** Test attendee instance used across multiple test methods */
     private Attendee attendee;
+    
+    /** Test booking instance used across multiple test methods */
     private Booking booking;
 
+    /**
+     * Setup before each test.
+     * Initializes mocks and creates sample test objects including:
+     * - An attendee
+     * - A room
+     * - An organiser
+     * - A booking
+     */
     @BeforeEach
     void setup() {
         MockitoAnnotations.openMocks(this);
@@ -49,6 +68,13 @@ public class AttendeeControllerTest {
         setId(booking, 1);
     }
 
+    /**
+     * Tests retrieving all attendees.
+     * Verifies that:
+     * 1. The endpoint returns a 200 OK status
+     * 2. The response body contains the expected number of attendees
+     * 3. The service's getAllAttendees method is called
+     */
     @Test
     void getAllAttendees_ShouldReturnAttendees() {
         List<Attendee> attendees = Arrays.asList(attendee);
@@ -59,6 +85,13 @@ public class AttendeeControllerTest {
         assertEquals(1, response.getBody().size());
     }
 
+    /**
+     * Tests retrieving an attendee by ID when the attendee exists.
+     * Verifies that:
+     * 1. The endpoint returns a 200 OK status
+     * 2. The response body is not null
+     * 3. The service's getAttendeeById method is called with the correct ID
+     */
     @Test
     void getAttendeeById_ShouldReturnAttendee_WhenExists() {
         when(attendeeService.getAttendeeById(1)).thenReturn(attendee);
@@ -67,6 +100,12 @@ public class AttendeeControllerTest {
         assertNotNull(response.getBody());
     }
 
+    /**
+     * Tests retrieving an attendee by ID when the attendee doesn't exist.
+     * Verifies that:
+     * 1. The endpoint returns a 404 Not Found status
+     * 2. The service's getAttendeeById method is called with the correct ID
+     */
     @Test
     void getAttendeeById_ShouldReturnNotFound_WhenNotExists() {
         when(attendeeService.getAttendeeById(1)).thenThrow(new UserNotFoundException(1));
@@ -74,6 +113,13 @@ public class AttendeeControllerTest {
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
+    /**
+     * Tests retrieving available bookings for an attendee.
+     * Verifies that:
+     * 1. The endpoint returns a 200 OK status
+     * 2. The response body is not null
+     * 3. The service's getAvailableBookings method is called with the correct attendee ID
+     */
     @Test
     void getAvailableBookings_ShouldReturnBookings() {
         List<Booking> bookings = Arrays.asList(booking);
@@ -83,6 +129,13 @@ public class AttendeeControllerTest {
         assertNotNull(response.getBody());
     }
 
+    /**
+     * Tests retrieving unavailable bookings for an attendee.
+     * Verifies that:
+     * 1. The endpoint returns a 200 OK status
+     * 2. The response body is not null
+     * 3. The service's getUnavailableBookings method is called with the correct attendee ID
+     */
     @Test
     void getUnavailableBookings_ShouldReturnBookings() {
         List<Booking> bookings = Arrays.asList(booking);
@@ -92,6 +145,13 @@ public class AttendeeControllerTest {
         assertNotNull(response.getBody());
     }
 
+    /**
+     * Tests retrieving registered bookings for an attendee.
+     * Verifies that:
+     * 1. The endpoint returns a 200 OK status
+     * 2. The response body is not null
+     * 3. The service's getRegisteredBookings method is called with the correct attendee ID
+     */
     @Test
     void getRegisteredBookings_ShouldReturnBookings() {
         List<Booking> bookings = Arrays.asList(booking);
@@ -101,6 +161,13 @@ public class AttendeeControllerTest {
         assertNotNull(response.getBody());
     }
 
+    /**
+     * Tests registering an attendee for a booking when registration is successful.
+     * Verifies that:
+     * 1. The endpoint returns a 200 OK status
+     * 2. The response body is not null
+     * 3. The service's registerForBooking method is called with the correct IDs
+     */
     @Test
     void registerForBooking_ShouldReturnBooking_WhenSuccess() {
         when(attendeeService.registerForBooking(1, 1)).thenReturn(booking);
@@ -109,6 +176,12 @@ public class AttendeeControllerTest {
         assertNotNull(response.getBody());
     }
 
+    /**
+     * Tests registering an attendee for a booking when the booking is full.
+     * Verifies that:
+     * 1. The endpoint returns a 400 Bad Request status
+     * 2. The service's registerForBooking method is called with the correct IDs
+     */
     @Test
     void registerForBooking_ShouldReturnBadRequest_WhenBookingFull() {
         when(attendeeService.registerForBooking(1, 1)).thenThrow(new BookingFullException(1));
@@ -116,6 +189,13 @@ public class AttendeeControllerTest {
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
+    /**
+     * Tests deregistering an attendee from a booking when deregistration is successful.
+     * Verifies that:
+     * 1. The endpoint returns a 200 OK status
+     * 2. The response body is not null
+     * 3. The service's deregisterFromBooking method is called with the correct IDs
+     */
     @Test
     void deregisterFromBooking_ShouldReturnBooking_WhenSuccess() {
         when(attendeeService.deregisterFromBooking(1, 1)).thenReturn(booking);
@@ -124,6 +204,12 @@ public class AttendeeControllerTest {
         assertNotNull(response.getBody());
     }
 
+    /**
+     * Tests deregistering an attendee from a booking when the booking doesn't exist.
+     * Verifies that:
+     * 1. The endpoint returns a 404 Not Found status
+     * 2. The service's deregisterFromBooking method is called with the correct IDs
+     */
     @Test
     void cancelRegistration_ShouldReturnNotFound_WhenBookingNotFound() {
         when(attendeeService.deregisterFromBooking(1, 1)).thenThrow(new BookingNotFoundException(1));
@@ -131,13 +217,20 @@ public class AttendeeControllerTest {
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
+    /**
+     * Helper method to set an ID field on an object using reflection.
+     * Used to simulate database-assigned IDs for testing.
+     *
+     * @param object The object to set the ID on
+     * @param id The ID value to set
+     */
     private void setId(Object object, int id) {
         try {
             Field field = object.getClass().getSuperclass().getDeclaredField("id");
             field.setAccessible(true);
             field.set(object, id);
         } catch (Exception e) {
+            // Silently handle exceptions
         }
     }
-
 }
