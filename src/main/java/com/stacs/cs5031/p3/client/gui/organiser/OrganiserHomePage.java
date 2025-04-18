@@ -9,6 +9,7 @@ import java.util.Map;
 import com.stacs.cs5031.p3.client.gui.helper_classes.CustomFontLoader;
 import com.stacs.cs5031.p3.client.gui.helper_classes.OnClickEventHelper;
 import com.stacs.cs5031.p3.client.gui.helper_classes.RoundedBorder;
+import com.stacs.cs5031.p3.server.dto.OrganiserDto;
 
 /**
  * This class is responsible for creating the main page of the organiser.
@@ -19,10 +20,9 @@ public class OrganiserHomePage {
 
   //   public static void main(String[] args) {
   //   // Sample user data
-  //   Map<String, String> user = new HashMap<>();
-  //   user.put("id", "3");
-  //   user.put("name", "John Doe");
-  
+  //  OrganiserDto user = new OrganiserDto(3, "John Doe", "johndoe");
+
+
   //   new OrganiserHomePage(user);
   // }
 
@@ -31,7 +31,7 @@ public class OrganiserHomePage {
    * This is the constructor of the OrganiserHomePage class.
    * @param user - the user details
    */
-  public OrganiserHomePage(Map<String, String> user) {
+  public OrganiserHomePage(OrganiserDto  user) {
 
     createPage(user);
    
@@ -41,7 +41,7 @@ public class OrganiserHomePage {
    * This method is responsible  for creating the main page of the organiser.
    * @param user - the user details
    */
-  public static void createPage( Map<String, String> user) {
+  public static void createPage( OrganiserDto user) {
     JFrame frame = new JFrame("Organiser Home");
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     frame.setSize(896, 483);
@@ -69,7 +69,7 @@ public class OrganiserHomePage {
   public static class PageElements {
     private JPanel panel; // The panel to which the elements will be added
     private JFrame frame; // The frame to which the panel will be added
-    private Map<String, String> user; // The user details
+    private OrganiserDto user; // The user details
 
     /**
      * This is the constructor of the PageElements class.
@@ -78,7 +78,7 @@ public class OrganiserHomePage {
      * @param frame       - the frame to which the panel will be added
      * @param user       - the user details
      */
-    public PageElements(Map<String, String> user, JPanel panel, JFrame frame) {
+    public PageElements(OrganiserDto user, JPanel panel, JFrame frame) {
       this.panel = panel;
       this.frame = frame;
       this.user = user;

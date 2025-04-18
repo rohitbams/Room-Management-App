@@ -22,6 +22,7 @@ import java.util.Map;
 
 import com.stacs.cs5031.p3.server.dto.RoomDto;
 import com.stacs.cs5031.p3.server.dto.BookingDto;
+import com.stacs.cs5031.p3.server.dto.OrganiserDto;
 import com.stacs.cs5031.p3.client.gui.helper_classes.CustomFontLoader;
 import com.stacs.cs5031.p3.client.gui.helper_classes.OnFocusEventHelper;
 import com.stacs.cs5031.p3.client.gui.helper_classes.RoundedBorder;
@@ -39,8 +40,8 @@ public class CreateBookingPage {
   /**
    * This is the constructor of the CreateBookingPage class.
    */
-  public CreateBookingPage( Map<String, String> user) {
-    int organiserId = Integer.parseInt(user.get("id"));
+  public CreateBookingPage( OrganiserDto user) {
+    int organiserId = user.getId();
     if (organiserId <=0) {
        System.out.println("Please provide a valid organiser id.");
      return;
@@ -56,7 +57,7 @@ public class CreateBookingPage {
    * @param user - the user details
    * 
    */
-  public static void createPage(int organiserId, Map<String, String> user) {
+  public static void createPage(int organiserId, OrganiserDto user) {
     JFrame frame = new JFrame("Create New Booking");
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     frame.setSize(1143, 617);
@@ -87,7 +88,7 @@ public class CreateBookingPage {
     private RestClient restClient = RestClient.create(); 
     private int organiserId; // id of the organiser
     private JFrame frame; // The frame to which the panel will be added
-    private Map<String, String> user; // The user details
+    private OrganiserDto user; // The user details
 
     /**
      * This is the constructor of the PageElements class.
@@ -95,7 +96,7 @@ public class CreateBookingPage {
      * @param panel       - the panel to which the elements will be added
      * @param organiserId - the id of the organiser
      */
-    public PageElements(int organiserId,Map<String, String> user, JPanel panel, JFrame frame) {
+    public PageElements(int organiserId,OrganiserDto user, JPanel panel, JFrame frame) {
       this.panel = panel;
       this.organiserId = organiserId;
       this.frame = frame;
