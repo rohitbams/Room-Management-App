@@ -6,40 +6,63 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
 import com.stacs.cs5031.p3.server.dto.OrganiserDto;
 import com.stacs.cs5031.p3.server.dto.RoomDto;
 import com.stacs.cs5031.p3.server.exception.RoomNotFoundException;
 import com.stacs.cs5031.p3.server.model.Attendee;
 import com.stacs.cs5031.p3.server.model.Room;
+import com.stacs.cs5031.p3.server.repository.AdminRepository;
 
+/**
+ * Unit tests for the {@link AdminService} class.
+ * Tests the business logic of the AdminService using mocked dependencies.
+ * Verifies that the service correctly interacts with its dependencies and handles data properly.
+ */
 public class AdminServiceTest {
+    
+    /** The AdminService instance being tested, with mocked dependencies injected */
     @InjectMocks
     private AdminService adminService;
 
+    /** Mock of the RoomService to simulate room-related operations */
     @Mock
     private RoomService roomService;
 
+    /** Mock of the OrganiserService to simulate organiser-related operations */
     @Mock
     private OrganiserService organiserService;
 
+    /** Mock of the AttendeeService to simulate attendee-related operations */
     @Mock
     private AttendeeService attendeeService;
 
+    /** Mock of the AdminRepository to simulate data access operations */
+    @Mock
+    private AdminRepository adminRepository;
+
+    /**
+     * Setup before each test.
+     * Initializes mocks and prepares the test environment.
+     */
     @BeforeEach
     void setup() {
         MockitoAnnotations.openMocks(this);
     }
 
+    /**
+     * Tests that getAllRooms returns all rooms from the RoomService.
+     * Verifies that:
+     * 1. The correct number of rooms is returned
+     * 2. The room properties match the expected values
+     * 3. The RoomService's findAllRooms method is called exactly once
+     */
     @Test
     void shouldGetAllRooms() {
         List<RoomDto> allRooms = List.of(
@@ -66,6 +89,13 @@ public class AdminServiceTest {
         verify(roomService, times(1)).findAllRooms();
     }
 
+    /**
+     * Tests that getAttendees returns all attendees from the AttendeeService.
+     * Verifies that:
+     * 1. The correct number of attendees is returned
+     * 2. The attendee properties match the expected values
+     * 3. The AttendeeService's getAllAttendees method is called exactly once
+     */
     @Test
     void shouldGetAttendees() {
         ArrayList<Attendee> attendees = new ArrayList<>();
@@ -87,11 +117,17 @@ public class AdminServiceTest {
             assertEquals(expected.getPassword(), actual.getPassword(), "Attendee password should match");
         }
 
-        // Verify that roomService.findAllRooms() was called exactly once
+        // Verify that AttendeeService.getAllAttendees() was called exactly once
         verify(attendeeService, times(1)).getAllAttendees();
-
     }
 
+    /**
+     * Tests that getOrganisers returns all organisers from the OrganiserService.
+     * Verifies that:
+     * 1. The correct number of organisers is returned
+     * 2. The organiser properties match the expected values
+     * 3. The OrganiserService's getAllOrganisers method is called exactly once
+     */
     @Test
     void shouldGetOrganisers() {
         ArrayList<OrganiserDto> organisers = new ArrayList<>();
@@ -113,10 +149,14 @@ public class AdminServiceTest {
             assertEquals(expected.getId(), actual.getId(), "Organiser id should match");
         }
 
-        // Verify that roomService.findAllRooms() was called exactly once
+        // Verify that OrganiserService.getAllOrganisers() was called exactly once
         verify(organiserService, times(1)).getAllOrganisers();
     }
 
+    /**
+     * Tests that addRoom returns true when adding a room with valid capacity.
+     * Verifies that the method correctly delegates to RoomService and handles successful room creation.
+     */
     @Test
     void shouldReturnTrue_whenAddRoomWithCapacityHigherThanZero() {
         Room testRoom = new Room("Test Room", 10);
@@ -124,6 +164,10 @@ public class AdminServiceTest {
         assertEquals(true, adminService.addRoom(testRoom));
     }
 
+    /**
+     * Tests that addRoom returns false when adding a room with zero capacity.
+     * Verifies that the method correctly handles the IllegalArgumentException thrown by RoomService.
+     */
     @Test
     void shouldReturnFalse_whenAddRoomWithZeroCapacity() {
         Room testRoom = new Room("Test Room", 0);
@@ -132,6 +176,10 @@ public class AdminServiceTest {
         assertEquals(false, adminService.addRoom(testRoom));
     }
 
+    /**
+     * Tests that addRoom returns false when adding a room with negative capacity.
+     * Verifies that the method correctly handles the IllegalArgumentException thrown by RoomService.
+     */
     @Test
     void shouldReturnFalse_whenAddRoomWithNegativeCapacity() {
         Room testRoom = new Room("Test Room", -1);
@@ -139,6 +187,10 @@ public class AdminServiceTest {
         assertEquals(false, adminService.addRoom(testRoom));
     }
 
+    /**
+     * Tests that removeRoom returns true when removing a room with a valid ID.
+     * Verifies that the method correctly delegates to RoomService and handles successful room deletion.
+     */
     @Test
     void shouldReturnTrue_whenRemoveRoomWithValidRoomId() {
         int validRoomId = 1;
@@ -146,6 +198,10 @@ public class AdminServiceTest {
         assertEquals(true, adminService.removeRoom(validRoomId));
     }
 
+    /**
+     * Tests that removeRoom returns false when attempting to remove a room with an invalid ID.
+     * Verifies that the method correctly handles the RoomNotFoundException thrown by RoomService.
+     */
     @Test
     void shouldReturnFalse_whenRemoveRoomWithInvalidRoomId() {
         int inValidRoomId = 999;
