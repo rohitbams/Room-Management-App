@@ -226,7 +226,10 @@ public class OrganiserControllerTest {
         @Order(6)
         void shouldCreateBookingWithoutIssue() throws Exception {
                 int roomId = 1;
-                int organiserId = 1;
+                Organiser org = organiserRepository.save(organiser1);
+                int organiserId = org.getId().intValue();
+     
+
                 BookingDto.BookingRequest bookingRequest = new BookingDto.BookingRequest("Event 1", Long.valueOf(roomId), new Date(), 2,
                                 "Test");
 

@@ -145,7 +145,7 @@ public class OrganiserController {
             @PathVariable int organiserId) {
         try {
             String res = organiserService.createBooking(request, organiserId);
-            if(res.equals("SUCCESS!")) {
+            if(res.equals("SUCCESS!")) { 
                 return ResponseEntity.status(HttpStatus.CREATED).body(res);
             } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
