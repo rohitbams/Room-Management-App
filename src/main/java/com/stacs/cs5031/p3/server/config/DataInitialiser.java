@@ -56,13 +56,13 @@ public class DataInitialiser implements CommandLineRunner {
         if (attendeeRepository.findByUsername("attendee") == null) {
             Attendee attendee = new Attendee("Attendee", "attendee", "password");
             attendeeRepository.save(attendee);
-            System.out.println("Attendee user created: attendee/test123");
+            System.out.println("Attendee user created: attendee/password");
         }
 
         if (organiserRepository.findByUsername("organiser") == null) {
             Organiser organiser = new Organiser("Organiser", "organiser", "password");
             organiserRepository.save(organiser);
-            System.out.println("Organiser user created: organiser/test123");
+            System.out.println("Organiser user created: organiser/password");
         }
 
         // creates rooms
