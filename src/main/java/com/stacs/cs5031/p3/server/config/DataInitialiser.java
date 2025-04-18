@@ -10,6 +10,7 @@ import com.stacs.cs5031.p3.server.repository.OrganiserRepository;
 import com.stacs.cs5031.p3.server.repository.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 /**
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Component;
  * the server. This allows the testing the client without having to register new users eah time.
  */
 @Component
+@Profile("!test")
 public class DataInitialiser implements CommandLineRunner {
 
     private final AdminRepository adminRepository;
@@ -39,6 +41,11 @@ public class DataInitialiser implements CommandLineRunner {
         this.organiserRepository = organiserRepository;
         this.roomRepository = roomRepository;
     }
+
+//    @Autowired
+//    public DataInitialiser(AdminRepository adminRepository) {
+//        this.adminRepository = adminRepository;
+//    }
 
     /**
      * This method creates sample rooms and users for each user type.
