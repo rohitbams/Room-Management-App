@@ -8,24 +8,33 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-
 import com.stacs.cs5031.p3.server.model.Room;
-import com.stacs.cs5031.p3.server.repository.RoomRepository;
 
+/**
+ * Integration tests for the {@link RoomRepository} interface.
+ * Tests CRUD operations and custom query methods on Room entities using an in-memory database.
+ * The @DataJpaTest annotation configures an in-memory database and JPA repositories for testing.
+ */
 @DataJpaTest
 public class RoomRepositoryTest {
+   /** The RoomRepository instance being tested, automatically injected by Spring */
    @Autowired
    private RoomRepository roomRepository;
+   
+   /** Test room instances used across multiple test methods */
    private Room room1;
    private Room room2;
    private Room room3;
 
+   /**
+    * Setup before each test.
+    * Creates and saves sample Room objects to the repository for testing.
+    */
    @BeforeEach
    public void setUp() {
        room1 = new Room("Room 1", 4);
@@ -34,12 +43,20 @@ public class RoomRepositoryTest {
        roomRepository.saveAll(Arrays.asList(room1, room2, room3));
    }
 
+   /**
+    * Cleanup after each test.
+    * Deletes all Room entities from the repository to ensure test isolation.
+    */
    @AfterEach
    public void tearDown() {
        // Release test data after each test method
        roomRepository.deleteAll();
    }
 
+   /**
+    * Tests that rooms can be saved to the repository and found.
+    * Verifies that all saved rooms exist in the repository.
+    */
    @Test
    void shouldSaveAndFindRooms() {
        // room1, room2, room3 are already saved in setUp()
@@ -51,6 +68,10 @@ public class RoomRepositoryTest {
        assertTrue(foundRooms.contains(room3), "room3 should be saved");
    }
 
+   /**
+    * Tests that the repository returns the correct count when a single room is saved.
+    * Verifies that after clearing the repository and saving one room, the count is 1.
+    */
    @Test
    void shouldReturnCorrectRoomCount_whenOneRoomIsSaved() {
        roomRepository.deleteAll(); // clear repository
@@ -59,6 +80,10 @@ public class RoomRepositoryTest {
        assertEquals(1, roomCount);
    }
 
+   /**
+    * Tests that the repository returns the correct count when multiple rooms are saved.
+    * Verifies counts for both the initial setup (3 rooms) and after clearing and adding 2 new rooms.
+    */
    @Test
    void shouldReturnCorrectRoomCount_whenMultipleRoomsAreSaved() {
        // three rooms are saved in setUp()
@@ -73,6 +98,10 @@ public class RoomRepositoryTest {
        assertEquals(2, roomCount);
    }
 
+   /**
+    * Tests that a room can be found by its ID.
+    * Verifies that the found room has the same properties as the saved room.
+    */
    @Test
    void shouldFindRoomById() {
        Room foundRoom = roomRepository.findById(room1.getID()).orElse(null);
@@ -82,6 +111,10 @@ public class RoomRepositoryTest {
        assertEquals(room1.isAvailable(), foundRoom.isAvailable());
    }
 
+   /**
+    * Tests the custom findByAvailability method with available rooms.
+    * Verifies that all rooms are found when searching for available rooms (default state).
+    */
    @Test
    void shouldFindAvailableRooms() {
        List<Room> availableRooms = roomRepository.findByAvailability(true);
@@ -93,6 +126,10 @@ public class RoomRepositoryTest {
        assertEquals(3, availableRooms.size());
    }
 
+   /**
+    * Tests the custom findByAvailability method with unavailable rooms.
+    * Verifies that no rooms are found when searching for unavailable rooms (since all are available by default).
+    */
    @Test
    void shouldFindUnavailableRooms() {
        List<Room> unAvailableRooms = roomRepository.findByAvailability(false);
@@ -101,6 +138,13 @@ public class RoomRepositoryTest {
        assertEquals(0, unAvailableRooms.size());
    }
 
+   /**
+    * Tests removing a room by ID.
+    * Verifies that:
+    * 1. The room count decreases by 1
+    * 2. The deleted room cannot be found
+    * 3. Other rooms still exist
+    */
    @Test
    void shouldRemoveRoomById() {
        roomRepository.deleteById(room1.getID());
@@ -113,6 +157,12 @@ public class RoomRepositoryTest {
        assertTrue(foundRooms.contains(room3), "Should contain room3 after removing room1");
    }
 
+   /**
+    * Tests updating a room's availability status when it is booked.
+    * Verifies that:
+    * 1. The room is initially available
+    * 2. After booking and saving, the room is unavailable when retrieved again
+    */
    @Test
    void shouldUpdateAvailability_whenRoomIsBooked() {
        Room savedRoom = roomRepository.findById(room1.getID()).orElse(null);
@@ -126,6 +176,12 @@ public class RoomRepositoryTest {
        assertFalse(updatedRoom.isAvailable(), "Room should be unavailable after booking");
    }
 
+   /**
+    * Tests updating a room's availability status when it is made available.
+    * Verifies that:
+    * 1. The room can be booked (made unavailable)
+    * 2. After making it available and saving, the room is available when retrieved again
+    */
    @Test
    void shouldUpdateAvailability_whenRoomIsMadeAvailable() {
        Room savedRoom = roomRepository.findById(room1.getID()).orElse(null);
