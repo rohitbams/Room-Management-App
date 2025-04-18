@@ -46,7 +46,6 @@ public class CreateBookingPage {
      return;
     }
 
-    System.out.println("oRGANISER home page- organiser id:"+ user.get("id"));
     createPage(organiserId, user);
    
   }
@@ -323,9 +322,9 @@ public class CreateBookingPage {
       }
 
       int duration = convertDuration(durationAsString);
-      if (duration <= 0 || duration > MAX_DURATION) {
+      if (duration <= 1 || duration > MAX_DURATION) {
         JOptionPane.showMessageDialog(null,
-            "Duration is invalid! A booking can be between 0 to " + MAX_DURATION + " hours.", "Error",
+            "Duration is invalid! A booking can be between 1 to " + MAX_DURATION + " hours.", "Error",
             JOptionPane.ERROR_MESSAGE);
         return false;
       }
@@ -378,6 +377,7 @@ public class CreateBookingPage {
      * @param duration  - duration of the booking in hours
      */
     private void createBooking(String eventName, int roomId, Date date, int duration) {
+      duration = duration * 60;
       BookingDto.BookingRequest bookingDto = new BookingDto.BookingRequest(eventName, (long) roomId, date, duration, "");
 
       ResponseEntity<String> res = restClient.post()

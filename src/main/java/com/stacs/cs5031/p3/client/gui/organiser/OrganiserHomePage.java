@@ -32,7 +32,6 @@ public class OrganiserHomePage {
    * @param user - the user details
    */
   public OrganiserHomePage(Map<String, String> user) {
-    System.out.println("oRGANISER home page- organiser id:"+ user.get("id"));
 
     createPage(user);
    
