@@ -27,18 +27,31 @@ import com.stacs.cs5031.p3.server.model.Attendee;
 import com.stacs.cs5031.p3.server.model.Room;
 import com.stacs.cs5031.p3.server.service.AdminService;
 
+/**
+ * Unit tests for the {@link AdminController} class.
+ * Tests the RESTful endpoints provided by the AdminController using MockMvc.
+ * The AdminService is mocked to isolate tests from the service layer.
+ */
 public class AdminControllerTest {
     
+    /** MockMvc instance for testing REST endpoints */
     private MockMvc mvc;
 
+    /** Mock of the AdminService to simulate service behavior */
     @Mock
     private AdminService adminService;
 
+    /** The controller being tested, with mocked dependencies injected */
     @InjectMocks
     private AdminController adminController;
 
+    /** ObjectMapper for JSON serialization/deserialization */
     private ObjectMapper objectMapper;
 
+    /**
+     * Setup before each test.
+     * Initializes mocks, sets up the MockMvc test environment, and creates an ObjectMapper.
+     */
     @BeforeEach
     void setup() {
         MockitoAnnotations.openMocks(this);
@@ -46,6 +59,12 @@ public class AdminControllerTest {
         objectMapper = new ObjectMapper();
     }
 
+    /**
+     * Tests that GET /admin/rooms returns all rooms correctly.
+     * Verifies the HTTP status, content type, and response JSON structure.
+     *
+     * @throws Exception if the test encounters an error
+     */
     @Test
     void shouldGetAllRooms() throws Exception {
         List<RoomDto> rooms = List.of(
@@ -65,6 +84,12 @@ public class AdminControllerTest {
         verify(adminService, times(1)).getAllRooms();
     }
     
+    /**
+     * Tests that GET /admin/attendees returns all attendees correctly.
+     * Verifies the HTTP status, content type, and response JSON structure.
+     *
+     * @throws Exception if the test encounters an error
+     */
     @Test
     void shouldGetAllAttendees() throws Exception {
         List<Attendee> attendees = List.of(
@@ -82,6 +107,12 @@ public class AdminControllerTest {
         verify(adminService, times(1)).getAttendees();
     }
     
+    /**
+     * Tests that GET /admin/organisers returns all organisers correctly.
+     * Verifies the HTTP status, content type, and response JSON structure.
+     *
+     * @throws Exception if the test encounters an error
+     */
     @Test
     void shouldGetAllOrganisers() throws Exception {
         List<OrganiserDto> organisers = List.of(
@@ -99,6 +130,12 @@ public class AdminControllerTest {
         verify(adminService, times(1)).getOrganisers();
     }
     
+    /**
+     * Tests that POST /admin/rooms successfully adds a valid room.
+     * Verifies the HTTP status and response message.
+     *
+     * @throws Exception if the test encounters an error
+     */
     @Test
     void shouldAddRoom() throws Exception {
         Room room = new Room("Test Room", 15);
@@ -113,6 +150,12 @@ public class AdminControllerTest {
         verify(adminService, times(1)).addRoom(any(Room.class));
     }
     
+    /**
+     * Tests that POST /admin/rooms returns an error when trying to add an invalid room.
+     * Verifies the HTTP status and error message.
+     *
+     * @throws Exception if the test encounters an error
+     */
     @Test
     void shouldFailToAddRoom() throws Exception {
         Room room = new Room("Invalid Room", 0);
@@ -127,6 +170,12 @@ public class AdminControllerTest {
         verify(adminService, times(1)).addRoom(any(Room.class));
     }
     
+    /**
+     * Tests that DELETE /admin/rooms/{roomId} successfully removes a room.
+     * Verifies the HTTP status and response message.
+     *
+     * @throws Exception if the test encounters an error
+     */
     @Test
     void shouldRemoveRoom() throws Exception {
         int roomId = 1;
@@ -139,6 +188,12 @@ public class AdminControllerTest {
         verify(adminService, times(1)).removeRoom(roomId);
     }
 
+    /**
+     * Tests that DELETE /admin/rooms/{roomId} returns an error when the room cannot be removed.
+     * Verifies the HTTP status and error message.
+     *
+     * @throws Exception if the test encounters an error
+     */
     @Test
     void shouldFailToRemoveRoom() throws Exception {
         int roomId = 999;
