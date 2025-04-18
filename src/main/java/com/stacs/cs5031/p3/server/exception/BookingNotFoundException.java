@@ -8,5 +8,8 @@ public class BookingNotFoundException extends RuntimeException {
     public BookingNotFoundException(int id) {
         super("Booking with id: " + id + " does not exist");
     }
+    public BookingNotFoundException(long id) {
+        super("Booking with id: " + id + " does not exist");
+    }
 
 }
