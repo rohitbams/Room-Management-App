@@ -1,8 +1,6 @@
 package com.stacs.cs5031.p3.server.controller;
 
-import com.stacs.cs5031.p3.server.controller.AttendeeController;
 import com.stacs.cs5031.p3.server.dto.AttendeeDto;
-import com.stacs.cs5031.p3.server.dto.BookingDto;
 import com.stacs.cs5031.p3.server.exception.BookingFullException;
 import com.stacs.cs5031.p3.server.exception.BookingNotFoundException;
 import com.stacs.cs5031.p3.server.exception.UserNotFoundException;
@@ -26,7 +24,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 public class AttendeeControllerTest {

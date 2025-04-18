@@ -1,4 +1,4 @@
-package com.stacs.cs5031.p3.client.gui;
+package com.stacs.cs5031.p3.client.gui.organiser;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -31,13 +31,16 @@ import java.awt.Point;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class MyBookingsPage extends JFrame {
     private ArrayList<BookingDto> bookings;
     private JTable bookingTable;
     private DefaultTableModel tableModel;
 
-    public MyBookingsPage(int organiserId) {
+    public MyBookingsPage(Map<String, String> user) {
+        int organiserId = Integer.parseInt(user.get("id"));
+        System.out.println("my bookings page- organiser id:"+ user.get("id"));
         // Set up the frame
         setTitle("My Bookings Page");
         setSize(1143, 617);
@@ -187,7 +190,7 @@ public class MyBookingsPage extends JFrame {
         contentPanel.setBackground(Color.decode("#d4d3b3"));
     
         // Add event name as title
-        JLabel titleLabel = new JLabel(booking.getEventName() + " <" + String.valueOf(booking.getId()) + ">",
+        JLabel titleLabel = new JLabel(booking.getEventName() ,
                 JLabel.CENTER);
         titleLabel.setFont(CustomFontLoader.loadFont("./resources/fonts/Lexend.ttf", 22));
         titleLabel.setForeground(Color.decode("#414833"));
@@ -215,9 +218,10 @@ public class MyBookingsPage extends JFrame {
         addDetailRow(detailsPanel, "Start Time:", startTimeStr, detailFont);
 
         addDetailRow(detailsPanel, "Duration:", booking.getDuration() + " minutes", detailFont);
-        addDetailRow(detailsPanel, "Organiser:", booking.getOrganiserName() + " <" + booking.getOrganiserId() + ">", detailFont);
+        addDetailRow(detailsPanel, "Organiser:", booking.getOrganiserName(), detailFont);
         addDetailRow(detailsPanel, "Attendees:", String.valueOf(booking.getCurrentAttendees()), detailFont);
         addDetailRow(detailsPanel, "Maximum Capacity:", String.valueOf(booking.getMaxCapacity()), detailFont);
+        addViewAttendeeButton(detailsPanel, booking);
 
         contentPanel.add(detailsPanel, BorderLayout.CENTER);
 
@@ -287,47 +291,101 @@ public class MyBookingsPage extends JFrame {
         panel.add(new JLabel(value, JLabel.LEFT));
     }
 
-    // // Method to fetch bookings from the backend
-    // private ArrayList<BookingDto> fetchBookings(int organiserId) {
-    //     // Define the backend API URL
-    //     String url = "http://localhost:8080/organiser/my-bookings/" + organiserId;
-    //     RestTemplate restTemplate = new RestTemplate();
-    //     try {
-    //         ResponseEntity<BookingDto[]> response = restTemplate.getForEntity(url, BookingDto[].class);
-    //         if (response.getStatusCode() == HttpStatus.OK) {
-    //             // Convert the array to an ArrayList and return it
-    //             BookingDto[] bookingsArray = response.getBody();
-    //             return new ArrayList<>(List.of(bookingsArray));
-    //         } else {
-    //             // Handle non-OK responses
-    //             System.err.println("Failed to fetch bookings. HTTP Status: " + response.getStatusCode());
-    //             return new ArrayList<>();
-    //         }
-    //     } catch (Exception e) {
-    //         // Handle exceptions (e.g., connection errors)
-    //         System.err.println("Error fetching bookings: " + e.getMessage());
-    //         return new ArrayList<>();
-    //     }
-    // }
-    //TODO use the fetchBookings above instead
+    // Method to fetch bookings from the backend
     private ArrayList<BookingDto> fetchBookings(int organiserId) {
-        // Mock data for testing
-        ArrayList<BookingDto> mockBookings = new ArrayList<>();
-        mockBookings.add(new BookingDto(1L, "Event A", 101L, "Room 1", new java.util.Date(), 60, 201L, "John Doe", null,
-                10, 50));
-        mockBookings.add(new BookingDto(2L, "Event B", 102L, "Room 2", new java.util.Date(), 120, 202L, "Jane Smith",
-                null, 20, 100));
-        mockBookings.add(new BookingDto(3L, "Event C", 103L, "Room 3", new java.util.Date(), 90, 203L, "Alice Johnson",
-                null, 15, 75));
-        return mockBookings;
+        // Define the backend API URL
+        String url = "http://localhost:8080/organiser/my-bookings/" + organiserId;
+        RestTemplate restTemplate = new RestTemplate();
+        try {
+            ResponseEntity<BookingDto[]> response = restTemplate.getForEntity(url, BookingDto[].class);
+            if (response.getStatusCode() == HttpStatus.OK) {
+                // Convert the array to an ArrayList and return it
+                BookingDto[] bookingsArray = response.getBody();
+                return new ArrayList<>(List.of(bookingsArray));
+            } else {
+                // Handle non-OK responses
+                System.err.println("Failed to fetch bookings. HTTP Status: " + response.getStatusCode());
+                return new ArrayList<>();
+            }
+        } catch (Exception e) {
+            // Handle exceptions (e.g., connection errors)
+            System.err.println("Error fetching bookings: " + e.getMessage());
+            return new ArrayList<>();
+        }
     }
 
-    // For testing or standalone usage
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            MyBookingsPage page = new MyBookingsPage(123);
-            page.setVisible(true);
-        });
+    private ArrayList<AttendeeDto> fetchAttendees(Long bookingId, Long organiserId){
+        // Define the backend API URL
+        String url = "http://localhost:8080/organiser/"+organiserId.intValue()+"/my-bookings/" + bookingId.intValue()+ "/attendees";
+        RestTemplate restTemplate = new RestTemplate();
+        try {
+            ResponseEntity<AttendeeDto[]> response = restTemplate.getForEntity(url, AttendeeDto[].class);
+            if (response.getStatusCode() == HttpStatus.OK) {
+                // Convert the array to an ArrayList and return it
+                AttendeeDto[] attendeesArray = response.getBody();
+                return new ArrayList<>(List.of(attendeesArray));
+            } else {
+                // Handle non-OK responses
+                System.err.println("Failed to fetch attendees. HTTP Status: " + response.getStatusCode());
+                return new ArrayList<>();
+            }
+        } catch (Exception e) {
+            // Handle exceptions (e.g., connection errors)
+            System.err.println("Error fetching attendees: " + e.getMessage());
+            return new ArrayList<>();
+        }
     }
+
+    private void addViewAttendeeButton(JPanel panel, BookingDto booking) {
+        JButton viewAttendeesButton = new JButton("View Attendees");
+        viewAttendeesButton.setBackground(Color.decode("#bca8e4"));
+        viewAttendeesButton.setForeground(Color.decode("#000"));
+        viewAttendeesButton.setFont(CustomFontLoader.loadFont("./resources/fonts/Lexend.ttf", 14));
+        viewAttendeesButton.setBorder(new RoundedBorder(4, Color.decode("#3d364a"), 1));
+        viewAttendeesButton.setFocusPainted(false);
+        OnClickEventHelper.setOnClickColor(viewAttendeesButton, Color.decode("#7c6f97"), Color.decode("#bca8e4"));
+  
+        viewAttendeesButton.addActionListener(e -> {
+            ArrayList<AttendeeDto> attendees = fetchAttendees(booking.getId(), booking.getOrganiserId());
+            showAttendeeList(attendees);
+        });
+        panel.add(viewAttendeesButton);
+    }
+
+    private void showAttendeeList(ArrayList<AttendeeDto> attendees) {
+        JDialog dialog = new JDialog(this, "Attendees List", true);
+        dialog.setSize(400, 300);
+        dialog.setLocationRelativeTo(this);
+
+        DefaultListModel<String> listModel = new DefaultListModel<>();
+        for (AttendeeDto attendee : attendees) {
+            listModel.addElement(attendee.getName() );
+        }
+
+        JList<String> attendeeList = new JList<>(listModel);
+        JScrollPane scrollPane = new JScrollPane(attendeeList);
+        dialog.add(scrollPane);
+        dialog.setVisible(true);
+    }
+    // //TODO use the fetchBookings above instead
+    // private ArrayList<BookingDto> fetchBookings(int organiserId) {
+    //     // Mock data for testing
+    //     ArrayList<BookingDto> mockBookings = new ArrayList<>();
+    //     mockBookings.add(new BookingDto(1L, "Event A", 101L, "Room 1", new java.util.Date(), 60, 201L, "John Doe", null,
+    //             10, 50));
+    //     mockBookings.add(new BookingDto(2L, "Event B", 102L, "Room 2", new java.util.Date(), 120, 202L, "Jane Smith",
+    //             null, 20, 100));
+    //     mockBookings.add(new BookingDto(3L, "Event C", 103L, "Room 3", new java.util.Date(), 90, 203L, "Alice Johnson",
+    //             null, 15, 75));
+    //     return mockBookings;
+    // }
+
+    // For testing or standalone usage
+    // public static void main(String[] args) {
+    //     SwingUtilities.invokeLater(() -> {
+    //         MyBookingsPage page = new MyBookingsPage(123);
+    //         page.setVisible(true);
+    //     });
+    // }
 
 }

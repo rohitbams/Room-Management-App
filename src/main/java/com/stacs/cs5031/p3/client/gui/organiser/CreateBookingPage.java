@@ -35,13 +35,6 @@ import com.stacs.cs5031.p3.client.gui.helper_classes.RoundedBorder;
  */
 public class CreateBookingPage {
 
-  public static void main(String[] args) {
-    // Sample user data
-    Map<String, String> user = new HashMap<>();
-    user.put("id", "1");
-    user.put("name", "John Doe");
-    new CreateBookingPage(user);
-  }
 
   /**
    * This is the constructor of the CreateBookingPage class.
@@ -52,6 +45,8 @@ public class CreateBookingPage {
        System.out.println("Please provide a valid organiser id.");
      return;
     }
+
+    System.out.println("oRGANISER home page- organiser id:"+ user.get("id"));
     createPage(organiserId, user);
    
   }
@@ -208,8 +203,7 @@ public class CreateBookingPage {
      * This method creates and adds the room dropdown to the panel.
      */
     private JComboBox<String> addRoomDropDown() {
-      HashMap<String, Integer> rooms = new HashMap<String, Integer>();
-      // getRooms();
+
       Object[] roomsObjArr = rooms.keySet().toArray();
       String[] roomsArr = Arrays.copyOf(roomsObjArr, roomsObjArr.length, String[].class);
       JComboBox<String> roomInput = new JComboBox<String>(roomsArr);
@@ -394,8 +388,12 @@ public class CreateBookingPage {
           .toEntity(String.class);
 
       if (res.getStatusCode() == HttpStatus.CREATED) {
-        JOptionPane.showMessageDialog(null, "Booking created successfully!",
-            "Success", JOptionPane.INFORMATION_MESSAGE);
+        int confirmation = JOptionPane.showConfirmDialog(null, "Booking created successfully!",
+            "Success",JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
+            if(confirmation == JOptionPane.OK_OPTION) {
+              new OrganiserHomePage(user);
+              frame.dispose();
+            }
       } else {
         JOptionPane.showMessageDialog(null, res.getBody(), "Error",
             JOptionPane.ERROR_MESSAGE);
@@ -424,6 +422,7 @@ public class CreateBookingPage {
         }
 
         for (RoomDto room : roomList) {
+          System.out.println(room.getName());
           rooms.put(room.getName(), room.getId());
         }
       } else {

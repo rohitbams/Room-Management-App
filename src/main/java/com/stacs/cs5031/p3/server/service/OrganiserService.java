@@ -7,10 +7,12 @@ import java.util.Optional;
 import com.stacs.cs5031.p3.server.model.Booking;
 import org.springframework.stereotype.Service;
 
+import com.stacs.cs5031.p3.server.dto.AttendeeDto;
 import com.stacs.cs5031.p3.server.dto.BookingDto;
 import com.stacs.cs5031.p3.server.dto.OrganiserDto;
 import com.stacs.cs5031.p3.server.dto.RoomDto;
 import com.stacs.cs5031.p3.server.exception.BookingNotFoundException;
+import com.stacs.cs5031.p3.server.mapper.AttendeeDtoMapper;
 import com.stacs.cs5031.p3.server.mapper.BookingDtoMapper;
 import com.stacs.cs5031.p3.server.model.Organiser;
 import com.stacs.cs5031.p3.server.repository.OrganiserRepository;
@@ -181,5 +183,26 @@ public class OrganiserService {
             return e.getMessage();
         }
         return "SUCCESS!";
+    }
+
+
+    /**
+     * This method is used to get all the attendees for a booking.
+     * @param bookingId - The ID of the booking
+     * @param organiserId - The ID of the organiser
+     * @return ArrayList<AttendeeDto> - List of all the attendees for the booking
+     */
+    public ArrayList<AttendeeDto> getAttendees(int bookingId, int organiserId) {
+        Long bookingIdAsLong = Long.valueOf(bookingId);
+        Booking booking =  bookingService.getBookingById(bookingIdAsLong).get();
+        if(booking.getOrganiser().getId() != organiserId) {
+            return null;
+        }
+        ArrayList<AttendeeDto> attendeeDtos = new ArrayList<AttendeeDto>();
+        booking.getAttendees().forEach(attendee -> {
+            AttendeeDto bookingDto = AttendeeDtoMapper.mapToDto(attendee);
+            attendeeDtos.add(bookingDto);
+        });
+        return attendeeDtos;
     }
 }
