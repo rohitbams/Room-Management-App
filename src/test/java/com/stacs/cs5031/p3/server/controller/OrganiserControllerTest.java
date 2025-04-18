@@ -1,7 +1,11 @@
 package com.stacs.cs5031.p3.server.controller;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,15 +18,19 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 import java.util.Date;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stacs.cs5031.p3.server.dto.BookingDto;
+import com.stacs.cs5031.p3.server.model.Booking;
 import com.stacs.cs5031.p3.server.model.Organiser;
 import com.stacs.cs5031.p3.server.repository.OrganiserRepository;
 import com.stacs.cs5031.p3.server.service.BookingService;
 import com.stacs.cs5031.p3.server.service.RoomService;
+
+import jakarta.transaction.Transactional;
 
 /**
  * This class is responsible for testing the Organiser Controller - integration
@@ -32,6 +40,8 @@ import com.stacs.cs5031.p3.server.service.RoomService;
  */
 @SpringBootTest
 @AutoConfigureMockMvc
+@TestMethodOrder(MethodOrderer.MethodName.class)
+@Transactional
 public class OrganiserControllerTest {
 
         @Autowired
@@ -41,21 +51,49 @@ public class OrganiserControllerTest {
         private OrganiserRepository organiserRepository;
 
         @Autowired
-        private RoomService roomService;
+        private static RoomService roomService;
 
         @Autowired
         private BookingService bookingService;
 
-        private Organiser organiser1, organiser2, organiser3, organiser4;
+        private Organiser organiser1, organiser2, organiser3, organiser4, organiser5;
+
+        @BeforeAll
+        static void setUpAll(@Autowired RoomService roomService2) {
+                roomService = roomService2;
+                roomService.createRoom("R1", 100);
+                roomService.createRoom("R2", 200);
+               
+        }
 
         @BeforeEach
         void setUp() {
                 organiserRepository.deleteAll();
-
+                System.out.println("Organiser in repository: " + organiserRepository.findAll());
                 organiser1 = new Organiser("James Dean", "james.dean", "password123");
                 organiser2 = new Organiser("Holly Dean", "", "password123");
                 organiser4 = new Organiser("Jim Dean", "jim.dean", null);
-                organiser3 = new Organiser("Johnny Doe", "johnny.doe", "passwordABC");
+                organiser3 = new Organiser("Johnny Doe", "johnny.doe", "passwordABC"); 
+                organiser5 = new Organiser("Millie Doe", "mil.doe", "passwordABC"); 
+        }
+
+            /**
+         * This test is responsible for testing that all organisers can be retrieved
+         * from the
+         * database without issue. In this case, there are no organisers in the
+         * database.
+         *
+         * @throws Exception
+         */
+        @Test
+        @Order(1)
+        void shouldGetAllOrganisersIfNoneExist() throws Exception {
+
+                this.mockMvc.perform(
+                                get("/organisers"))
+                                .andExpect(status().isOk())
+                                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                                .andExpect(jsonPath("$").isEmpty());
         }
 
         /**
@@ -65,15 +103,17 @@ public class OrganiserControllerTest {
          * @throws Exception
          */
         @Test
+        @Order(2)
         void shouldCreateOrganiser() throws Exception {
-
+               
                 this.mockMvc.perform(
                                 post("/organiser/create-organiser")
-                                                .content(new ObjectMapper().writeValueAsString(organiser1))
+                                                .content(new ObjectMapper().writeValueAsString(organiser5))
                                                 .contentType(MediaType.APPLICATION_JSON)
                                                 .accept(MediaType.APPLICATION_JSON))
                                 .andExpect(status().isCreated())
                                 .andExpect(content().string("SUCCESS!"));
+                
         }
 
         /**
@@ -84,6 +124,7 @@ public class OrganiserControllerTest {
          * @throws Exception
          */
         @Test
+        @Order(3)
         void shouldNotCreateOrganiserIfCredentialAreInvalid() throws Exception {
 
                 this.mockMvc.perform(
@@ -121,6 +162,7 @@ public class OrganiserControllerTest {
          * @throws Exception
          */
         @Test
+        @Order(4)
         void shouldGetAllOrganisers() throws Exception {
                 this.mockMvc.perform(
                                 post("/organiser/create-organiser")
@@ -140,6 +182,7 @@ public class OrganiserControllerTest {
 
                 this.mockMvc.perform(
                                 get("/organisers"))
+                                .andDo(print())
                                 .andExpect(status().isOk())
                                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                                 .andExpect(jsonPath("$.[0].username").value(organiser1.getUsername()))
@@ -147,31 +190,15 @@ public class OrganiserControllerTest {
 
         }
 
-        /**
-         * This test is responsible for testing that all organisers can be retrieved
-         * from the
-         * database without issue. In this case, there are no organisers in the
-         * database.
-         *
-         * @throws Exception
-         */
-        @Test
-        void shouldGetAllOrganisersIfNoneExist() throws Exception {
-                this.mockMvc.perform(
-                                get("/organisers"))
-                                .andExpect(status().isOk())
-                                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                                .andExpect(jsonPath("$").isEmpty());
-        }
+    
 
         /**
          * This test is responsible for testing that all available rooms can be
          * retrieved
          */
         @Test
+        @Order(5)
         void shouldGetAllAvailableRooms() throws Exception {
-                roomService.createRoom("R1", 100);
-                roomService.createRoom("R2", 200);
 
                 this.mockMvc.perform(
                                 get("/organiser/available-rooms"))
@@ -186,10 +213,10 @@ public class OrganiserControllerTest {
          * issue.
          */
         @Test
+        @Order(6)
         void shouldCreateBookingWithoutIssue() throws Exception {
-                organiserRepository.save(organiser1);
-                roomService.createRoom("R1", 100);
-                BookingDto.BookingRequest bookingRequest = new BookingDto.BookingRequest("Event 1", 1L, new Date(), 2,
+                int roomId = 1;
+                BookingDto.BookingRequest bookingRequest = new BookingDto.BookingRequest("Event 1", Long.valueOf(roomId), new Date(), 2,
                                 "Test");
 
                 this.mockMvc.perform(
@@ -210,9 +237,12 @@ public class OrganiserControllerTest {
          * @throws Exception
          */
         @Test
+        @Order(7)
         void shouldNotGetBookingDetailsIfBookingDoesNotExist() throws Exception {
+                int organiserId = 1;
+                int bookingId = 1;
                 this.mockMvc.perform(
-                                get("/organiser/" + 1 + "my-bookings/" + 1))
+                                get("/organiser/" + organiserId + "my-bookings/" + bookingId))
                                 .andExpect(status().isNotFound());
         }
 
@@ -221,14 +251,18 @@ public class OrganiserControllerTest {
          * issue.
          */
         @Test
+        @Order(8)
         void shouldGetBookingDetailsWithoutIssue() throws Exception {
-                organiserRepository.save(organiser1);
-                roomService.createRoom("R1", 100);
+                Organiser org = organiserRepository.save(organiser1);
+                int organiserId = org.getId().intValue();
+
+                
+                
                 BookingDto.BookingRequest bookingRequest = new BookingDto.BookingRequest("Event 1", 1L, new Date(), 2,
                                 "Testing 1");
-                bookingService.createBooking(bookingRequest, 1L);
+                Booking b = bookingService.createBooking(bookingRequest, Long.valueOf(organiserId));
                 this.mockMvc.perform(
-                                get("/organiser/" + 1 + "/my-bookings/" + 1))
+                                get("/organiser/" + organiserId+ "/my-bookings/" + b.getId()))
                                 .andExpect(status().isOk())
                                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                                 .andExpect(jsonPath("$.eventName").value("Event 1"))
@@ -243,14 +277,20 @@ public class OrganiserControllerTest {
          * @throws Exception
          */
         @Test
+        @Order(9)
         void shouldCancelBookingWithoutIssue() throws Exception {
+                this.mockMvc.perform(
+                        post("/organiser/create-organiser")
+                                        .content(new ObjectMapper().writeValueAsString(organiser1))
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .accept(MediaType.APPLICATION_JSON))
+                        .andExpect(status().isCreated())
+                        .andExpect(content().string("SUCCESS!"));
 
-                organiserRepository.save(organiser1);
-                roomService.createRoom("R1", 100);
                 BookingDto.BookingRequest bookingRequest = new BookingDto.BookingRequest("Event 1", 1L, new Date(), 2,
                                 "Test");
 
-                bookingService.createBooking(bookingRequest, 0L);
+                bookingService.createBooking(bookingRequest, 1L);
 
                 this.mockMvc.perform(
                                 delete("/organiser/cancel-booking/" + 1 + "/" + 1))
@@ -267,23 +307,24 @@ public class OrganiserControllerTest {
          * @throws Exception
          */
         @Test
+        @Order(10)
         void shouldGetAllBookingsWithoutIssue() throws Exception {
+                Organiser org = organiserRepository.save(organiser1);
+                int organiserId = org.getId().intValue();
                 BookingDto.BookingRequest bookingRequest = new BookingDto.BookingRequest("Event 1", 1L, new Date(), 2,
                                 "Testing 1");
                 BookingDto.BookingRequest bookingRequest2 = new BookingDto.BookingRequest("Event 2", 2L, new Date(), 2,
                                 "Testing 2");
-                roomService.createRoom("R1", 100);
-                roomService.createRoom("R2", 200);
-                organiserRepository.save(organiser1);
-                bookingService.createBooking(bookingRequest, 1L);
-                bookingService.createBooking(bookingRequest2, 1L);
+
+               Booking b1 = bookingService.createBooking(bookingRequest, Long.valueOf(organiserId));
+                Booking b2 = bookingService.createBooking(bookingRequest2, Long.valueOf(organiserId));
 
                 this.mockMvc.perform(
-                                get("/organiser/my-bookings/" + 1))
+                                get("/organiser/my-bookings/" + organiserId))
                                 .andExpect(status().isOk())
                                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                                .andExpect(jsonPath("$.[0].eventName").value("Event 1"))
-                                .andExpect(jsonPath("$.[1].eventName").value("Event 2"));
+                                .andExpect(jsonPath("$.[0].eventName").value(b1.getName()))
+                                .andExpect(jsonPath("$.[1].eventName").value(b2.getName()));
 
         }
 
