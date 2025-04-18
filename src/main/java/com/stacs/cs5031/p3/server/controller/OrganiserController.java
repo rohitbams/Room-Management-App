@@ -144,9 +144,14 @@ public class OrganiserController {
     public ResponseEntity<String> createBooking(@RequestBody BookingDto.BookingRequest request,
             @PathVariable int organiserId) {
         try {
-            organiserService.createBooking(request, organiserId);
-            return ResponseEntity.status(HttpStatus.CREATED).body("SUCCESS!");
+            String res = organiserService.createBooking(request, organiserId);
+            if(res.equals("SUCCESS!")) {
+                return ResponseEntity.status(HttpStatus.CREATED).body(res);
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+            }
         } catch (Exception e) { // if booking request is invalid
+            System.out.println("Error creating booking - controller: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }

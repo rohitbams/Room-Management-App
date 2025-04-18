@@ -127,8 +127,12 @@ public class BookingServiceImpl implements BookingService {
             cal.setTime(existingStart);
             Date existingEnd = new Date(cal.getTimeInMillis() + booking.getDuration() * 60000);
 
-            boolean isOverlapping = startTime.before(existingEnd) && endTime.after(existingStart);
-            if (isOverlapping) {
+            
+            boolean isNotOverlapping =
+            endTime.before(existingStart) ||
+            startTime.after(existingEnd) ;
+
+            if (!isNotOverlapping) {
                 return true;
             }
         }
@@ -148,7 +152,7 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new EntityNotFoundException("Organiser not found with ID: " + organiserId));
 
         // 3. Check if room is available
-        if (!room.isAvailable()) {
+        if (hasConflict((long)room.getID(), bookingDTO.getStartTime(), bookingDTO.getDuration())) {
             throw new ResourceUnavailableException("Room is not available");
         }
 
