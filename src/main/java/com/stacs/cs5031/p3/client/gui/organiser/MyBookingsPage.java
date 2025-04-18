@@ -40,7 +40,6 @@ public class MyBookingsPage extends JFrame {
 
     public MyBookingsPage(Map<String, String> user) {
         int organiserId = Integer.parseInt(user.get("id"));
-        System.out.println("my bookings page- organiser id:"+ user.get("id"));
         // Set up the frame
         setTitle("My Bookings Page");
         setSize(1143, 617);
@@ -337,6 +336,8 @@ public class MyBookingsPage extends JFrame {
     }
 
     private void addViewAttendeeButton(JPanel panel, BookingDto booking) {
+        panel.add(new JLabel());
+
         JButton viewAttendeesButton = new JButton("View Attendees");
         viewAttendeesButton.setBackground(Color.decode("#bca8e4"));
         viewAttendeesButton.setForeground(Color.decode("#000"));
