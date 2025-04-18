@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
  * and simple logging in and out.
  */
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/users")
 public class UserController {
 
     private final UserService userService;

@@ -1,6 +1,7 @@
 package com.stacs.cs5031.p3.client.terminal;
 
 import com.stacs.cs5031.p3.server.dto.RoomDto;
+import com.stacs.cs5031.p3.server.dto.UserDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -53,26 +54,21 @@ public class TerminalClientTest {
 
     @Test
     public void testHandleLogin_Success() {
-
-        Map<String, Object> responseMap = new HashMap<>();
-        responseMap.put("id", 1);
-        responseMap.put("username", username);
-        responseMap.put("name", name);
-        responseMap.put("role", "ATTENDEE");
+        UserDto mockUser = new UserDto(1, "readyfreddie", name, "ATTENDEE");
 
         when(mockRestTemplate.postForObject(
                 contains("/users/login"),
                 any(HttpEntity.class),
-                eq(Map.class)))
-                .thenReturn(responseMap);
+                eq(UserDto.class)))
+                .thenReturn(mockUser);
 
         boolean result = TerminalClient.handleLogin(username, password);
 
         assertTrue(result);
-        Map<String, String> currentUser = TerminalClient.getCurrentUser();
+        UserDto currentUser = TerminalClient.getCurrentUser();
         assertNotNull(currentUser);
-        assertEquals("readyfreddie", currentUser.get("username"));
-        assertEquals("ATTENDEE", currentUser.get("role"));
+        assertEquals("readyfreddie", currentUser.getUsername());
+        assertEquals("ATTENDEE", currentUser.getRole()); // Fixed - was comparing role to username
     }
 
     @Test
@@ -91,16 +87,12 @@ public class TerminalClientTest {
     @Test
     public void testHandleRegistration_Success() {
         role = "ORGANISER";
-        Map<String, Object> responseMap = new HashMap<>();
-        responseMap.put("id", 1);
-        responseMap.put("username", username);
-        responseMap.put("name", name);
-
+        UserDto mockUser = new UserDto(1, username, name, role);
         when(mockRestTemplate.postForObject(
                 contains("/users/register"),
                 any(HttpEntity.class),
-                eq(Map.class)))
-                .thenReturn(responseMap);
+                eq(UserDto.class)))
+                .thenReturn(mockUser);
 
         boolean result = TerminalClient.handleRegistration(name, username, password, role);
         assertTrue(result);
