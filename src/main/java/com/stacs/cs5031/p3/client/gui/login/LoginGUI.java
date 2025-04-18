@@ -2,20 +2,20 @@ package com.stacs.cs5031.p3.client.gui.login;
 
 import javax.swing.*;
 import java.awt.Color;
-import java.util.HashMap;
-import java.util.Map;
 
 import com.stacs.cs5031.p3.client.gui.Attendee.AttendeeEventsView;
+import com.stacs.cs5031.p3.client.gui.organiser.OrganiserHomePage;
+import com.stacs.cs5031.p3.server.dto.LoginRequest;
+import com.stacs.cs5031.p3.server.dto.RegistrationRequest;
+import com.stacs.cs5031.p3.server.dto.UserDto;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
 
-// Import custom helper classes
 import com.stacs.cs5031.p3.client.gui.helper_classes.CustomFontLoader;
 import com.stacs.cs5031.p3.client.gui.helper_classes.OnClickEventHelper;
 import com.stacs.cs5031.p3.client.gui.helper_classes.RoundedBorder;
-import com.stacs.cs5031.p3.client.gui.organiser.OrganiserHomePage;
 
 public class LoginGUI extends JFrame {
 
@@ -31,6 +31,7 @@ public class LoginGUI extends JFrame {
 
     private JTextField usernameField;
     private JPasswordField passwordField;
+    private UserDto currentUser;
 
     public LoginGUI() {
         setTitle("Room Booking System - Login");
@@ -113,92 +114,57 @@ public class LoginGUI extends JFrame {
         }
 
         try {
+            // Create login request DTO
+            LoginRequest loginRequest = new LoginRequest();
+            loginRequest.setUsername(username);
+            loginRequest.setPassword(password);
+
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-
-            Map<String, String> requestBody = new HashMap<>();
-            requestBody.put("username", username);
-            requestBody.put("password", password);
-
-            HttpEntity<Map<String, String>> request = new HttpEntity<>(requestBody, headers);
+            HttpEntity<LoginRequest> request = new HttpEntity<>(loginRequest, headers);
 
             String loginUrl = BASE_URL + "/users/login";
             System.out.println("Attempting to connect to: " + loginUrl);
 
-            Map<String, Object> response = restTemplate.postForObject(
+            UserDto response = restTemplate.postForObject(
                     loginUrl,
                     request,
-                    Map.class
+                    UserDto.class
             );
 
             if (response != null) {
-                Map<String, String> user = new HashMap<>();
-                user.put("id", String.valueOf(response.get("id")));
-                user.put("username", (String) response.get("username"));
-                user.put("name", (String) response.get("name"));
-                user.put("role", (String) response.get("role"));
-
-                openAppropriateView(user);
+                currentUser = response;
+                openAppropriateView();
             } else {
                 showCustomMessageDialog("Login failed. Invalid credentials.", "Error");
             }
         } catch (Exception e) {
+            System.out.println("Error during login: " + e.getMessage());
             showCustomMessageDialog("Login failed: " + e.getMessage(), "Error");
-
-            // For testing - allow login with any credentials
-            if (username.equalsIgnoreCase("attendee") && password.equals("test")) {
-                System.out.println("Using test account since server is unavailable");
-                Map<String, String> user = new HashMap<>();
-                user.put("id", "1");
-                user.put("username", username);
-                user.put("name", "Test Attendee");
-                user.put("role", "ATTENDEE");
-
-                openAppropriateView(user);
-            } else if (username.equalsIgnoreCase("organiser") && password.equals("test")) {
-                Map<String, String> user = new HashMap<>();
-                user.put("id", "2");
-                user.put("username", username);
-                user.put("name", "Test Organiser");
-                user.put("role", "ORGANISER");
-
-                openAppropriateView(user);
-            } else if (username.equalsIgnoreCase("admin") && password.equals("test")) {
-                Map<String, String> user = new HashMap<>();
-                user.put("id", "3");
-                user.put("username", username);
-                user.put("name", "Test Admin");
-                user.put("role", "ADMIN");
-
-                openAppropriateView(user);
-            } else {
-                showCustomMessageDialog("Login failed: " + e.getMessage() +
-                                "\n\nTry using test accounts:\n" +
-                                "Username: attendee, Password: test\n" +
-                                "Username: organiser, Password: test\n" +
-                                "Username: admin, Password: test",
-                        "Error");
-            }
         }
     }
 
-    private void openAppropriateView(Map<String, String> user) {
-        dispose(); // Close login window
 
-        String role = user.get("role");
+    private UserDto createTestUser(Integer id, String username, String name, String role) {
+        return new UserDto(id, username, name, role);
+    }
+
+    private void openAppropriateView() {
+        dispose();
+
+        String role = currentUser.getRole();
         if ("ATTENDEE".equals(role)) {
-            AttendeeEventsView attendeeGUI = new AttendeeEventsView(user);
+            AttendeeEventsView attendeeGUI = new AttendeeEventsView(currentUser);
             attendeeGUI.setVisible(true);
         } else if ("ORGANISER".equals(role)) {
-            new OrganiserHomePage(user);
+            new OrganiserHomePage(currentUser);
         } else if ("ADMIN".equals(role)) {
-            // You'll need to implement this class
+            // custom message for admin view not yet implemented
             showCustomMessageDialog("Admin view not yet implemented", "Information");
         }
     }
 
     private void showRegistrationDialog() {
-        // Create a registration dialog
         JDialog dialog = new JDialog(this, "Register", true);
 
         JPanel panel = new JPanel();
@@ -286,15 +252,24 @@ public class LoginGUI extends JFrame {
                 return;
             }
 
-            // Call API to register
             try {
-                // Implementation omitted for brevity
-                // In a real app, would call API to register user
+                // create registration request DTO
+                RegistrationRequest registrationRequest = new RegistrationRequest(
+                        name, username, password, role);
+
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_JSON);
+                HttpEntity<RegistrationRequest> request = new HttpEntity<>(registrationRequest, headers);
+
+                UserDto response = restTemplate.postForObject(
+                        BASE_URL + "/users/register",
+                        request,
+                        UserDto.class
+                );
 
                 showCustomMessageDialog("Registration successful! Please login.", "Success");
                 dialog.dispose();
             } catch (Exception ex) {
-                showCustomMessageDialog("Registration successful! Please login.", "Success");
                 dialog.dispose();
             }
         });

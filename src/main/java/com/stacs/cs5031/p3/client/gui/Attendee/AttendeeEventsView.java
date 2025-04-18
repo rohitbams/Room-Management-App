@@ -3,28 +3,30 @@ package com.stacs.cs5031.p3.client.gui.Attendee;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.Color;
-import java.util.HashMap;
-import java.util.Map;
 
+import org.springframework.http.HttpEntity;
+import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
 
 import com.stacs.cs5031.p3.client.gui.helper_classes.CustomFontLoader;
 import com.stacs.cs5031.p3.client.gui.helper_classes.OnClickEventHelper;
 import com.stacs.cs5031.p3.client.gui.helper_classes.RoundedBorder;
 import com.stacs.cs5031.p3.client.gui.login.LoginGUI;
+import com.stacs.cs5031.p3.server.dto.BookingDto;
+import com.stacs.cs5031.p3.server.dto.UserDto;
 
 public class AttendeeEventsView extends JFrame {
 
     private static final String BASE_URL = "http://localhost:8080/api";
     private static final RestTemplate restTemplate = new RestTemplate();
 
-    private Map<String, String> currentUser;
+    private UserDto currentUser;
     private JTable availableEventsTable;
     private JTable unavailableEventsTable;
     private DefaultTableModel availableEventsModel;
     private DefaultTableModel unavailableEventsModel;
 
-    public AttendeeEventsView(Map<String, String> user) {
+    public AttendeeEventsView(UserDto user) {
         this.currentUser = user;
         setTitle("Event Booking System - Available Events");
         setSize(1143, 617);
@@ -80,7 +82,7 @@ public class AttendeeEventsView extends JFrame {
         }
 
         private void addWelcomeLabel() {
-            JLabel welcomeLabel = new JLabel("Welcome, " + currentUser.get("name"));
+            JLabel welcomeLabel = new JLabel("Welcome, " + currentUser.getName());
             welcomeLabel.setBounds(20, 60, 300, 20);
             welcomeLabel.setFont(CustomFontLoader.loadFont("./resources/fonts/Lexend.ttf", 14));
             panel.add(welcomeLabel);
@@ -226,20 +228,20 @@ public class AttendeeEventsView extends JFrame {
             availableEventsModel.setRowCount(0);
 
             try {
-                Map[] events = restTemplate.getForObject(
-                        BASE_URL + "/attendees/" + currentUser.get("id") + "/available-bookings",
-                        Map[].class
+                BookingDto[] events = restTemplate.getForObject(
+                        BASE_URL + "/attendees/" + currentUser.getId() + "/available-bookings",
+                        BookingDto[].class
                 );
 
                 if (events != null) {
-                    for (Map event : events) {
+                    for (BookingDto event : events) {
                         availableEventsModel.addRow(new Object[]{
-                                event.get("id"),
-                                event.get("eventName"),
-                                event.get("roomName"),
-                                event.get("startTime"),
-                                event.get("duration") + " mins",
-                                event.get("currentAttendees") + "/" + event.get("maxCapacity"),
+                                event.getId(),
+                                event.getEventName(),
+                                event.getRoomName(),
+                                event.getStartTime(),
+                                event.getDuration() + " mins",
+                                event.getCurrentAttendees() + "/" + event.getMaxCapacity(),
                                 ""
                         });
                     }
@@ -249,6 +251,7 @@ public class AttendeeEventsView extends JFrame {
                 System.out.println("Error loading available events: " + e.getMessage());
             }
 
+            // Fallback to sample data if API fails
             for (int i = 1; i <= 5; i++) {
                 availableEventsModel.addRow(new Object[]{
                         i,
@@ -269,20 +272,20 @@ public class AttendeeEventsView extends JFrame {
         try {
             unavailableEventsModel.setRowCount(0);
             try {
-                Map[] events = restTemplate.getForObject(
-                        BASE_URL + "/attendees/" + currentUser.get("id") + "/unavailable-bookings",
-                        Map[].class
+                BookingDto[] events = restTemplate.getForObject(
+                        BASE_URL + "/attendees/" + currentUser.getId() + "/unavailable-bookings",
+                        BookingDto[].class
                 );
 
                 if (events != null) {
-                    for (Map event : events) {
+                    for (BookingDto event : events) {
                         unavailableEventsModel.addRow(new Object[]{
-                                event.get("id"),
-                                event.get("eventName"),
-                                event.get("roomName"),
-                                event.get("startTime"),
-                                event.get("duration") + " mins",
-                                event.get("currentAttendees") + "/" + event.get("maxCapacity"),
+                                event.getId(),
+                                event.getEventName(),
+                                event.getRoomName(),
+                                event.getStartTime(),
+                                event.getDuration() + " mins",
+                                event.getCurrentAttendees() + "/" + event.getMaxCapacity(),
                                 "Full"
                         });
                     }
@@ -292,6 +295,7 @@ public class AttendeeEventsView extends JFrame {
                 System.out.println("Error loading unavailable events: " + e.getMessage());
             }
 
+            // Fallback to sample data if API fails
             for (int i = 1; i <= 3; i++) {
                 unavailableEventsModel.addRow(new Object[]{
                         i + 10,
@@ -310,7 +314,7 @@ public class AttendeeEventsView extends JFrame {
 
     private void registerForBooking(int row) {
         try {
-            int bookingId = ((Number) availableEventsModel.getValueAt(row, 0)).intValue();
+            Long bookingId = (Long) availableEventsModel.getValueAt(row, 0);
             String eventName = (String) availableEventsModel.getValueAt(row, 1);
 
             boolean confirmed = ConfirmationDialog.showConfirmDialog(
@@ -320,10 +324,11 @@ public class AttendeeEventsView extends JFrame {
 
             if (confirmed) {
                 try {
-                    restTemplate.postForObject(
-                            BASE_URL + "/attendees/" + currentUser.get("id") + "/register/" + bookingId,
+                    // Use proper DTO for response
+                    BookingDto response = restTemplate.postForObject(
+                            BASE_URL + "/attendees/" + currentUser.getId() + "/register/" + bookingId,
                             null,  // No request body needed
-                            Map.class
+                            BookingDto.class
                     );
 
                     showCustomMessageDialog(
@@ -335,7 +340,7 @@ public class AttendeeEventsView extends JFrame {
                     loadAvailableEvents();
                     loadUnavailableEvents();
                 } catch (Exception e) {
-                    // for testing purposes, show success even if API fails
+                    // For testing purposes, show success even if API fails
                     showCustomMessageDialog(
                             "Successfully registered for event: " + eventName,
                             "Success");
@@ -378,18 +383,13 @@ public class AttendeeEventsView extends JFrame {
         dialog.setVisible(true);
     }
 
-    // for testing
-    public static void main(String[] args) {
-        // sample user data
-        Map<String, String> testUser = new HashMap<>();
-        testUser.put("id", "1");
-        testUser.put("username", "testuser");
-        testUser.put("name", "Test User");
-        testUser.put("role", "ATTENDEE");
-
-        SwingUtilities.invokeLater(() -> {
-            AttendeeEventsView view = new AttendeeEventsView(testUser);
-            view.setVisible(true);
-        });
-    }
+//    // For testing purpose only - simplified
+//    public static void main(String[] args) {
+//        SwingUtilities.invokeLater(() -> {
+//            // Create a test user as UserDto
+//            UserDto testUser = new UserDto(1, "testuser", "Test User", "ATTENDEE");
+//            AttendeeEventsView view = new AttendeeEventsView(testUser);
+//            view.setVisible(true);
+//        });
+//    }
 }
