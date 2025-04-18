@@ -426,29 +426,34 @@ public class CreateBookingPage {
      * This method is called to get the list of rooms from the server.
      */
     private void getRooms() {
-      ResponseEntity<ArrayList<RoomDto>> res = restClient.get()
-          .uri(BASE_URL + "organiser/available-rooms")
-          .retrieve()
-          .toEntity(new ParameterizedTypeReference<>() {
-          });
+      try {
+        ResponseEntity<ArrayList<RoomDto>> res = restClient.get()
+            .uri(BASE_URL + "organiser/available-rooms")
+            .retrieve()
+            .toEntity(new ParameterizedTypeReference<>() {
+            });
 
-      if (res.getStatusCode() == HttpStatus.OK) {
+        if (res.getStatusCode() == HttpStatus.OK) {
 
-        List<RoomDto> roomList = res.getBody();
+          List<RoomDto> roomList = res.getBody();
 
-        // Check if the room list is null
-        if (roomList == null) {
-          JOptionPane.showMessageDialog(null, "No rooms available!", "Error",
+          // Check if the room list is null
+          if (roomList == null) {
+            JOptionPane.showMessageDialog(null, "No rooms available!", "Error",
+                JOptionPane.ERROR_MESSAGE);
+            return;
+          }
+
+          for (RoomDto room : roomList) {
+            System.out.println(room.getName());
+            rooms.put(room.getName(), room.getId());
+          }
+        } else {
+          JOptionPane.showMessageDialog(null, res.getBody(), "Error",
               JOptionPane.ERROR_MESSAGE);
-          return;
         }
-
-        for (RoomDto room : roomList) {
-          System.out.println(room.getName());
-          rooms.put(room.getName(), room.getId());
-        }
-      } else {
-        JOptionPane.showMessageDialog(null, res.getBody(), "Error",
+      } catch (Exception e) {
+        JOptionPane.showMessageDialog(null, e.getMessage(), "Error",
             JOptionPane.ERROR_MESSAGE);
       }
     }
