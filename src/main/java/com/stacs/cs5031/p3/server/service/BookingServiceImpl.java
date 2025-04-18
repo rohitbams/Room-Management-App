@@ -125,7 +125,7 @@ public class BookingServiceImpl implements BookingService {
             Date existingStart = booking.getStartTime();
             Calendar cal = Calendar.getInstance();
             cal.setTime(existingStart);
-            Date existingEnd = new Date(cal.getTimeInMillis() + booking.getDuration() * 60000);
+            Date existingEnd = new Date((cal.getTimeInMillis() + booking.getDuration() * 60000) -60000);
 
             
             boolean isNotOverlapping =
