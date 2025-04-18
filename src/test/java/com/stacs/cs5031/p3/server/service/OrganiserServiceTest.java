@@ -5,17 +5,21 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.times;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 
+import com.stacs.cs5031.p3.server.dto.AttendeeDto;
 import com.stacs.cs5031.p3.server.dto.BookingDto;
 import com.stacs.cs5031.p3.server.dto.RoomDto;
 import com.stacs.cs5031.p3.server.exception.BookingNotFoundException;
+import com.stacs.cs5031.p3.server.model.Attendee;
 import com.stacs.cs5031.p3.server.model.Booking;
 import com.stacs.cs5031.p3.server.model.Organiser;
 import com.stacs.cs5031.p3.server.model.Room;
@@ -358,5 +362,45 @@ public class OrganiserServiceTest {
         BookingDto res = organiserService.getBooking(bookingId.intValue(), organiserId);
         assertEquals(null, res);
     }
+
+
+
+    /**
+     * Tests that an organiser can get all their booking attendees successfully.
+     */
+    @Test
+    void shouldGetAttendeesForBookingWithoutIssue() {
+
+        Booking booking1 = Mockito.mock(Booking.class);
+        Room room = Mockito.mock(Room.class);
+        Organiser organiser = Mockito.mock(Organiser.class);
+        ArrayList<Attendee> attendees = new ArrayList<>();
+        Attendee attendee = Mockito.mock(Attendee.class);
+        Attendee attendee2 = Mockito.mock(Attendee.class);
+        attendees.add(attendee);
+        attendees.add(attendee2);
+
+        Mockito.when(booking1.getRoom()).thenReturn(room);
+
+        Mockito.when(booking1.getOrganiser()).thenReturn(organiser);
+        Mockito.when(booking1.getAttendees()).thenReturn(attendees); 
+        Mockito.when(attendee.getId()).thenReturn(1);
+        Mockito.when(attendee2.getId()).thenReturn(2);
+
+        Mockito.when(room.getID()).thenReturn(1);
+        Mockito.when(organiser.getId()).thenReturn(1);
+
+        ArrayList<Booking> bookings = new ArrayList<>();
+        bookings.add(booking1);
+
+        Mockito.when(bookingService.getBookingById(1L)).thenReturn(Optional.of(booking1));
+        ArrayList<AttendeeDto> attendeeDtos = organiserService.getAttendees(1,1);
+        Mockito.verify(bookingService, times(1)).getBookingById(1L);
+        assertEquals(2, attendeeDtos.size());
+        assertEquals(attendee.getId(), attendeeDtos.get(0).getId());
+        assertEquals(attendee2.getId(), attendeeDtos.get(1).getId());
+
+    }
+
 
 }

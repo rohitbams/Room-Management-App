@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.stacs.cs5031.p3.server.dto.AttendeeDto;
 import com.stacs.cs5031.p3.server.dto.BookingDto;
 import com.stacs.cs5031.p3.server.dto.OrganiserDto;
 import com.stacs.cs5031.p3.server.dto.RoomDto;
@@ -148,6 +149,27 @@ public class OrganiserController {
         } catch (Exception e) { // if booking request is invalid
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
+    }
+
+
+    /**
+     * This method is used to get all attendees for a booking.
+     * @param bookingId   - the id of the booking
+     * @param organiserId - the id of the organiser
+     * @return the list of attendees
+     */
+    @GetMapping("/organiser/{organiserId}/my-bookings/{bookingId}/attendees")
+    public ResponseEntity<ArrayList<AttendeeDto>> getAttendees(@PathVariable int bookingId, @PathVariable int organiserId) {
+        try{
+            ArrayList<AttendeeDto> attendees = organiserService.getAttendees(bookingId, organiserId);
+            if (attendees == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(attendees);
+        } catch (Exception e) { //if there is an error in the server
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+        return null;
     }
 
 }

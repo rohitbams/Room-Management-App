@@ -25,9 +25,12 @@ import java.util.Date;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stacs.cs5031.p3.server.dto.BookingDto;
+import com.stacs.cs5031.p3.server.model.Attendee;
 import com.stacs.cs5031.p3.server.model.Booking;
 import com.stacs.cs5031.p3.server.model.Organiser;
+import com.stacs.cs5031.p3.server.repository.AttendeeRepository;
 import com.stacs.cs5031.p3.server.repository.OrganiserRepository;
+import com.stacs.cs5031.p3.server.service.AttendeeService;
 import com.stacs.cs5031.p3.server.service.BookingService;
 import com.stacs.cs5031.p3.server.service.RoomService;
 
@@ -51,9 +54,14 @@ public class OrganiserControllerTest {
 
         @Autowired
         private OrganiserRepository organiserRepository;
+        @Autowired
+        private AttendeeRepository attendeeRepository;
 
         @Autowired
         private static RoomService roomService;
+
+        @Autowired
+        private AttendeeService attendeeService;
 
         @Autowired
         private BookingService bookingService;
@@ -321,6 +329,33 @@ public class OrganiserControllerTest {
                                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                                 .andExpect(jsonPath("$.[0].eventName").value(b1.getName()))
                                 .andExpect(jsonPath("$.[1].eventName").value(b2.getName()));
+
+        }
+
+
+        /**
+         * This test is responsible for checking that all attendees can be retrieved for an organisers event.
+         * @throws Exception
+         */
+        @Test
+        @Order(11)
+        void shouldGetAllAttendeesWithoutIssue() throws Exception {
+                Organiser org = organiserRepository.save(organiser1);
+                int organiserId = org.getId().intValue();
+                BookingDto.BookingRequest bookingRequest = new BookingDto.BookingRequest("Event 1", 1L, new Date(), 2,
+                                "Testing 1");
+
+                Booking b1 = bookingService.createBooking(bookingRequest, Long.valueOf(organiserId));
+
+                Attendee attendee1 = new Attendee("John Doe", "john.doe", "password123");
+                attendeeRepository.save(attendee1);     
+                attendeeService.registerForBooking(attendee1.getId(), b1.getId());
+
+                this.mockMvc.perform(
+                                get("/organiser/"+org.getId()+"/my-bookings/" + b1.getId()+"/attendees"))
+                                .andExpect(status().isOk())
+                                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                                .andExpect(jsonPath("$.[0].name").value(attendee1.getName()));
 
         }
 

@@ -3,6 +3,7 @@ package com.stacs.cs5031.p3.client.gui.organiser;
 
 import javax.swing.*;
 import java.awt.Color;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.stacs.cs5031.p3.client.gui.helper_classes.CustomFontLoader;
@@ -16,11 +17,22 @@ import com.stacs.cs5031.p3.client.gui.helper_classes.RoundedBorder;
  */
 public class OrganiserHomePage {
 
+  //   public static void main(String[] args) {
+  //   // Sample user data
+  //   Map<String, String> user = new HashMap<>();
+  //   user.put("id", "3");
+  //   user.put("name", "John Doe");
+  
+  //   new OrganiserHomePage(user);
+  // }
+
+
   /**
    * This is the constructor of the OrganiserHomePage class.
    * @param user - the user details
    */
   public OrganiserHomePage(Map<String, String> user) {
+    System.out.println("oRGANISER home page- organiser id:"+ user.get("id"));
 
     createPage(user);
    
@@ -90,7 +102,7 @@ public class OrganiserHomePage {
     private void addViewBookingsButton() {
 
       JButton viewBookingsBtn = new JButton("View Bookings");
-      viewBookingsBtn.setBounds(276, 267, 314, 40);
+      viewBookingsBtn.setBounds(280, 267, 314, 40);
       viewBookingsBtn.setBackground(Color.decode("#bca8e4"));
       viewBookingsBtn.setForeground(Color.decode("#000"));
       viewBookingsBtn.setFont(CustomFontLoader.loadFont("./resources/fonts/Lexend.ttf", 14));
@@ -98,6 +110,10 @@ public class OrganiserHomePage {
       viewBookingsBtn.setFocusPainted(false);
       OnClickEventHelper.setOnClickColor(viewBookingsBtn, Color.decode("#7c6f97"), Color.decode("#bca8e4"));
       panel.add(viewBookingsBtn);
+      viewBookingsBtn.addActionListener(e -> {
+        new MyBookingsPage(user).setVisible(true);
+        frame.dispose();
+      });
 
     }
 
