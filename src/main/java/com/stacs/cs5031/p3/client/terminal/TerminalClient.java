@@ -364,6 +364,7 @@ public class TerminalClient {
                     BookingDto[].class
             );
 
+            // null check
             if (bookings == null || bookings.length == 0) {
                 System.out.println("You have no bookings to cancel.");
                 return;
@@ -372,7 +373,8 @@ public class TerminalClient {
             System.out.println("Your Bookings:");
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm");
             for (int i = 0; i < bookings.length; i++) {
-                float durationHours = bookings[i].getDuration() / 60.0f;
+                // convert minutes to hours for display
+                float durationHours = bookings[i].getDuration() / 60.0f; // make the number pretty
                 String formattedDuration = durationHours == (int)durationHours ?
                         String.valueOf((int)durationHours) : String.valueOf(durationHours);
 
@@ -406,32 +408,36 @@ public class TerminalClient {
      */
     private static void viewMyBookings() {
         System.out.println("\n=== My Bookings ===");
-
         try {
-            Map[] bookings = restTemplate.getForObject(
+            BookingDto[] bookings = restTemplate.getForObject(
                     BASE_URL + "/organisers/" + currentUser.get("id") + "/bookings",
-                    Map[].class
+                    BookingDto[].class
             );
 
             if (bookings == null || bookings.length == 0) {
                 System.out.println("You have no bookings.");
-                return;            }
+                return;
+            }
 
             System.out.println("Your Bookings:");
-            for (Map booking : bookings) {
-                System.out.println("ID: " + booking.get("id") +
-                        ", Event: " + booking.get("eventName") +
-                        ", Room: " + booking.get("roomName") +
-                        ", Time: " + booking.get("startTime") +
-                        ", Duration: " + booking.get("duration") + " minutes" +
-                        ", Attendees: " + booking.get("currentAttendees") + "/" + booking.get("maxCapacity"));
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+            for (BookingDto booking : bookings) {
+                float durationHours = booking.getDuration() / 60.0f;
+                String formattedDuration = durationHours == (int)durationHours ?
+                        String.valueOf((int)durationHours) : String.valueOf(durationHours);
+
+                System.out.println("ID: " + booking.getId() +
+                        ", Event: " + booking.getEventName() +
+                        ", Room: " + booking.getRoomName() +
+                        ", Time: " + dateFormat.format(booking.getStartTime()) +
+                        ", Duration: " + formattedDuration + " hours" +
+                        ", Attendees: " + booking.getCurrentAttendees() + "/" + booking.getMaxCapacity());
             }
 
         } catch (Exception e) {
             System.out.println("Failed to retrieve your bookings: " + e.getMessage());
         }
     }
-
     /**
      * This method displays the menu of options for an Attendee.
      */
