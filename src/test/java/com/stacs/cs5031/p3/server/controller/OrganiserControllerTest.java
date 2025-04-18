@@ -216,11 +216,12 @@ public class OrganiserControllerTest {
         @Order(6)
         void shouldCreateBookingWithoutIssue() throws Exception {
                 int roomId = 1;
+                int organiserId = 1;
                 BookingDto.BookingRequest bookingRequest = new BookingDto.BookingRequest("Event 1", Long.valueOf(roomId), new Date(), 2,
                                 "Test");
 
                 this.mockMvc.perform(
-                                post("/organiser/create-booking" + "/" + 1)
+                                post("/organiser/create-booking" + "/" + organiserId)
                                                 .content(new ObjectMapper().writeValueAsString(bookingRequest))
                                                 .contentType(MediaType.APPLICATION_JSON)
                                                 .accept(MediaType.APPLICATION_JSON))
@@ -255,8 +256,6 @@ public class OrganiserControllerTest {
         void shouldGetBookingDetailsWithoutIssue() throws Exception {
                 Organiser org = organiserRepository.save(organiser1);
                 int organiserId = org.getId().intValue();
-
-                
                 
                 BookingDto.BookingRequest bookingRequest = new BookingDto.BookingRequest("Event 1", 1L, new Date(), 2,
                                 "Testing 1");
@@ -279,21 +278,16 @@ public class OrganiserControllerTest {
         @Test
         @Order(9)
         void shouldCancelBookingWithoutIssue() throws Exception {
-                this.mockMvc.perform(
-                        post("/organiser/create-organiser")
-                                        .content(new ObjectMapper().writeValueAsString(organiser1))
-                                        .contentType(MediaType.APPLICATION_JSON)
-                                        .accept(MediaType.APPLICATION_JSON))
-                        .andExpect(status().isCreated())
-                        .andExpect(content().string("SUCCESS!"));
+                Organiser org = organiserRepository.save(organiser1);
+                int organiserId = org.getId().intValue();
 
                 BookingDto.BookingRequest bookingRequest = new BookingDto.BookingRequest("Event 1", 1L, new Date(), 2,
                                 "Test");
 
-                bookingService.createBooking(bookingRequest, 1L);
+                Booking b = bookingService.createBooking(bookingRequest, 1L);
 
                 this.mockMvc.perform(
-                                delete("/organiser/cancel-booking/" + 1 + "/" + 1))
+                                delete("/organiser/cancel-booking/" + organiserId+"/"+b.getId()))
                                 .andExpect(status().isNoContent())
                                 .andExpect(content().string("SUCCESS!"));
 
@@ -316,7 +310,7 @@ public class OrganiserControllerTest {
                 BookingDto.BookingRequest bookingRequest2 = new BookingDto.BookingRequest("Event 2", 2L, new Date(), 2,
                                 "Testing 2");
 
-               Booking b1 = bookingService.createBooking(bookingRequest, Long.valueOf(organiserId));
+                Booking b1 = bookingService.createBooking(bookingRequest, Long.valueOf(organiserId));
                 Booking b2 = bookingService.createBooking(bookingRequest2, Long.valueOf(organiserId));
 
                 this.mockMvc.perform(
