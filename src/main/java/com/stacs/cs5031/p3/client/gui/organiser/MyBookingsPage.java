@@ -19,6 +19,8 @@ import org.springframework.web.client.RestTemplate;
 import com.stacs.cs5031.p3.client.gui.helper_classes.*;
 import com.stacs.cs5031.p3.server.dto.AttendeeDto;
 import com.stacs.cs5031.p3.server.dto.BookingDto;
+import com.stacs.cs5031.p3.server.dto.OrganiserDto;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -38,9 +40,8 @@ public class MyBookingsPage extends JFrame {
     private JTable bookingTable;
     private DefaultTableModel tableModel;
 
-    public MyBookingsPage(Map<String, String> user) {
-        int organiserId = Integer.parseInt(user.get("id"));
-        System.out.println("my bookings page- organiser id:"+ user.get("id"));
+    public MyBookingsPage(OrganiserDto user) {
+        int organiserId = user.getId();
         // Set up the frame
         setTitle("My Bookings Page");
         setSize(1143, 617);
@@ -337,6 +338,8 @@ public class MyBookingsPage extends JFrame {
     }
 
     private void addViewAttendeeButton(JPanel panel, BookingDto booking) {
+        panel.add(new JLabel());
+
         JButton viewAttendeesButton = new JButton("View Attendees");
         viewAttendeesButton.setBackground(Color.decode("#bca8e4"));
         viewAttendeesButton.setForeground(Color.decode("#000"));
