@@ -19,7 +19,7 @@ import org.springframework.web.client.RestTemplate;
 import com.stacs.cs5031.p3.client.gui.helper_classes.*;
 import com.stacs.cs5031.p3.server.dto.AttendeeDto;
 import com.stacs.cs5031.p3.server.dto.BookingDto;
-import com.stacs.cs5031.p3.server.dto.OrganiserDto;
+import com.stacs.cs5031.p3.server.dto.UserDto;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -40,7 +40,7 @@ public class MyBookingsPage extends JFrame {
     private JTable bookingTable;
     private DefaultTableModel tableModel;
 
-    public MyBookingsPage(OrganiserDto user) {
+    public MyBookingsPage(UserDto user) {
         int organiserId = user.getId();
         // Set up the frame
         setTitle("My Bookings Page");
@@ -218,7 +218,7 @@ public class MyBookingsPage extends JFrame {
         String startTimeStr = booking.getStartTime() != null ? fullDateFormat.format(booking.getStartTime()) : "N/A";
         addDetailRow(detailsPanel, "Start Time:", startTimeStr, detailFont);
 
-        addDetailRow(detailsPanel, "Duration:", booking.getDuration() + " minutes", detailFont);
+        addDetailRow(detailsPanel, "Duration:", booking.getDuration()/60 + " hrs", detailFont);
         addDetailRow(detailsPanel, "Organiser:", booking.getOrganiserName(), detailFont);
         addDetailRow(detailsPanel, "Attendees:", String.valueOf(booking.getCurrentAttendees()), detailFont);
         addDetailRow(detailsPanel, "Maximum Capacity:", String.valueOf(booking.getMaxCapacity()), detailFont);

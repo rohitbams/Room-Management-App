@@ -22,7 +22,7 @@ import java.util.Map;
 
 import com.stacs.cs5031.p3.server.dto.RoomDto;
 import com.stacs.cs5031.p3.server.dto.BookingDto;
-import com.stacs.cs5031.p3.server.dto.OrganiserDto;
+import com.stacs.cs5031.p3.server.dto.UserDto;
 import com.stacs.cs5031.p3.client.gui.helper_classes.CustomFontLoader;
 import com.stacs.cs5031.p3.client.gui.helper_classes.OnFocusEventHelper;
 import com.stacs.cs5031.p3.client.gui.helper_classes.RoundedBorder;
@@ -40,7 +40,7 @@ public class CreateBookingPage {
   /**
    * This is the constructor of the CreateBookingPage class.
    */
-  public CreateBookingPage( OrganiserDto user) {
+  public CreateBookingPage( UserDto user) {
     int organiserId = user.getId();
     if (organiserId <=0) {
        System.out.println("Please provide a valid organiser id.");
@@ -57,7 +57,7 @@ public class CreateBookingPage {
    * @param user - the user details
    * 
    */
-  public static void createPage(int organiserId, OrganiserDto user) {
+  public static void createPage(int organiserId, UserDto user) {
     JFrame frame = new JFrame("Create New Booking");
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     frame.setSize(1143, 617);
@@ -88,7 +88,7 @@ public class CreateBookingPage {
     private RestClient restClient = RestClient.create(); 
     private int organiserId; // id of the organiser
     private JFrame frame; // The frame to which the panel will be added
-    private OrganiserDto user; // The user details
+    private UserDto user; // The user details
 
     /**
      * This is the constructor of the PageElements class.
@@ -96,7 +96,7 @@ public class CreateBookingPage {
      * @param panel       - the panel to which the elements will be added
      * @param organiserId - the id of the organiser
      */
-    public PageElements(int organiserId,OrganiserDto user, JPanel panel, JFrame frame) {
+    public PageElements(int organiserId,UserDto user, JPanel panel, JFrame frame) {
       this.panel = panel;
       this.organiserId = organiserId;
       this.frame = frame;
