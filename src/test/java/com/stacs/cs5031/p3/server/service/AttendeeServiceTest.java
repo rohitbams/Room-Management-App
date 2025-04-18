@@ -113,13 +113,13 @@ public class AttendeeServiceTest {
     @Test
     void registerForBooking_ShouldRegisterAttendee_WhenBookingHasSpace() {
         when(attendeeRepository.findById(1)).thenReturn(Optional.of(attendee));
-        when(bookingRepository.findById(1)).thenReturn(Optional.of(booking));
+        when(bookingRepository.findById(1L)).thenReturn(Optional.of(booking));
         when(attendeeRepository.save(any(Attendee.class))).thenReturn(attendee);
         when(bookingRepository.save(any(Booking.class))).thenReturn(booking);
         Booking result = attendeeService.registerForBooking(1, 1);
         assertNotNull(result);
         verify(attendeeRepository).findById(1);
-        verify(bookingRepository).findById(1);
+        verify(bookingRepository).findById(1L);
         verify(attendeeRepository).save(attendee);
         verify(bookingRepository).save(booking);
     }
@@ -127,7 +127,7 @@ public class AttendeeServiceTest {
     @Test
     void deregisterFromBooking_shouldRemoveBookingFromAttendee_whenRegistered() {
         Integer attendeeId = 1;
-        int bookingId = 1;
+        long bookingId = 1;
         when(attendeeRepository.findById(attendeeId)).thenReturn(Optional.of(attendee));
         when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
         when(bookingRepository.save(any(Booking.class))).thenReturn(booking);

@@ -115,7 +115,7 @@ public class AttendeeService {
      */
 
     @Transactional
-    public Booking registerForBooking(Integer attendeeId, Integer bookingId) {
+    public Booking registerForBooking(Integer attendeeId, long bookingId) {
         Attendee attendee = getAttendeeById(attendeeId);
 
         Booking booking = bookingRepository.findById(bookingId)
@@ -145,7 +145,7 @@ public class AttendeeService {
      * @throws IllegalStateException if attendee is not registered on the event
      */
     @Transactional
-    public Booking deregisterFromBooking(Integer attendeeId, int bookingId) {
+    public Booking deregisterFromBooking(Integer attendeeId, long bookingId) {
         Attendee attendee = getAttendeeById(attendeeId);
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new BookingNotFoundException(bookingId));
@@ -165,14 +165,12 @@ public class AttendeeService {
 
 
     public Attendee getAttendeeById(Integer id) {
-        User user = userRepository.findById(id)
+        Attendee attendee = attendeeRepository.findById(id)
             .orElseThrow(() -> new UserNotFoundException(id));
-        if (!(user instanceof Attendee)) {
+//        if (!(attendee instanceof Attendee)) {
+            if (attendee == null) {
             throw new IllegalArgumentException("User with ID " + id + " is not an Attendee.");
         }
-        return (Attendee) user;
+        return (Attendee) attendee;
     }
-
-
-
 }
