@@ -1,15 +1,25 @@
 package com.stacs.cs5031.p3.client.terminal;
 
-import com.stacs.cs5031.p3.server.dto.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
 
-import javax.swing.*;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import com.stacs.cs5031.p3.server.dto.AttendeeDto;
+import com.stacs.cs5031.p3.server.dto.BookingDto;
+import com.stacs.cs5031.p3.server.dto.OrganiserDto;
+import com.stacs.cs5031.p3.server.dto.RoomDto;
+import com.stacs.cs5031.p3.server.dto.UserDto;
 
 /**
  * TerminalClient class.

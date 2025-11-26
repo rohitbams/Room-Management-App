@@ -21,9 +21,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.stacs.cs5031.p3.server.dto.AttendeeDto;
 import com.stacs.cs5031.p3.server.dto.OrganiserDto;
 import com.stacs.cs5031.p3.server.dto.RoomDto;
-import com.stacs.cs5031.p3.server.model.Attendee;
 import com.stacs.cs5031.p3.server.model.Room;
 import com.stacs.cs5031.p3.server.service.AdminService;
 
@@ -92,9 +92,9 @@ public class AdminControllerTest {
      */
     @Test
     void shouldGetAllAttendees() throws Exception {
-        List<Attendee> attendees = List.of(
-                new Attendee("John Doe", "john.doe", "password123"),
-                new Attendee("Jane Smith", "jane.smith", "password456"));
+        List<AttendeeDto> attendees = List.of(
+                new AttendeeDto(1, "john.doe", "John Doe", List.of()),
+                new AttendeeDto(2, "jane.smith", "Jane Smith", List.of()));
         when(adminService.getAttendees()).thenReturn(new ArrayList<>(attendees));
 
         mvc.perform(get("/admin/attendees"))

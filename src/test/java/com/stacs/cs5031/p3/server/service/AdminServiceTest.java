@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import com.stacs.cs5031.p3.server.dto.AttendeeDto;
 import com.stacs.cs5031.p3.server.dto.OrganiserDto;
 import com.stacs.cs5031.p3.server.dto.RoomDto;
 import com.stacs.cs5031.p3.server.exception.RoomNotFoundException;
@@ -93,7 +94,7 @@ public class AdminServiceTest {
      * Tests that getAttendees returns all attendees from the AttendeeService.
      * Verifies that:
      * 1. The correct number of attendees is returned
-     * 2. The attendee properties match the expected values
+     * 2. The attendee properties match the expected values (now as DTOs)
      * 3. The AttendeeService's getAllAttendees method is called exactly once
      */
     @Test
@@ -104,17 +105,16 @@ public class AdminServiceTest {
         attendees.add(new Attendee("Toothless", "toothless", "12345"));
 
         when(attendeeService.getAllAttendees()).thenReturn(attendees);
-        ArrayList<Attendee> result = adminService.getAttendees();
+        ArrayList<AttendeeDto> result = adminService.getAttendees();
         assertEquals(attendees.size(), result.size());
 
         // Verify the contents of the returned list
         for (int i = 0; i < attendees.size(); i++) {
             Attendee expected = attendees.get(i);
-            Attendee actual = result.get(i);
+            AttendeeDto actual = result.get(i);
 
             assertEquals(expected.getName(), actual.getName(), "Attendee name should match");
             assertEquals(expected.getUsername(), actual.getUsername(), "Attendee username should match");
-            assertEquals(expected.getPassword(), actual.getPassword(), "Attendee password should match");
         }
 
         // Verify that AttendeeService.getAllAttendees() was called exactly once

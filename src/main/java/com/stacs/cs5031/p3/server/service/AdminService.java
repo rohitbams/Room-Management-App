@@ -4,9 +4,11 @@ import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.stacs.cs5031.p3.server.dto.AttendeeDto;
 import com.stacs.cs5031.p3.server.dto.OrganiserDto;
 import com.stacs.cs5031.p3.server.dto.RoomDto;
 import com.stacs.cs5031.p3.server.exception.RoomNotFoundException;
+import com.stacs.cs5031.p3.server.mapper.AttendeeDtoMapper;
 import com.stacs.cs5031.p3.server.model.Attendee;
 import com.stacs.cs5031.p3.server.model.Room;
 import com.stacs.cs5031.p3.server.repository.AdminRepository;
@@ -52,10 +54,11 @@ public class AdminService {
     /**
      * Retrieves all attendees registered in the system.
      *
-     * @return ArrayList of Attendee objects
+     * @return ArrayList of AttendeeDto objects
      */
-    public ArrayList<Attendee> getAttendees() {
-        return new ArrayList<>(attendeeService.getAllAttendees());
+    public ArrayList<AttendeeDto> getAttendees() {
+        ArrayList<Attendee> attendees = new ArrayList<>(attendeeService.getAllAttendees());
+        return new ArrayList<>(AttendeeDtoMapper.mapToDtoList(attendees));
     }
 
     /**

@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.stacs.cs5031.p3.server.dto.AttendeeDto;
 import com.stacs.cs5031.p3.server.dto.OrganiserDto;
 import com.stacs.cs5031.p3.server.dto.RoomDto;
-import com.stacs.cs5031.p3.server.model.Attendee;
 import com.stacs.cs5031.p3.server.model.Room;
 import com.stacs.cs5031.p3.server.service.AdminService;
 
@@ -52,11 +52,11 @@ public class AdminController {
     /**
      * Retrieves all attendees registered in the system.
      *
-     * @return ResponseEntity containing a list of all attendees and HTTP status 200 (OK)
+     * @return ResponseEntity containing a list of all attendee DTOs and HTTP status 200 (OK)
      */
     @GetMapping("/attendees")
-    public ResponseEntity<ArrayList<Attendee>> getAllAttendees() {
-        ArrayList<Attendee> attendees = adminService.getAttendees();
+    public ResponseEntity<ArrayList<AttendeeDto>> getAllAttendees() {
+        ArrayList<AttendeeDto> attendees = adminService.getAttendees();
         return ResponseEntity.ok(attendees);
     }
 

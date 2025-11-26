@@ -2,8 +2,8 @@
 
 > A full-stack event management application enabling organisers to book rooms and attendees to register for events through multiple client interfaces.
 
-[![Java](https://img.shields.io/badge/Java-11-orange.svg)](https://www.oracle.com/java/)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-2.6.7-brightgreen.svg)](https://spring.io/projects/spring-boot)
+[![Java](https://img.shields.io/badge/Java-21-orange.svg)](https://www.oracle.com/java/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4.4-brightgreen.svg)](https://spring.io/projects/spring-boot)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
 
@@ -28,10 +28,10 @@ A comprehensive room booking system built using **Agile/Scrum methodology** with
 ### Core Capabilities
 
 - **3 User Roles**: Organiser, Attendee, Admin with distinct permissions
-- **11 REST API Endpoints** for complete CRUD operations
+- **42 REST API Endpoints** for complete CRUD operations
 - **2 Client Interfaces**: Terminal CLI (897 LOC) and Java Swing GUI
 - **Real-time Capacity Management**: Automatic tracking and conflict prevention
-- **Comprehensive Testing**: 66 test cases across 8 test suites
+- **Comprehensive Testing**: 227 test cases across 27 test classes
 
 ---
 
@@ -104,13 +104,13 @@ A comprehensive room booking system built using **Agile/Scrum methodology** with
 
 | Layer | Technology |
 |-------|-----------|
-| **Backend** | Java 11, Spring Boot 2.6.7, Spring Data JPA |
+| **Backend** | Java 21, Spring Boot 3.4.4, Spring Data JPA, Spring Security |
 | **Database** | H2 (in-memory) |
 | **API** | RESTful with JSON |
 | **Terminal Client** | Java Console Application |
-| **GUI Client** | Java Swing |
+| **GUI Client** | Java Swing, JavaFX 20 |
 | **Build Tool** | Maven |
-| **Testing** | JUnit, Mockito |
+| **Testing** | JUnit 5, Mockito, Spring Boot Test |
 | **Version Control** | Git, GitLab |
 
 ---
@@ -119,7 +119,7 @@ A comprehensive room booking system built using **Agile/Scrum methodology** with
 
 ### Prerequisites
 
-- **Java Development Kit (JDK)**: Version 11 or higher
+- **Java Development Kit (JDK)**: Version 21 or higher
 - **Maven**: Version 3.6.0 or higher
 - **Git**: For cloning the repository
 
@@ -197,37 +197,75 @@ The system initializes with test accounts for development:
 
 ### Base URL
 ```
-http://localhost:8080/api
+http://localhost:8080
 ```
 
-### User Endpoints
+### User Endpoints (7 endpoints)
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | POST | `/users/register` | Register new user |
 | POST | `/users/login` | User login |
+| POST | `/users/logout` | User logout |
 | GET | `/users` | Get all users |
 | GET | `/users/{id}` | Get user by ID |
 | GET | `/users/by-username/{username}` | Get user by username |
 | DELETE | `/users/{id}` | Delete user |
 
-### Attendee Endpoints
+### Attendee Endpoints (7 endpoints)
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/attendees` | Get all attendees |
 | GET | `/attendees/{id}` | Get attendee by ID |
 | GET | `/attendees/{id}/available-bookings` | Get available bookings |
+| GET | `/attendees/{id}/unavailable-bookings` | Get unavailable bookings |
 | GET | `/attendees/{id}/registered-bookings` | Get registered bookings |
 | POST | `/attendees/{attendeeId}/register/{bookingId}` | Register for booking |
+| DELETE | `/attendees/{attendeeId}/cancel/{bookingId}` | Cancel registration |
 
-### Organiser Endpoints
+### Organiser Endpoints (8 endpoints)
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/organisers/{id}/create-booking` | Create new booking |
-| GET | `/organisers/{id}/bookings` | Get organiser's bookings |
-| DELETE | `/organisers/{id}/bookings/{bookingId}` | Cancel booking |
+| POST | `/organiser/create-organiser` | Create new organiser |
+| GET | `/organisers` | Get all organisers |
+| GET | `/organiser/available-rooms` | Get available rooms |
+| GET | `/organiser/my-bookings/{organiserId}` | Get organiser's bookings |
+| GET | `/organiser/{organiserId}/my-bookings/{bookingId}` | Get specific booking details |
+| GET | `/organiser/{organiserId}/my-bookings/{bookingId}/attendees` | Get booking attendees |
+| POST | `/organiser/create-booking/{organiserId}` | Create new booking |
+| DELETE | `/organiser/cancel-booking/{bookingId}/{organiserId}` | Cancel booking |
+
+### Booking Endpoints (5 endpoints)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/bookings` | Get all bookings |
+| GET | `/api/bookings/{bookingId}` | Get booking by ID |
+| POST | `/api/bookings/organiser/{organiserId}` | Create booking for organiser |
+| DELETE | `/api/bookings/{bookingId}` | Delete booking |
+| POST | `/api/bookings/{bookingId}/attendees/{attendeeId}` | Add attendee to booking |
+
+### Room Endpoints (5 endpoints)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/rooms/all` | Get all rooms |
+| GET | `/rooms/{id}` | Get room by ID |
+| GET | `/rooms/available` | Get available rooms |
+| POST | `/rooms/{id}/book` | Book a room |
+| POST | `/rooms/{id}/makeAvailable` | Make room available |
+
+### Admin Endpoints (5 endpoints)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/admin/rooms` | Get all rooms (admin view) |
+| GET | `/admin/attendees` | Get all attendees (admin view) |
+| GET | `/admin/organisers` | Get all organisers (admin view) |
+| POST | `/admin/rooms` | Add new room |
+| DELETE | `/admin/rooms/{roomId}` | Delete room |
 
 **Example Request:**
 ```json
@@ -244,14 +282,23 @@ POST /api/users/register
 
 ## Testing
 
-<!-- ### Test Coverage
+### Test Coverage
 
-- **Total Test Cases**: 66 across 8 test classes
-- **Entity Tests**: 12 (User, Attendee models)
-- **Service Tests**: 21 (Business logic validation)
-- **Controller Tests**: 24 (API endpoint verification)
-- **Repository Tests**: 5 (Custom JPQL queries)
-- **Integration Tests**: 4 (End-to-end workflows) -->
+- **Total Test Cases**: 227 test methods across 27 test classes
+- **Controller Tests**: 72 tests (6 controllers)
+  - UserControllerTest, AttendeeControllerTest, BookingControllerTest
+  - OrganiserControllerTest, RoomControllerTest, AdminControllerTest
+- **Service Tests**: 63 tests (6 services)
+  - UserServiceTest, AttendeeServiceTest, BookingServiceTest
+  - OrganiserServiceTest, RoomServiceTest, AdminServiceTest
+- **Repository Tests**: 29 tests (5 repositories)
+  - Custom JPQL queries and data persistence validation
+- **Model/Entity Tests**: 38 tests (6 entities)
+  - User, Attendee, Organiser, Booking, Room, Admin
+- **DTO Tests**: 20 tests (4 DTOs)
+  - Data Transfer Object validation and mapping
+- **Integration Tests**: 5 tests
+  - End-to-end workflows and client-server communication
 
 ### Running Tests
 ```bash
@@ -296,7 +343,7 @@ p3-code/
 │   │   │       └── application.properties
 │   └── test/
 │       └── java/com/stacs/cs5031/p3/
-│           └── server/             # Test classes (66 tests)
+│           └── server/             # Test classes (227 tests across 27 classes)
 ├── pom.xml
 └── README.md
 ```
