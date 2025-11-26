@@ -11,6 +11,7 @@
 
 - [Overview](#overview)
 - [Features](#features)
+- [Screenshots](#screenshots)
 - [Architecture](#architecture)
 - [Getting Started](#getting-started)
 - [Usage](#usage)
@@ -22,6 +23,21 @@
 ---
 
 ## Overview
+
+### What is the Room Management App?
+
+The Room Management App is a comprehensive **event management platform** designed to streamline the process of organising and attending events. The application serves as a central hub where event organisers can book rooms for their events, and attendees can discover and register for events that interest them.
+
+**Real-World Use Case:**
+Imagine a university, conference center, or community hub where multiple events happen daily. Event organisers (speakers, workshop leaders, club presidents) need to reserve rooms for their events. Meanwhile, students, employees, or community members want to browse available events and sign up to attend. This application bridges that gap by providing:
+
+- **For Event Organisers:** A simple way to book rooms, specify event details (date, time, duration), and track who's attending their events
+- **For Attendees:** An easy-to-use platform to browse available events, register for ones they're interested in, and manage their event schedule
+- **For Administrators:** System-wide oversight to manage rooms, monitor bookings, and ensure smooth operations
+
+The platform is accessible through both a modern GUI interface (perfect for everyday use) and a terminal CLI (ideal for power users or remote access), making it flexible for different user preferences and scenarios.
+
+### Technical Overview
 
 A comprehensive room booking system built using **Agile/Scrum methodology** with **Test-Driven Development (TDD)**. The system provides a RESTful backend API consumed by both terminal (CLI) and graphical (GUI) clients, enabling seamless event management and attendee coordination.
 
@@ -67,6 +83,222 @@ A comprehensive room booking system built using **Agile/Scrum methodology** with
 - Duplicate registration detection
 - Real-time availability updates
 - Comprehensive error handling
+
+---
+
+## Screenshots
+
+### Authentication & Registration
+
+<div align="center">
+
+#### GUI Interface
+<table>
+  <tr>
+    <td align="center">
+      <img src="screenshots/GUI_Login.png" alt="GUI Login" width="400"/>
+      <br/>
+      <b>Login Screen</b>
+    </td>
+    <td align="center">
+      <img src="screenshots/GUI__Register.png" alt="GUI Registration" width="400"/>
+      <br/>
+      <b>User Registration</b>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center">
+      <img src="screenshots/GUI_Registration_succes.png" alt="Registration Success" width="400"/>
+      <br/>
+      <b>Registration Success Confirmation</b>
+    </td>
+  </tr>
+</table>
+
+#### CLI Interface
+<table>
+  <tr>
+    <td align="center">
+      <img src="screenshots/CLI_Login.png" alt="CLI Login" width="400"/>
+      <br/>
+      <b>Terminal Login</b>
+    </td>
+    <td align="center">
+      <img src="screenshots/CLI_Login_error.png" alt="CLI Login Error" width="400"/>
+      <br/>
+      <b>Error Handling</b>
+    </td>
+  </tr>
+</table>
+
+</div>
+
+---
+
+### Admin Features
+
+<div align="center">
+
+#### GUI Admin Dashboard
+<img src="screenshots/GUI_Admin_View.png" alt="Admin Dashboard" width="600"/>
+<br/>
+<b>Admin Dashboard - System Overview</b>
+
+#### CLI Admin Operations
+<table>
+  <tr>
+    <td align="center">
+      <img src="screenshots/CLI_Admin_Menu.png" alt="Admin Menu" width="400"/>
+      <br/>
+      <b>Admin Menu</b>
+    </td>
+    <td align="center">
+      <img src="screenshots/CLI_Admin_ViewAllRooms.png" alt="View All Rooms" width="400"/>
+      <br/>
+      <b>View All Rooms</b>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="screenshots/CLI_Admin_ViewAllAttendees.png" alt="View All Attendees" width="400"/>
+      <br/>
+      <b>View All Attendees</b>
+    </td>
+    <td align="center">
+      <img src="screenshots/CLI_Admin_ViewAllOrganisers.png" alt="View All Organisers" width="400"/>
+      <br/>
+      <b>View All Organisers</b>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center">
+      <img src="screenshots/CLI_Admin_RemoveRoom.png" alt="Remove Room" width="400"/>
+      <br/>
+      <b>Remove Room Functionality</b>
+    </td>
+  </tr>
+</table>
+
+</div>
+
+---
+
+### Organiser Features
+
+<div align="center">
+
+#### GUI Organiser Interface
+<table>
+  <tr>
+    <td align="center">
+      <img src="screenshots/GUI_Organiser_Home.png" alt="Organiser Home" width="400"/>
+      <br/>
+      <b>Organiser Dashboard</b>
+    </td>
+    <td align="center">
+      <img src="screenshots/GUI_Organiser_Create_booking.png" alt="Create Booking" width="400"/>
+      <br/>
+      <b>Create New Booking</b>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="screenshots/GUI_Organiser_Booking_success.png" alt="Booking Success" width="400"/>
+      <br/>
+      <b>Booking Created Successfully</b>
+    </td>
+    <td align="center">
+      <img src="screenshots/GUI_Organiser_My_Bookings.png" alt="My Bookings" width="400"/>
+      <br/>
+      <b>View My Bookings</b>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center">
+      <img src="screenshots/GUI_Organiser_Select_Booking.png" alt="Select Booking" width="400"/>
+      <br/>
+      <b>Select & Manage Booking</b>
+    </td>
+  </tr>
+</table>
+
+#### CLI Organiser Operations
+<table>
+  <tr>
+    <td align="center">
+      <img src="screenshots/CLI_Organiser_Login.png" alt="Organiser Login" width="400"/>
+      <br/>
+      <b>Organiser Login</b>
+    </td>
+    <td align="center">
+      <img src="screenshots/CLI_Organiser_CreateBooking.png" alt="Create Booking CLI" width="400"/>
+      <br/>
+      <b>Create Booking</b>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center">
+      <img src="screenshots/CLI_Organiser_My_Bookings.png" alt="View Bookings CLI" width="400"/>
+      <br/>
+      <b>View My Bookings</b>
+    </td>
+  </tr>
+</table>
+
+</div>
+
+---
+
+### Attendee Features
+
+<div align="center">
+
+#### GUI Attendee Interface
+<table>
+  <tr>
+    <td align="center">
+      <img src="screenshots/GUI_Attendee_Register.png" alt="Attendee Registration" width="400"/>
+      <br/>
+      <b>Attendee Registration</b>
+    </td>
+    <td align="center">
+      <img src="screenshots/GUI_Attendee_Home.png" alt="Attendee Home" width="400"/>
+      <br/>
+      <b>Attendee Dashboard</b>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="screenshots/GUI_Attendee_Register_Event.png" alt="Register for Event" width="400"/>
+      <br/>
+      <b>Browse & Register for Events</b>
+    </td>
+    <td align="center">
+      <img src="screenshots/GUI_Attendee__Registration_Succes.png" alt="Registration Success" width="400"/>
+      <br/>
+      <b>Event Registration Success</b>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="screenshots/GUI_Attendee_My_Events.png" alt="My Events" width="400"/>
+      <br/>
+      <b>View My Registered Events</b>
+    </td>
+    <td align="center">
+      <img src="screenshots/GUI_Attendee_Deregister.png" alt="Deregister" width="400"/>
+      <br/>
+      <b>Deregister from Event</b>
+    </td>
+  </tr>
+</table>
+
+#### CLI Attendee Operations
+<img src="screenshots/CLI_Attendee_RegisterBooking_ViewMyBookings.png" alt="Attendee CLI Operations" width="600"/>
+<br/>
+<b>Register for Event & View My Bookings</b>
+
+</div>
 
 ---
 
@@ -183,7 +415,7 @@ mvn compile exec:java -Dexec.mainClass=com.stacs.cs5031.p3.client.gui.login.Logi
 
 ### Default Test Accounts
 
-The system initializes with test accounts for development:
+The system initialises with test accounts for development:
 
 | Username | Password | Role |
 |----------|----------|------|
@@ -331,7 +563,7 @@ p3-code/
 │   │   │   │   ├── gui/           # Java Swing GUI components
 │   │   │   │   └── terminal/      # Terminal client
 │   │   │   ├── server/
-│   │   │   │   ├── config/        # Configuration & DataInitializer
+│   │   │   │   ├── config/        # Configuration & DataInitialiser
 │   │   │   │   ├── controller/    # REST API controllers
 │   │   │   │   ├── dto/           # Data Transfer Objects
 │   │   │   │   ├── exception/     # Custom exceptions
