@@ -258,3 +258,4 @@ public class AttendeeServiceTest {
         verify(attendeeRepository, never()).findRegisteredBookings(any());
     }
 }
+// 11

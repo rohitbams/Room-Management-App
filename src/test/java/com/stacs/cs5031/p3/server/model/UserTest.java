@@ -89,3 +89,4 @@ public class UserTest {
         assertEquals("newpassword", user.getPassword(), "password should be updated to 'newpassword'");
     }
 }
+// 7

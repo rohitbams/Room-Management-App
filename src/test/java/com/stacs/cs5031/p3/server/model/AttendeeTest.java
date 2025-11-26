@@ -98,3 +98,4 @@ public class AttendeeTest {
         assertEquals(1, attendee.getRegisteredBookings().size(), "should have only one booking registration");
     }
 }
+// 5

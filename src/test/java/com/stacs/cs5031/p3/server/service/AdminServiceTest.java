@@ -209,3 +209,4 @@ public class AdminServiceTest {
         assertEquals(false, adminService.removeRoom(inValidRoomId));
     }
 }
+// 8
