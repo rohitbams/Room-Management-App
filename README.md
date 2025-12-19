@@ -4,7 +4,6 @@
 
 [![Java](https://img.shields.io/badge/Java-21-orange.svg)](https://www.oracle.com/java/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4.4-brightgreen.svg)](https://spring.io/projects/spring-boot)
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
 
 ## Table of Contents
@@ -24,9 +23,7 @@
 
 ## Overview
 
-### What is the Room Management App?
-
-The Room Management App is a comprehensive **event management platform** designed to streamline the process of organising and attending events. The application serves as a central hub where event organisers can book rooms for their events, and attendees can discover and register for events that interest them.
+This application is a comprehensive **event management platform** designed to streamline the process of organising and attending events. It serves as a central hub where event organisers can book rooms for their events, and attendees can discover and register for events that interest them.
 
 **Real-World Use Case:**
 Imagine a university, conference center, or community hub where multiple events happen daily. Event organisers (speakers, workshop leaders, club presidents) need to reserve rooms for their events. Meanwhile, students, employees, or community members want to browse available events and sign up to attend. This application bridges that gap by providing:
@@ -39,14 +36,14 @@ The platform is accessible through both a modern GUI interface (perfect for ever
 
 ### Technical Overview
 
-A comprehensive room booking system built using **Agile/Scrum methodology** with **Test-Driven Development (TDD)**. The system provides a RESTful backend API consumed by both terminal (CLI) and graphical (GUI) clients, enabling seamless event management and attendee coordination.
+A comprehensive room booking system built by a 4-person software development team using **Agile/Scrum methodology** with **Test-Driven Development (TDD)**. A Spring Boot application written following OOP principles, this system provides a RESTful backend API consumed by both terminal (CLI) and graphical (GUI) clients, enabling seamless event management and attendee coordination.
 
 ### Core Capabilities
 
 - **3 User Roles**: Organiser, Attendee, Admin with distinct permissions
 - **42 REST API Endpoints** for complete CRUD operations
-- **2 Client Interfaces**: Terminal CLI (897 LOC) and Java Swing GUI
-- **Real-time Capacity Management**: Automatic tracking and conflict prevention
+- **2 Client Interfaces**: Terminal CLI and Java Swing GUI
+- **Real-time Capacity Management**: Automatic capacity tracking and conflict prevention
 - **Comprehensive Testing**: 227 test cases across 27 test classes
 
 ---
